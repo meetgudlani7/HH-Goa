@@ -1,25 +1,216 @@
-import React from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { useCardRenderer } from '../hooks/useCardRenderer';
+import canvasConfetti from 'canvas-confetti';
 
-export const ResultScreen = ({ badgeData, onReset }) => {
-  return (
-    <div style={{ textAlign: 'center', padding: '40px 20px', borderRadius: '16px', background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
-      <h2 style={{ fontFamily: 'Space Grotesk', fontSize: '24px', marginBottom: '16px' }}>Your Builder Card! 🎉</h2>
+/**
+ * ResultScreen Component - Phase 4 & 5 Implementation
+ * 
+ * Features:
+ * - Displays the generated ID card
+ * - Renders card using HTML5 Canvas (useCardRenderer)
+ * - Reveal animation (slide up + fade in)
+ * - Confetti burst on card reveal
+ * - Download PNG button
+ * - Make Another button
+ */
+export const ResultScreen = ({ croppedPhotoData, badgeData, onReset }) => {
+  const [isRevealed, setIsRevealed] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [cardImageUrl, setCardImageUrl] = useState(null);
+  const [error, setError] = useState(null);
+  
+  const cardContainerRef = useRef(null);
+  
+  const { renderCard, isRendering } = useCardRenderer();
+
+  /**
+   * Render the card on component mount
+   */
+  useEffect(() => {
+    const render = async () => {
+      if (!croppedPhotoData || !badgeData) return;
       
-      <div style={{ width: '100%', maxWidth: '300px', height: '375px', background: 'var(--surface-raised)', border: '2px solid var(--accent-primary)', borderRadius: '16px', margin: '0 auto 24px', padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', boxShadow: '0 0 20px rgba(123, 92, 240, 0.3)' }}>
-        <div style={{ fontSize: '12px', color: 'var(--accent-glow)', fontWeight: 'bold', letterSpacing: '1px' }}>HH GOA 2026 // BUILDER PASS</div>
-        <div style={{ fontSize: '24px', fontFamily: 'Space Grotesk', fontWeight: 'bold', margin: '20px 0' }}>{badgeData?.name || 'NAME PLACEHOLDER'}</div>
-        <div style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>{badgeData?.role || 'ROLE PLACEHOLDER'}</div>
-        <div style={{ borderTop: '1px dashed var(--border-subtle)', paddingTop: '10px', fontSize: '12px', color: 'var(--text-muted)' }}>goa.hackathon.com</div>
+      try {
+        const canvas = await renderCard(
+          {
+            name: badgeData.name,
+            role: badgeData.role,
+            city: badgeData.city,
+            xHandle: badgeData.xHandle,
+            builderTitle: badgeData.builderTitle,
+          },
+          croppedPhotoData.objectURL
+        );
+        
+        const dataUrl = canvas.toDataURL('image/png');
+        setCardImageUrl(dataUrl);
+        
+        // Trigger reveal animation
+        setTimeout(() => {
+          setIsRevealed(true);
+          fireConfetti();
+        }, 100);
+        
+      } catch (err) {
+        console.error('Failed to render card:', err);
+        setError('Failed to generate your card. Please try again.');
+      }
+    };
+    
+    render();
+  }, [croppedPhotoData, badgeData, renderCard]);
+
+  /**
+   * Fire confetti animation
+   */
+  const fireConfetti = useCallback(() => {
+    // Check if user prefers reduced motion
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return; // Skip confetti for accessibility
+    }
+    
+    try {
+      canvasConfetti({
+        particleCount: 80,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#7B5CF0', '#A78BFA', '#F97316', '#FAFAFA'],
+        scalar: 1.2,
+      });
+    } catch (err) {
+      console.warn('Confetti failed to fire:', err);
+    }
+  }, []);
+
+  /**
+   * Handle download
+   */
+  const handleDownload = useCallback(() => {
+    if (!cardImageUrl) return;
+    
+    setIsDownloading(true);
+    
+    try {
+      // Create a temporary anchor element
+      const link = document.createElement('a');
+      link.href = cardImageUrl;
+      link.download = `hh-goa-2026-${badgeData?.name?.toLowerCase().replace(/\s+/g, '-') || 'builder'}-card.png`;
+      
+      // Append to body, click, and remove
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // For iOS, also show a message about long-press
+      if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+        setTimeout(() => {
+          alert('If the download did not start, long-press the card image and select "Save Image"');
+        }, 500);
+      }
+    } catch (err) {
+      console.error('Download failed:', err);
+      setError('Failed to download. Please try again.');
+    } finally {
+      setIsDownloading(false);
+    }
+  }, [cardImageUrl, badgeData]);
+
+  /**
+   * Handle make another
+   */
+  const handleMakeAnother = useCallback(() => {
+    setCardImageUrl(null);
+    setIsRevealed(false);
+    onReset();
+  }, [onReset]);
+
+  /**
+   * Dismiss error
+   */
+  const handleDismissError = useCallback(() => {
+    setError(null);
+  }, []);
+
+  return (
+    <div className="result-container">
+      {/* Error state */}
+      {error && (
+        <div className="result-error" role="alert">
+          <span>{error}</span>
+          <button 
+            className="btn-secondary" 
+            onClick={handleDismissError}
+            style={{ marginLeft: '12px', padding: '6px 12px', fontSize: '13px' }}
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
+      {/* Header */}
+      <div className="result-header">
+        <h2 className="result-title">Your Builder Card! 🎉</h2>
+        <p className="result-subtitle">Ready to share with the world</p>
       </div>
 
-      <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
-        <button className="btn-secondary" onClick={onReset}>
+      {/* Card container with reveal animation */}
+      <div 
+        className={`result-card-container ${isRevealed ? 'revealed' : ''}`}
+        ref={cardContainerRef}
+      >
+        {cardImageUrl && (
+          <div className="result-card-wrapper">
+            <img 
+              src={cardImageUrl} 
+              alt="Your HH Goa 2026 Builder Card"
+              className="result-card-image"
+              // For iOS long-press save
+              onContextMenu={(e) => {
+                if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+                  e.preventDefault();
+                  alert('Long-press and select "Save Image" to save to your camera roll');
+                }
+              }}
+            />
+          </div>
+        )}
+        
+        {/* Loading state */}
+        {isRendering && !cardImageUrl && (
+          <div className="result-loading">
+            <div className="spinner"></div>
+            <p>Generating your card...</p>
+          </div>
+        )}
+      </div>
+
+      {/* Actions */}
+      <div className="result-actions">
+        <button 
+          className="btn-secondary"
+          onClick={handleMakeAnother}
+          disabled={isDownloading}
+        >
           Make Another
         </button>
-        <button className="btn-primary" onClick={() => alert('Download coming in Phase 5!')}>
-          Save Card 💾
+        
+        <button 
+          className="btn-primary"
+          onClick={handleDownload}
+          disabled={!cardImageUrl || isDownloading}
+        >
+          {isDownloading ? 'Downloading...' : 'Save Card 💾'}
         </button>
+      </div>
+
+      {/* Card info */}
+      <div className="result-info">
+        <p style={{ color: 'var(--text-muted)', fontSize: '11px' }}>
+          Card size: 1080 × 1350px (4:5 ratio)
+        </p>
       </div>
     </div>
   );
 };
+
+export default ResultScreen;

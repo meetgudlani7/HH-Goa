@@ -13,19 +13,27 @@ export const App = () => {
   const [badgeData, setBadgeData] = useState(null);
 
   const handleUploadNext = (data) => {
-    console.log('App: handleUploadNext called with data:', data?.fileName, data?.isHeic);
+    if (photoData?.objectURL) {
+      URL.revokeObjectURL(photoData.objectURL);
+    }
+    if (croppedPhotoData?.objectURL) {
+      URL.revokeObjectURL(croppedPhotoData.objectURL);
+    }
+
     setPhotoData(data);
+    setCroppedPhotoData(null);
     setStep('crop');
   };
 
   const handleCropNext = (data) => {
-    console.log('Crop Step Complete:', data);
+    if (croppedPhotoData?.objectURL && data.objectURL !== croppedPhotoData.objectURL) {
+      URL.revokeObjectURL(croppedPhotoData.objectURL);
+    }
     setCroppedPhotoData(data);
     setStep('form');
   };
 
   const handleFormNext = (data) => {
-    console.log('Form Step Complete:', data);
     setBadgeData(data);
     setStep('result');
   };
@@ -45,9 +53,7 @@ export const App = () => {
     setBadgeData(null);
   };
 
-  // Clean up object URLs when component unmounts
-  // Note: We don't clean up on data changes because handleReset already does that
-  // and we want to avoid double revocation
+  // Clean up object URLs when the data changes or component unmounts
   useEffect(() => {
     return () => {
       if (photoData?.objectURL) {
@@ -57,7 +63,7 @@ export const App = () => {
         URL.revokeObjectURL(croppedPhotoData.objectURL);
       }
     };
-  }, []);
+  }, [photoData, croppedPhotoData]);
 
   return (
     <div className="container">
@@ -79,12 +85,14 @@ export const App = () => {
         )}
         {step === 'form' && (
           <FormFields 
+            croppedPhotoData={croppedPhotoData}
             onNext={handleFormNext} 
             onBack={() => setStep('crop')} 
           />
         )}
         {step === 'result' && (
           <ResultScreen 
+            croppedPhotoData={croppedPhotoData}
             badgeData={badgeData} 
             onReset={handleReset} 
           />
@@ -92,7 +100,7 @@ export const App = () => {
       </main>
 
       <footer style={{ marginTop: '40px', textAlign: 'center', borderTop: '1px solid var(--border-subtle)', paddingTop: '20px', color: 'var(--text-muted)', fontSize: '12px' }}>
-        GOA &bull; AUG 2026 &bull; placeholder@email.com
+        GOA &bull; JAN 2026 &bull; goa.hackathon.com
       </footer>
     </div>
   );

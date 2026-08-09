@@ -1,5 +1,4 @@
 import { useState, useCallback } from 'react';
-import heic2any from 'heic2any';
 
 /**
  * Magic bytes for HEIC/HEIF format detection
@@ -70,16 +69,28 @@ export const useImageProcessor = () => {
    * - Validate the resulting image
    * - Return normalized image data
    */
-  const processImage = useCallback(async (file) => {
-    // Reset state
-    setError(null);
-    setIsProcessing(true);
+   const processImage = useCallback(async (file) => {
+     // Reset state
+     setError(null);
+     setIsProcessing(true);
 
-    try {
-      // Validate file is an image
-      if (!file || !file.type || !file.type.startsWith('image/')) {
-        throw new Error('Please upload a valid image file (JPG, PNG, or HEIC)');
-      }
+     try {
+       // Validate file exists
+       if (!file) {
+         throw new Error('Please upload a valid image file (JPG, PNG, or HEIC)');
+       }
+
+       // Check if file is likely an image based on type OR name
+       // iOS sometimes sends HEIC with application/octet-stream or empty MIME type
+       const isLikelyImage = file.type && file.type.startsWith('image/');
+       const hasImageExtension = /\.(jpe?g|png|heic|heif|webp)$/i.test(file.name);
+       
+       // If file doesn't have image MIME type and doesn't have image extension,
+       // still try to process it (magic bytes will catch HEIC)
+       if (!isLikelyImage && !hasImageExtension) {
+         // We'll still try to process it, but check magic bytes first
+         console.warn('File does not have image MIME type or extension, checking magic bytes:', file.name);
+       }
 
       // Check file size - warn if > 20MB
       const MAX_SIZE = 20 * 1024 * 1024; // 20MB
@@ -94,24 +105,48 @@ export const useImageProcessor = () => {
       let objectURL;
 
       if (isHeic) {
-        // Check for WebAssembly support
-        if (!isWasmSupported()) {
-          throw new Error('Your browser does not support HEIC conversion. Please upload a JPG or PNG file.');
-        }
+        const originalObjectURL = URL.createObjectURL(file);
 
-        // Convert HEIC to JPEG using heic2any
-        try {
-          const result = await heic2any({
-            blob: file,
-            toType: 'image/jpeg',
-            quality: 0.92,
-          });
-          
-          processedBlob = result;
-          objectURL = URL.createObjectURL(processedBlob);
-        } catch (heicError) {
-          console.error('HEIC conversion failed:', heicError);
-          throw new Error('Failed to convert HEIC file. Please try uploading a JPG or PNG instead.');
+        // If the browser can convert HEIC with heic2any, do so.
+        if (isWasmSupported()) {
+          try {
+            const heic2anyModule = await import('heic2any');
+            const heic2any = heic2anyModule.default ?? heic2anyModule;
+
+            const result = await heic2any({
+              blob: file,
+              toType: 'image/jpeg',
+              quality: 0.92,
+            });
+
+            processedBlob = result;
+            objectURL = URL.createObjectURL(processedBlob);
+
+            await verifyImage(objectURL);
+            URL.revokeObjectURL(originalObjectURL);
+          } catch (heicError) {
+            console.warn('HEIC conversion failed, trying native browser support if available:', heicError);
+
+            try {
+              await verifyImage(originalObjectURL);
+              processedBlob = file;
+              objectURL = originalObjectURL;
+            } catch (nativeError) {
+              URL.revokeObjectURL(originalObjectURL);
+              console.error('HEIC conversion and native load both failed:', nativeError);
+              throw new Error('Failed to process the HEIC image. Please upload a JPG or PNG file if this keeps happening.');
+            }
+          }
+        } else {
+          // Browser cannot use the HEIC converter library; try native HEIC rendering.
+          try {
+            await verifyImage(originalObjectURL);
+            processedBlob = file;
+            objectURL = originalObjectURL;
+          } catch (nativeError) {
+            URL.revokeObjectURL(originalObjectURL);
+            throw new Error('HEIC conversion is not supported in this browser. Please upload a JPG or PNG file.');
+          }
         }
       } else {
         // For JPG/PNG, use the file directly

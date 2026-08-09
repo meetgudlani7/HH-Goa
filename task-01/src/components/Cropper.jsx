@@ -1,6 +1,7 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
-import EasyCrop from 'react-easy-crop';
+import React, { useState, useRef, useCallback, useEffect, lazy, Suspense } from 'react';
 import { getCroppedImg } from '../utils/canvasHelpers';
+
+const EasyCrop = lazy(() => import('react-easy-crop'));
 
 /**
  * Cropper Component - Phase 2 Implementation (Fixed)
@@ -113,15 +114,11 @@ export const Cropper = ({ photoData, onNext, onBack }) => {
     setError(null);
 
     try {
-      // Use the existing image element from react-easy-crop if available
-      // Otherwise create a new one
-      let image;
-      if (easyCropRef.current?.getImageElement) {
-        image = easyCropRef.current.getImageElement();
-      } else {
-        // Create new image and wait for it to load
+      // Prefer the internal image element from react-easy-crop if available.
+      // If the component instance doesn't expose it, fall back to a new Image.
+      let image = easyCropRef.current?.imageRef?.current;
+      if (!image) {
         image = new Image();
-        
         await new Promise((resolve, reject) => {
           image.onload = resolve;
           image.onerror = reject;
@@ -221,44 +218,46 @@ export const Cropper = ({ photoData, onNext, onBack }) => {
           className="cropper-wrapper" 
           ref={cropperContainerRef}
         >
-          <EasyCrop
-            ref={easyCropRef}
-            image={imageSrc}
-            crop={crop}
-            zoom={zoom}
-            aspect={aspectRatio}
-            minZoom={getMinZoom()}
-            maxZoom={3}
-            zoomSpeed={0.5}
-            onCropChange={setCrop}
-            onZoomChange={onZoomChange}
-            onCropComplete={onCropComplete}
-            onMediaLoaded={onMediaLoaded}
-            rotation={rotation}
-            objectFit="contain"
-            showGrid={false}
-            disableAutomaticStylesInjection={true}
-            classes={{
-              containerClassName: 'react-easy-crop-container',
-              cropAreaClassName: 'react-easy-crop-crop-area',
-              mediaClassName: 'react-easy-crop-media',
-            }}
-            style={{
-              containerStyle: {
-                width: '100%',
-                height: '100%',
-                position: 'relative',
-              },
-              cropAreaStyle: {
-                border: '2px solid var(--accent-primary)',
-                borderRadius: '8px',
-                background: 'rgba(123, 92, 240, 0.1)',
-              },
-              mediaStyle: {
-                borderRadius: '4px',
-              },
-            }}
-          />
+          <Suspense fallback={<div className="cropper-loading">Loading cropper...</div>}>
+            <EasyCrop
+              ref={easyCropRef}
+              image={imageSrc}
+              crop={crop}
+              zoom={zoom}
+              aspect={aspectRatio}
+              minZoom={getMinZoom()}
+              maxZoom={3}
+              zoomSpeed={0.5}
+              onCropChange={setCrop}
+              onZoomChange={onZoomChange}
+              onCropComplete={onCropComplete}
+              onMediaLoaded={onMediaLoaded}
+              rotation={rotation}
+              objectFit="contain"
+              showGrid={false}
+              disableAutomaticStylesInjection={true}
+              classes={{
+                containerClassName: 'react-easy-crop-container',
+                cropAreaClassName: 'react-easy-crop-crop-area',
+                mediaClassName: 'react-easy-crop-media',
+              }}
+              style={{
+                containerStyle: {
+                  width: '100%',
+                  height: '100%',
+                  position: 'relative',
+                },
+                cropAreaStyle: {
+                  border: '2px solid var(--accent-primary)',
+                  borderRadius: '8px',
+                  background: 'rgba(123, 92, 240, 0.1)',
+                },
+                mediaStyle: {
+                  borderRadius: '4px',
+                },
+              }}
+            />
+          </Suspense>
         </div>
 
         {/* Live preview of card silhouette */}

@@ -1,0 +1,33 @@
+/**
+ * Curated list of Builder Titles for HH Goa 2026
+ * From the DesignDoc Section 9
+ */
+export const BUILDER_TITLES = [
+  "VIBE ENGINEER",
+  "FULL STACK GREMLIN",
+  "SHIP IT OR SKIP IT",
+  "PROMPT WHISPERER",
+  "API ABUSER",
+  "SERIAL SIDE PROJECTER",
+  "BROKE PROD ONCE",
+  "NEVER READ THE DOCS",
+  "CEO OF SIDE PROJECTS",
+  "CAFFEINATED CODER",
+  "DEBUGGING IN PROD",
+  "ONE MORE FEATURE",
+  "DESIGN? WHAT DESIGN",
+  "JUST SHIP IT",
+  "LIVING IN MY TERMINAL",
+  "LOCALHOST LEGEND",
+  "MVP FACTORY",
+  "GIT PUSH THERAPIST",
+  "ZERO TO DEPLOYED",
+  "BUILDING IN PUBLIC"
+];
+
+/**
+ * Default builder title to use when none selected
+ */
+export const DEFAULT_BUILDER_TITLE = "BUILDER";
+
+export default BUILDER_TITLES;

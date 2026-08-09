@@ -503,3 +503,392 @@ button:disabled {
 .cropper-actions button {
   min-height: 44px;
 }
+
+/* ===== FormFields Component Styles ===== */
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.form-header {
+  text-align: center;
+}
+
+.form-title {
+  font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 8px 0;
+}
+
+.form-subtitle {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Photo preview */
+.form-photo-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px;
+  background: var(--bg-card);
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+}
+
+.photo-thumb {
+  width: 80px;
+  height: 106.67px; /* 3:4 aspect ratio */
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.photo-preview-label {
+  color: var(--text-muted);
+  font-size: 11px;
+  margin: 0;
+}
+
+/* Form fields */
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.form-label sup {
+  color: var(--accent-primary);
+  font-size: 12px;
+}
+
+.form-input {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-input:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px rgba(123, 92, 240, 0.2);
+}
+
+.form-input::placeholder {
+  color: var(--text-muted);
+}
+
+.form-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.form-input-error {
+  border-color: var(--accent-hot);
+  background: rgba(249, 115, 22, 0.05);
+}
+
+.form-error {
+  color: var(--accent-hot);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.form-hint {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.form-input-wrapper {
+  position: relative;
+}
+
+.char-counter {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 11px;
+  pointer-events: none;
+}
+
+/* Title chips */
+.title-chips-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 0;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.title-chips-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.title-chips-container::-webkit-scrollbar-track {
+  background: var(--bg-card);
+  border-radius: 3px;
+}
+
+.title-chips-container::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: 3px;
+}
+
+.title-chip {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  padding: 8px 14px;
+  font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.title-chip:hover:not(:disabled) {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  background: rgba(123, 92, 240, 0.1);
+}
+
+.title-chip.selected {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: var(--text-primary);
+}
+
+.title-chip:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.title-mode-toggle {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 4px 0;
+  text-align: left;
+}
+
+.title-mode-toggle:hover:not(:disabled) {
+  color: var(--text-secondary);
+}
+
+.title-mode-toggle:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Form actions */
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.form-actions button {
+  flex: 1;
+  min-width: 120px;
+  padding: 12px 24px;
+  font-size: 14px;
+}
+
+.form-required-notice {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+/* Responsive adjustments for form */
+@media (max-width: 480px) {
+  .form-title {
+    font-size: 20px;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .form-actions button {
+    width: 100%;
+  }
+  
+  .title-chips-container {
+    max-height: 100px;
+  }
+  
+  .title-chip {
+    font-size: 10px;
+    padding: 6px 10px;
+  }
+}
+
+/* Ensure touch targets are large enough */
+.form-field button,
+.title-chip,
+.title-mode-toggle {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* ===== ResultScreen Component Styles ===== */
+.result-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  align-items: center;
+}
+
+.result-header {
+  text-align: center;
+}
+
+.result-title {
+  font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 8px 0;
+}
+
+.result-subtitle {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Card container with reveal animation */
+.result-card-container {
+  width: 100%;
+  max-width: 380px;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+}
+
+.result-card-container.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.result-card-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.result-card-image {
+  width: 100%;
+  height: auto;
+  border-radius: 16px;
+  box-shadow: 0 0 30px rgba(123, 92, 240, 0.3);
+  display: block;
+  max-width: 100%;
+}
+
+/* Loading state */
+.result-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+/* Actions */
+.result-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.result-actions button {
+  flex: 1;
+  min-width: 140px;
+  padding: 12px 24px;
+  font-size: 14px;
+}
+
+/* Error state */
+.result-error {
+  background: rgba(249, 115, 22, 0.1);
+  border: 1px solid var(--accent-hot);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--accent-hot);
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Card info */
+.result-info {
+  text-align: center;
+  margin-top: 8px;
+}
+
+/* Responsive adjustments for result screen */
+@media (max-width: 480px) {
+  .result-title {
+    font-size: 20px;
+  }
+  
+  .result-actions {
+    flex-direction: column;
+  }
+  
+  .result-actions button {
+    width: 100%;
+  }
+  
+  .result-card-container {
+    max-width: 100%;
+  }
+}
+
+/* Ensure touch targets are large enough */
+.result-actions button {
+  min-height: 44px;
+}
