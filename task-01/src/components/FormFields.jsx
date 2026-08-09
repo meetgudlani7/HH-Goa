@@ -1,419 +1,263 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { BUILDER_TITLES } from '../utils/titlesList';
 
-/**
- * FormFields Component - Phase 3 Implementation
- * 
- * Features:
- * - Collects builder information (Name, Role, City, X handle, Builder Title)
- * - Builder Title: pick from chips or type custom
- * - Validation for required fields
- * - Auto-focus first field
- * - Mini preview of cropped photo
- * - Disabled submit until all required fields are filled
- */
-export const FormFields = ({ croppedPhotoData, onNext, onBack }) => {
-  // Form state
-  const [formData, setFormData] = useState({
-    name: '',
-    role: '',
-    city: '',
-    xHandle: '',
-    builderTitle: '',
-  });
-  
-  // Builder title mode: 'pick' or 'type'
+export const FormFields = ({ setStep, formData, setFormData }) => {
   const [builderTitleMode, setBuilderTitleMode] = useState('pick');
-  
-  // Selected title index for pick mode
-  const [selectedTitleIndex, setSelectedTitleIndex] = useState(null);
-  
-  // Error and focus state
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  // Refs for inputs
   const nameInputRef = useRef(null);
 
-  /**
-   * Auto-focus name input on mount
-   */
   useEffect(() => {
     if (nameInputRef.current) {
       nameInputRef.current.focus();
     }
   }, []);
 
-  /**
-   * Check if form is valid (required fields filled)
-   */
   const isFormValid = useCallback(() => {
     return (
       formData.name.trim().length > 0 &&
-      formData.role.trim().length > 0 &&
+      formData.stack.trim().length > 0 &&
       formData.builderTitle.trim().length > 0
     );
   }, [formData]);
 
-  /**
-   * Handle input change
-   */
   const handleInputChange = useCallback((e) => {
     const { name, value } = e.target;
     
-    // Clean up X handle: remove @ prefix
     if (name === 'xHandle') {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value.replace(/@/g, ''),
-      }));
+      setFormData(prev => ({ ...prev, [name]: value.replace(/@/g, '') }));
     } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value,
-      }));
+      setFormData(prev => ({ ...prev, [name]: value }));
     }
     
-    // Clear error for this field
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: null }));
     }
-  }, [errors]);
+  }, [errors, setFormData]);
 
-  /**
-   * Handle builder title selection from chip
-   */
   const handleTitleSelect = useCallback((index) => {
-    setSelectedTitleIndex(index);
     setFormData(prev => ({
       ...prev,
       builderTitle: BUILDER_TITLES[index],
     }));
     setErrors(prev => ({ ...prev, builderTitle: null }));
-  }, []);
+  }, [setFormData]);
 
-  /**
-   * Toggle between pick and type mode for builder title
-   */
+  const regenerateTitle = useCallback(() => {
+    const randomIndex = Math.floor(Math.random() * BUILDER_TITLES.length);
+    handleTitleSelect(randomIndex);
+  }, [handleTitleSelect]);
+
   const toggleBuilderTitleMode = useCallback(() => {
     if (builderTitleMode === 'pick') {
       setBuilderTitleMode('type');
-      setSelectedTitleIndex(null);
     } else {
       setBuilderTitleMode('pick');
-      // If there's a typed title that's not in the list, clear it
-      if (formData.builderTitle && !BUILDER_TITLES.includes(formData.builderTitle.toUpperCase())) {
-        setFormData(prev => ({ ...prev, builderTitle: '' }));
-      } else {
-        // Find the index of the current title
-        const index = BUILDER_TITLES.findIndex(t => t === formData.builderTitle.toUpperCase());
-        if (index >= 0) {
-          setSelectedTitleIndex(index);
-        }
-      }
     }
+  }, [builderTitleMode]);
+
+  const formatCharCount = useCallback(() => {
+    if (builderTitleMode !== 'type') return null;
+    return `${formData.builderTitle.length}/32`;
   }, [builderTitleMode, formData.builderTitle]);
 
-  /**
-   * Validate field on blur
-   */
-  const validateField = useCallback((name, value) => {
-    if (name === 'name' || name === 'role') {
-      if (value.trim().length === 0) {
-        setErrors(prev => ({ ...prev, [name]: `${name.charAt(0).toUpperCase() + name.slice(1)} is required` }));
-        return false;
-      }
-    }
-    
-    if (name === 'builderTitle') {
-      if (value.trim().length === 0) {
-        setErrors(prev => ({ ...prev, builderTitle: 'Builder Title is required' }));
-        return false;
-      }
-      if (value.length > 32) {
-        setErrors(prev => ({ ...prev, builderTitle: 'Builder Title must be 32 characters or less' }));
-        return false;
-      }
-    }
-    
-    // Clear error
-    setErrors(prev => ({ ...prev, [name]: null }));
-    return true;
-  }, []);
-
-  /**
-   * Handle field blur
-   */
-  const handleBlur = useCallback((e) => {
-    const { name, value } = e.target;
-    validateField(name, value);
-  }, [validateField]);
-
-  /**
-   * Handle form submission
-   */
   const handleSubmit = useCallback(() => {
-    // Validate all required fields
     const isValid = isFormValid();
     
     if (!isValid) {
-      // Set errors for empty required fields
       const newErrors = {};
-      if (formData.name.trim().length === 0) newErrors.name = 'Name is required';
-      if (formData.role.trim().length === 0) newErrors.role = 'Role is required';
-      if (formData.builderTitle.trim().length === 0) newErrors.builderTitle = 'Builder Title is required';
-      
+      if (!formData.name.trim()) newErrors.name = 'Name is required';
+      if (!formData.stack.trim()) newErrors.stack = 'Stack is required';
+      if (!formData.builderTitle.trim()) newErrors.builderTitle = 'Builder Title is required';
       setErrors(newErrors);
-      
-      // Focus on first error
-      if (newErrors.name && nameInputRef.current) {
-        nameInputRef.current.focus();
-      }
+      if (newErrors.name && nameInputRef.current) nameInputRef.current.focus();
       return;
     }
 
     setIsSubmitting(true);
-    
-    try {
-      // Pass form data to next step
-      onNext({
-        ...formData,
-        // Ensure xHandle is stored without @
-        xHandle: formData.xHandle.replace(/@/g, ''),
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  }, [formData, isFormValid, onNext]);
-
-  /**
-   * Handle keyboard submit
-   */
-  const handleKeyDown = useCallback((e) => {
-    if (e.key === 'Enter' && isFormValid() && !isSubmitting) {
-      e.preventDefault();
-      handleSubmit();
-    }
-  }, [isFormValid, isSubmitting, handleSubmit]);
-
-  /**
-   * Format character count for builder title
-   */
-  const formatCharCount = useCallback(() => {
-    if (builderTitleMode !== 'type') return null;
-    const count = formData.builderTitle.length;
-    const max = 32;
-    return `${count}/${max}`;
-  }, [builderTitleMode, formData.builderTitle]);
+    setStep('scanning');
+    setIsSubmitting(false);
+  }, [formData, isFormValid, setStep]);
 
   return (
-    <div className="form-container" onKeyDown={handleKeyDown}>
-      {/* Header */}
-      <div className="form-header">
-        <h2 className="form-title">Builder Details</h2>
-        <p className="form-subtitle">Tell us about yourself</p>
+    <div className="form-screen" style={{ maxWidth: '540px', margin: '0 auto' }}>
+      <div className="form-poster-bg">BUILD</div>
+      <div className="border-strip-top"></div>
+      
+      <div className="windowbar">
+        <div className="windowbar-title">⬛ NAAM KYA HAI, BUILDER? — STEP 2 OF 3</div>
+        <div className="wbtns">
+          <div className="wbtn" style={{ background: '#C8001E' }}></div>
+          <div className="wbtn" style={{ background: '#F0C229' }}></div>
+          <div className="wbtn" style={{ background: '#2A7A4B' }}></div>
+        </div>
       </div>
 
-      {/* Photo preview */}
-      {croppedPhotoData?.objectURL && (
-        <div className="form-photo-preview">
-          <div className="photo-thumb">
-            <img 
-              src={croppedPhotoData.objectURL} 
-              alt="Your photo"
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                borderRadius: '8px',
-              }}
-            />
-          </div>
-          <p className="photo-preview-label">Your photo</p>
+      <div className="form-body">
+        <div className="form-eyebrow">// IDENTITY CONFIGURATION IN PROGRESS</div>
+        <div className="form-heading-big">
+          TERI<br />
+          <span className="hl">IDENTITY</span><br />
+          KYA HAI?
         </div>
-      )}
 
-      {/* Form fields */}
-      <form className="form-fields" noValidate>
-        
-        {/* Name field */}
-        <div className="form-field">
-          <label htmlFor="name" className="form-label">
-            Name *
-          </label>
-          <input
-            type="text"
-            id="name"
-            name="name"
+        <div className="field-group">
+          <div className="field-label">TERA NAAM KYA HAI? / Your name</div>
+          <input 
+            className="field-inp"
             value={formData.name}
             onChange={handleInputChange}
-            onBlur={handleBlur}
             ref={nameInputRef}
-            className={`form-input ${errors.name ? 'form-input-error' : ''}`}
-            placeholder="Arjun Mehta"
+            name="name"
+            placeholder="Your Name"
             maxLength={40}
             autoComplete="name"
-            autoCapitalize="words"
             disabled={isSubmitting}
           />
-          {errors.name && <span className="form-error">{errors.name}</span>}
+          {formData.name.trim() && <div className="field-decoration">NAAM ✓</div>}
+          {errors.name && <div className="field-error">{errors.name}</div>}
         </div>
 
-        {/* Role / Stack field */}
-        <div className="form-field">
-          <label htmlFor="role" className="form-label">
-            Role / Stack *
-          </label>
-          <input
-            type="text"
-            id="role"
-            name="role"
-            value={formData.role}
+        <div className="field-group">
+          <div className="field-label">KYA CHALTA HAI MACHINE MEIN? / Your stack</div>
+          <input 
+            className="field-inp"
+            value={formData.stack}
             onChange={handleInputChange}
-            onBlur={handleBlur}
-            className={`form-input ${errors.role ? 'form-input-error' : ''}`}
-            placeholder="Full-stack / React, Go"
+            name="stack"
+            placeholder="REACT / TS / AI"
             maxLength={50}
             autoComplete="off"
-            autoCapitalize="none"
-            spellCheck="false"
             disabled={isSubmitting}
           />
-          {errors.role && <span className="form-error">{errors.role}</span>}
+          {formData.stack.trim() && <div className="field-decoration">STACK ✓</div>}
+          {errors.stack && <div className="field-error">{errors.stack}</div>}
         </div>
 
-        {/* City / Country field (optional) */}
-        <div className="form-field">
-          <label htmlFor="city" className="form-label">
-            City / Country
-          </label>
-          <input
-            type="text"
-            id="city"
-            name="city"
+        <div className="field-group">
+          <div className="field-label">KAHAN SE AAYA HAI? / City, Country</div>
+          <input 
+            className="field-inp"
             value={formData.city}
             onChange={handleInputChange}
-            onBlur={handleBlur}
-            className="form-input"
-            placeholder="Mumbai, India"
+            name="city"
+            placeholder="Goa, India"
             maxLength={30}
             autoComplete="off"
             disabled={isSubmitting}
           />
         </div>
 
-        {/* X Handle field (optional) */}
-        <div className="form-field">
-          <label htmlFor="xHandle" className="form-label">
-            X Handle
-          </label>
-          <input
-            type="text"
-            id="xHandle"
-            name="xHandle"
+        <div className="field-group">
+          <div className="field-label">TU X PE KYA HAI? / @handle</div>
+          <input 
+            className="field-inp"
             value={formData.xHandle}
             onChange={handleInputChange}
-            onBlur={handleBlur}
-            className="form-input"
+            name="xHandle"
             placeholder="yourhandle"
             maxLength={30}
             autoComplete="off"
-            autoCapitalize="none"
-            spellCheck="false"
             disabled={isSubmitting}
           />
-          <span className="form-hint">No @ needed</span>
+          <div className="field-hint">No @ needed</div>
         </div>
 
-        {/* Builder Title field */}
-        <div className="form-field">
-          <label className="form-label">
-            Builder Title *
-          </label>
-          
-          {builderTitleMode === 'pick' ? (
-            <>
-              <div className="title-chips-container">
-                {BUILDER_TITLES.map((title, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    className={`title-chip ${selectedTitleIndex === index ? 'selected' : ''}`}
-                    onClick={() => handleTitleSelect(index)}
-                    disabled={isSubmitting}
-                  >
-                    {title}
-                  </button>
-                ))}
-              </div>
-              <button 
-                type="button"
-                className="title-mode-toggle"
-                onClick={toggleBuilderTitleMode}
-                disabled={isSubmitting}
-              >
-                or type your own
-              </button>
-            </>
-          ) : (
-            <>
-              <div className="form-input-wrapper">
-                <input
-                  type="text"
-                  name="builderTitle"
-                  value={formData.builderTitle}
-                  onChange={handleInputChange}
-                  onBlur={handleBlur}
-                  className={`form-input ${errors.builderTitle ? 'form-input-error' : ''}`}
-                  placeholder="Enter your custom title"
-                  maxLength={32}
-                  autoComplete="off"
-                  autoCapitalize="words"
-                  disabled={isSubmitting}
-                />
-                <span className="char-counter">{formatCharCount()}</span>
-              </div>
-              <button 
-                type="button"
-                className="title-mode-toggle"
-                onClick={toggleBuilderTitleMode}
-                disabled={isSubmitting}
-              >
-                Back to chips
-              </button>
-            </>
-          )}
-          
-          {errors.builderTitle && <span className="form-error">{errors.builderTitle}</span>}
+        <div className="tags-label">TU KYA BANATA HAI? / Your role</div>
+        <div className="tags-row">
+          {['Builder', 'Designer', 'Founder', 'AI Hacker', 'Chaos Agent'].map((role) => (
+            <button
+              key={role}
+              className={`tag ${formData.role === role ? 'active' : ''}`}
+              onClick={() => setFormData(prev => ({ ...prev, role }))}
+              disabled={isSubmitting}
+            >
+              {role}
+            </button>
+          ))}
         </div>
 
-      </form>
+        <div className="back-pattern-row" style={{ margin: '14px 0' }}>
+          <div className="bp-diamond"></div><div className="bp-circle"></div>
+          <div className="bp-diamond"></div><div className="bp-circle"></div>
+          <div className="bp-diamond"></div><div className="bp-circle"></div>
+          <div className="bp-diamond"></div>
+        </div>
 
-      {/* Actions */}
-      <div className="form-actions">
-        <button 
-          type="button"
-          className="btn-secondary"
-          onClick={onBack}
-          disabled={isSubmitting}
-        >
-          Back
-        </button>
+        <div className="tags-label">// GENERATED BUILDER TITLE</div>
         
-        <button 
-          type="button"
-          className="btn-primary"
-          onClick={handleSubmit}
-          disabled={!isFormValid() || isSubmitting}
-        >
-          {isSubmitting ? 'Generating...' : 'Generate My Card'}
+        {builderTitleMode === 'pick' && (
+          <>
+            <div className="title-box">
+              <div className="title-box-name">{formData.builderTitle || 'Select a title...'}</div>
+              <button className="title-box-regen" onClick={regenerateTitle} disabled={isSubmitting}>
+                ↻ EK AUR
+              </button>
+            </div>
+            
+            <div className="tags-row" style={{ marginTop: '8px' }}>
+              {BUILDER_TITLES.slice(0, 8).map((title, index) => (
+                <button
+                  key={index}
+                  className={`tag ${formData.builderTitle === title ? 'active' : ''}`}
+                  onClick={() => handleTitleSelect(index)}
+                  disabled={isSubmitting}
+                >
+                  {title}
+                </button>
+              ))}
+            </div>
+            <div className="tags-row" style={{ marginTop: '8px' }}>
+              {BUILDER_TITLES.slice(8).map((title, index) => (
+                <button
+                  key={index + 8}
+                  className={`tag ${formData.builderTitle === title ? 'active' : ''}`}
+                  onClick={() => handleTitleSelect(index + 8)}
+                  disabled={isSubmitting}
+                >
+                  {title}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+
+        {builderTitleMode === 'type' && (
+          <div className="field-group">
+            <input 
+              className="field-inp"
+              value={formData.builderTitle}
+              onChange={handleInputChange}
+              name="builderTitle"
+              placeholder="Your custom title"
+              maxLength={32}
+              autoComplete="off"
+              disabled={isSubmitting}
+            />
+            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: '7px', color: 'var(--fade)', letterSpacing: '.08em', marginTop: '4px' }}>
+              {formData.builderTitle.length}/32
+            </div>
+          </div>
+        )}
+
+        <button type="button" className="title-mode-toggle" onClick={toggleBuilderTitleMode} disabled={isSubmitting}>
+          {builderTitleMode === 'pick' ? '✏ TYPE MY OWN' : 'Back to chips'}
+        </button>
+
+        {errors.builderTitle && <div className="field-error">{errors.builderTitle}</div>}
+
+        <div className="back-pattern-row" style={{ margin: '14px 0' }}>
+          <div className="bp-diamond"></div><div className="bp-circle"></div>
+          <div className="bp-diamond"></div><div className="bp-circle"></div>
+          <div className="bp-diamond"></div><div className="bp-circle"></div>
+          <div className="bp-diamond"></div>
+        </div>
+
+        <button className="generate-btn" onClick={handleSubmit} disabled={!isFormValid() || isSubmitting}>
+          JUGAAD KARO → GENERATE MY ARTIFACT
         </button>
       </div>
-
-      {/* Required fields notice */}
-      <p className="form-required-notice">
-        * Required
-      </p>
+      <div className="border-strip-bottom"></div>
     </div>
   );
 };

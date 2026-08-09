@@ -1,107 +1,136 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './styles/tokens.css';
 import './index.css';
 import { Uploader } from './components/Uploader';
 import { Cropper } from './components/Cropper';
 import { FormFields } from './components/FormFields';
 import { ResultScreen } from './components/ResultScreen';
+import { ScanningScreen } from './components/ScanningScreen';
+import { ArtifactFront } from './components/ArtifactFront';
+import { ArtifactBack } from './components/ArtifactBack';
+import { PfpScreen } from './components/PfpScreen';
+import { useCardRenderer } from './hooks/useCardRenderer';
+import { useImageProcessor } from './hooks/useImageProcessor';
 
 export const App = () => {
-  const [step, setStep] = useState('upload'); // 'upload' | 'crop' | 'form' | 'result'
-  const [photoData, setPhotoData] = useState(null);
-  const [croppedPhotoData, setCroppedPhotoData] = useState(null);
-  const [badgeData, setBadgeData] = useState(null);
+  const [step, setStep] = useState('upload');
+  const [croppedImageURL, setCroppedImageURL] = useState(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    stack: '',
+    role: 'Builder',
+    builderTitle: '',
+    city: '',
+    xHandle: ''
+  });
+  const [cardDataURL, setCardDataURL] = useState(null);
 
-  const handleUploadNext = (data) => {
-    if (photoData?.objectURL) {
-      URL.revokeObjectURL(photoData.objectURL);
-    }
-    if (croppedPhotoData?.objectURL) {
-      URL.revokeObjectURL(croppedPhotoData.objectURL);
-    }
+  const { processImage, originalBlob } = useImageProcessor();
+  const { renderCard, getCardDataURL } = useCardRenderer();
 
-    setPhotoData(data);
-    setCroppedPhotoData(null);
-    setStep('crop');
-  };
-
-  const handleCropNext = (data) => {
-    if (croppedPhotoData?.objectURL && data.objectURL !== croppedPhotoData.objectURL) {
-      URL.revokeObjectURL(croppedPhotoData.objectURL);
+  const handleScanComplete = useCallback(async () => {
+    try {
+      const url = await renderCard(formData, croppedImageURL);
+      setCardDataURL(url);
+      setStep('artifact-front');
+    } catch (err) {
+      console.error('Failed to render card during scanning:', err);
+      setStep('result');
     }
-    setCroppedPhotoData(data);
-    setStep('form');
-  };
+  }, [formData, croppedImageURL, renderCard]);
 
-  const handleFormNext = (data) => {
-    setBadgeData(data);
-    setStep('result');
-  };
-
-  const handleReset = () => {
-    // Revoke object URLs to prevent memory leaks
-    if (photoData?.objectURL) {
-      URL.revokeObjectURL(photoData.objectURL);
+  const handleReset = useCallback(() => {
+    if (croppedImageURL) {
+      URL.revokeObjectURL(croppedImageURL);
     }
-    if (croppedPhotoData?.objectURL) {
-      URL.revokeObjectURL(croppedPhotoData.objectURL);
-    }
-    
     setStep('upload');
-    setPhotoData(null);
-    setCroppedPhotoData(null);
-    setBadgeData(null);
-  };
+    setCroppedImageURL(null);
+    setFormData({
+      name: '',
+      stack: '',
+      role: 'Builder',
+      builderTitle: '',
+      city: '',
+      xHandle: ''
+    });
+    setCardDataURL(null);
+  }, [croppedImageURL]);
 
-  // Clean up object URLs when the data changes or component unmounts
   useEffect(() => {
     return () => {
-      if (photoData?.objectURL) {
-        URL.revokeObjectURL(photoData.objectURL);
+      if (croppedImageURL) {
+        URL.revokeObjectURL(croppedImageURL);
       }
-      if (croppedPhotoData?.objectURL) {
-        URL.revokeObjectURL(croppedPhotoData.objectURL);
+      if (cardDataURL) {
+        URL.revokeObjectURL(cardDataURL);
       }
     };
-  }, [photoData, croppedPhotoData]);
+  }, [croppedImageURL, cardDataURL]);
+
+  const screens = {
+    'upload': (
+      <Uploader 
+        setStep={setStep} 
+        processImage={processImage} 
+        setCroppedImageURL={setCroppedImageURL} 
+      />
+    ),
+    'crop': (
+      <Cropper 
+        setStep={setStep} 
+        originalBlob={originalBlob} 
+        setCroppedImageURL={setCroppedImageURL} 
+      />
+    ),
+    'form': (
+      <FormFields 
+        setStep={setStep} 
+        formData={formData} 
+        setFormData={setFormData} 
+      />
+    ),
+    'scanning': (
+      <ScanningScreen 
+        setStep={setStep} 
+        formData={formData} 
+        onComplete={handleScanComplete} 
+      />
+    ),
+    'artifact-front': (
+      <ArtifactFront 
+        setStep={setStep} 
+        cardDataURL={cardDataURL} 
+      />
+    ),
+    'artifact-back': (
+      <ArtifactBack 
+        setStep={setStep} 
+        formData={formData} 
+      />
+    ),
+    'result': (
+      <ResultScreen 
+        setStep={setStep} 
+        formData={formData} 
+        getDataURL={getCardDataURL} 
+        croppedImageURL={croppedImageURL}
+        onReset={handleReset}
+      />
+    ),
+    'pfp': (
+      <PfpScreen 
+        setStep={setStep} 
+        formData={formData} 
+        croppedImageURL={croppedImageURL} 
+      />
+    ),
+  };
 
   return (
-    <div className="container">
-      <header style={{ textAlign: 'center', marginBottom: '40px' }}>
-        <h1 style={{ fontFamily: 'Space Grotesk', fontSize: '32px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '-0.5px' }}>
-          HH Goa <span style={{ color: 'var(--accent-glow)' }}>2026</span>
-        </h1>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '4px' }}>Builder ID Card Generator</p>
-      </header>
-
-      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-        {step === 'upload' && <Uploader onNext={handleUploadNext} />}
-        {step === 'crop' && (
-          <Cropper 
-            photoData={photoData} 
-            onNext={handleCropNext} 
-            onBack={() => setStep('upload')} 
-          />
-        )}
-        {step === 'form' && (
-          <FormFields 
-            croppedPhotoData={croppedPhotoData}
-            onNext={handleFormNext} 
-            onBack={() => setStep('crop')} 
-          />
-        )}
-        {step === 'result' && (
-          <ResultScreen 
-            croppedPhotoData={croppedPhotoData}
-            badgeData={badgeData} 
-            onReset={handleReset} 
-          />
-        )}
-      </main>
-
-      <footer style={{ marginTop: '40px', textAlign: 'center', borderTop: '1px solid var(--border-subtle)', paddingTop: '20px', color: 'var(--text-muted)', fontSize: '12px' }}>
-        GOA &bull; JAN 2026 &bull; goa.hackathon.com
-      </footer>
+    <div style={{ maxWidth: '540px', margin: '0 auto' }}>
+      {screens[step]}
     </div>
   );
 };
+
+export default App;

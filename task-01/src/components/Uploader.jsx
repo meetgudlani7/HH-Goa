@@ -1,5 +1,4 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { useImageProcessor } from '../hooks/useImageProcessor';
 
 /**
  * Uploader Component - Phase 1 Implementation
@@ -12,76 +11,69 @@ import { useImageProcessor } from '../hooks/useImageProcessor';
  * - Error handling
  * - File size warnings
  */
-export const Uploader = ({ onNext }) => {
+export const Uploader = ({ setStep, processImage, setCroppedImageURL }) => {
   const fileInputRef = useRef(null);
   const dragDropRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [fileInfo, setFileInfo] = useState(null);
   const [fileSizeWarning, setFileSizeWarning] = useState(false);
-  
-  const {
-    processImage,
-    isProcessing,
-    error,
-    setError,
-    isWasmSupported,
-  } = useImageProcessor();
+  const [error, setError] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const isWasmSupported = () => {
+    try {
+      return typeof WebAssembly === 'object' && WebAssembly.validate !== undefined;
+    } catch (error) {
+      return false;
+    }
+  };
 
   /**
    * Handle file selection from input
    */
   const handleFileSelect = useCallback(async (event) => {
-    console.log('Uploader: handleFileSelect called');
     const file = event.target.files?.[0];
-    console.log('Uploader: file selected:', file?.name, file?.type, file?.size);
     if (!file) {
-      console.log('Uploader: no file, returning');
       return;
     }
 
-    // Clear drag state
     setIsDragging(false);
-
-    // Show file info
     setFileInfo({ name: file.name, size: formatFileSize(file.size) });
 
-    // Check for large file warning (> 20MB)
     const MAX_SIZE_WARN = 20 * 1024 * 1024;
-    const MAX_SIZE_ERROR = 40 * 1024 * 1024; // 40MB - ProRAW territory
-    
+    const MAX_SIZE_ERROR = 40 * 1024 * 1024;
+
     if (file.size > MAX_SIZE_ERROR) {
       setError('File is too large (over 40MB). Please use a compressed photo.');
       return;
     }
-    
+
     if (file.size > MAX_SIZE_WARN) {
       setFileSizeWarning(true);
     } else {
       setFileSizeWarning(false);
     }
 
+    setIsProcessing(true);
+    setError(null);
+
     try {
       const processedData = await processImage(file);
-      
-      // If successful, pass data to parent and move to next step
-      onNext({
-        blob: processedData.blob,
-        objectURL: processedData.objectURL,
-        fileName: processedData.fileName,
-        fileSize: processedData.fileSize,
-        isHeic: processedData.isHeic,
-      });
-      
-      // Reset input so same file can be selected again
+
+      setCroppedImageURL(processedData.objectURL);
+      setFileInfo(null);
+      setStep('crop');
+
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
-      setFileInfo(null);
     } catch (err) {
-      // Error is already set in the hook
+      setError(err.message || 'Failed to process image');
       setFileInfo(null);
+    } finally {
+      setIsProcessing(false);
     }
-  }, [processImage, onNext, setError]);
+  }, [processImage, setStep, setCroppedImageURL]);
 
   /**
    * Handle drag and drop events
@@ -102,30 +94,22 @@ export const Uploader = ({ onNext }) => {
   const handleDragOver = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
-    // Required for drop to work
   }, []);
 
   const handleDrop = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
-    
+
     const file = e.dataTransfer.files?.[0];
     if (!file) return;
 
-    // Check if it's an image
     if (!file.type.startsWith('image/')) {
       setError('Please drop an image file (JPG, PNG, or HEIC)');
       return;
     }
 
-    // Create a synthetic event for the file input handler
-    const syntheticEvent = {
-      target: {
-        files: [file],
-      },
-    };
-    
+    const syntheticEvent = { target: { files: [file] } };
     handleFileSelect(syntheticEvent);
   }, [handleFileSelect, setError]);
 
@@ -154,16 +138,7 @@ export const Uploader = ({ onNext }) => {
     setError(null);
     setFileInfo(null);
     setFileSizeWarning(false);
-  }, [setError]);
-
-  /**
-   * Check WASM support on component mount
-   */
-  React.useEffect(() => {
-    if (!isWasmSupported()) {
-      console.warn('WebAssembly not supported - HEIC conversion will not work');
-    }
-  }, [isWasmSupported]);
+  }, []);
 
   // Add drag event listeners
   React.useEffect(() => {
@@ -191,7 +166,7 @@ export const Uploader = ({ onNext }) => {
       e.preventDefault();
       e.stopPropagation();
       setIsDragging(false);
-      
+
       const file = e.dataTransfer.files?.[0];
       if (!file) return;
 
@@ -218,18 +193,157 @@ export const Uploader = ({ onNext }) => {
   }, [handleFileSelect, setError]);
 
   return (
-    <div 
-      className="uploader-container"
-      ref={dragDropRef}
-    >
+    <div className="hero" ref={dragDropRef}>
+      {/* Background text elements */}
+      <div className="pbt-hacker poster-bg-text">HACK<br />HACK</div>
+      <div className="pbt-goa poster-bg-text">GOA</div>
+      <div className="pbt-2026 poster-bg-text">2026</div>
+
+      {/* Decorative SVG: hibiscus top right */}
+      <svg className="hero-flower-tr" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="50" cy="50" rx="30" ry="15" fill="#E8407A" opacity=".8" transform="rotate(0 50 50)"/>
+        <ellipse cx="50" cy="50" rx="30" ry="15" fill="#E8407A" opacity=".8" transform="rotate(45 50 50)"/>
+        <ellipse cx="50" cy="50" rx="30" ry="15" fill="#E8407A" opacity=".8" transform="rotate(90 50 50)"/>
+        <ellipse cx="50" cy="50" rx="30" ry="15" fill="#E8407A" opacity=".8" transform="rotate(135 50 50)"/>
+        <circle cx="50" cy="50" r="12" fill="#F0C229"/>
+        <circle cx="50" cy="50" r="6" fill="#C8001E"/>
+      </svg>
+
+      {/* Decorative SVG: lotus bottom left */}
+      <svg className="hero-flower-bl" viewBox="0 0 130 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="65" cy="75" rx="20" ry="35" fill="#F5EDD8" opacity=".9" transform="rotate(-20 65 75)"/>
+        <ellipse cx="65" cy="75" rx="20" ry="35" fill="#F5EDD8" opacity=".9" transform="rotate(0 65 75)"/>
+        <ellipse cx="65" cy="75" rx="20" ry="35" fill="#F5EDD8" opacity=".9" transform="rotate(20 65 75)"/>
+        <ellipse cx="65" cy="75" rx="18" ry="30" fill="#F0C229" opacity=".7" transform="rotate(-10 65 75)"/>
+        <ellipse cx="65" cy="75" rx="18" ry="30" fill="#F0C229" opacity=".7" transform="rotate(10 65 75)"/>
+        <circle cx="65" cy="65" r="12" fill="#F0C229"/>
+        <ellipse cx="30" cy="90" rx="22" ry="10" fill="#2A7A4B" opacity=".6" transform="rotate(-15 30 90)"/>
+        <ellipse cx="100" cy="95" rx="22" ry="10" fill="#2A7A4B" opacity=".6" transform="rotate(10 100 95)"/>
+      </svg>
+
+      <div className="border-strip-top"></div>
+
+      <div className="windowbar">
+        <div className="windowbar-title">⬛ HH GOA BUILDER PAINT v2.26 — [UNTITLED.BUILDER]</div>
+        <div className="wbtns">
+          <div className="wbtn" style={{ background: '#E8407A' }}></div>
+          <div className="wbtn" style={{ background: '#F0C229' }}></div>
+          <div className="wbtn" style={{ background: '#2A7A4B' }}></div>
+        </div>
+      </div>
+      <div className="menubar">
+        <span className="menuitem">File</span>
+        <span className="menuitem">Edit</span>
+        <span className="menuitem" style={{ textDecoration: 'underline', textDecorationStyle: 'dotted' }}>Builder</span>
+        <span className="menuitem">View</span>
+        <span className="menuitem">Jugaad</span>
+        <span className="menuitem">Help</span>
+      </div>
+
+      <div className="hero-body">
+        {/* Annotation cluster top right */}
+        <div className="hero-annotation">
+          <div className="anno-stamp">
+            <div className="anno-stamp-text">OPEN<br />TRIALS<br />AUG '26</div>
+          </div>
+          <div className="anno-pill">247 BUILDERS SELECTED</div>
+          <div className="anno-pill" style={{ background: 'var(--pink)', transform: 'rotate(1.5deg)' }}>★ BUILT IN GOA ★</div>
+        </div>
+
+        {/* Diagonal eyebrow */}
+        <div className="diagonal-band">
+          <div className="diagonal-band-text">// हैकर हाउस में आपका स्वागत है · welcome, builder</div>
+        </div>
+
+        {/* Giant poster headline */}
+        <div className="poster-sub-hindi">हैकर हाउस</div>
+        <div className="poster-headline">
+          HACKER<br />
+          HOUSE<br />
+          <span className="accent-pink">GOA</span><span className="accent-red" style={{ fontSize: '.55em', verticalAlign: 'top', marginTop: '.15em', display: 'inline-block' }}>★</span>
+        </div>
+
+        <div className="year-pill">2026 · OCT 28–31</div>
+
+        {/* Inner computer window */}
+        <div className="inner-window">
+          <div className="inner-window-top">
+            <span>NEW FILE — BUILDER_IDENTITY.ART</span>
+            <span>hhgoa.com</span>
+          </div>
+          <div 
+            className="upload-area"
+            onClick={!isProcessing ? handleClick : undefined}
+          >
+            {/* Hidden file input */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              accept="image/jpeg,image/png,image/heic,image/heif"
+              onChange={handleFileSelect}
+              style={{ display: 'none' }}
+              disabled={isProcessing}
+            />
+
+            {isProcessing ? (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
+                <div className="spinner"></div>
+                <p style={{ marginTop: '16px', color: 'var(--fade)', fontFamily: 'Space Mono, monospace', fontSize: '10px' }}>
+                  {fileInfo?.name ? `Converting ${fileInfo.name}...` : 'Converting your iPhone photo...'}
+                </p>
+              </div>
+            ) : (
+              <>
+                <span className="upload-big">APNA FACE<br />DAALO →</span>
+                <span className="upload-arrow-big">⇪</span>
+                <div className="upload-sub">JPG · PNG · HEIC — ANY CROP WORKS — MOBILE OK</div>
+                <div style={{ marginTop: '14px', fontFamily: 'Space Mono, monospace', fontSize: '7px', color: 'var(--fade)', letterSpacing: '.1em' }}>
+                  // YOUR PHOTO BECOMES THE ARTWORK. NOT THE CARD.
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Illustrated coconut annotation */}
+        <div style={{ marginTop: '12px', display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <div style={{ fontFamily: 'Space Mono, monospace', fontSize: '7px', color: 'rgba(245,237,216,.5)', letterSpacing: '.1em' }}>
+            🥥 BEST ENJOYED NEAR THE ARABIAN SEA
+          </div>
+          <div style={{ flex: 1, height: '1px', background: 'rgba(245,237,216,.15)' }}></div>
+          <div style={{ fontFamily: 'Space Mono, monospace', fontSize: '7px', color: 'rgba(245,237,216,.5)' }}>
+            BUILT IN GOA · MADE TO SHIP
+          </div>
+        </div>
+      </div>
+
+      <div className="ticker-outer">
+        <span className="ticker-inner">
+          🌊 JUGAAD KARO · SHIP KARO · REPEAT 🌴 GOA COMPATIBILITY: 100% 🥥 247 BUILDERS FROM 20,500+ APPLICANTS ★ $50K+ BOUNTIES 🌺 PRIVATE BEACH RESORT 🐚 AI × CRYPTO 🛵 WORKS ON MY MACHINE ⚡ COFFEE: CRITICAL ✦ JUGAAD KARO · SHIP KARO · REPEAT 🌊 GOA COMPATIBILITY: 100% 🌴 247 BUILDERS ★ $50K+ BOUNTIES 🥥 PRIVATE BEACH RESORT 🛵 AI × CRYPTO 🌺 WORKS ON MY MACHINE ⚡
+        </span>
+      </div>
+
+      <div className="hero-info-row">
+        <span className="info-chip">// BUILDER DETECTED</span>
+        <span className="info-chip"><strong>28–31 OCTOBER · GOA, INDIA</strong></span>
+        <span className="info-chip">hhgoa.com</span>
+      </div>
+
+      {/* Corner ornaments */}
+      <div className="corner-orn tl"></div>
+      <div className="corner-orn tr"></div>
+      <div className="corner-orn bl"></div>
+      <div className="corner-orn br"></div>
+
+      <div className="border-strip-bottom"></div>
+
       {/* Error state */}
       {error && (
-        <div className="uploader-error" role="alert">
+        <div style={{ background: 'rgba(200,0,30,.15)', border: '1px solid var(--red)', padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', color: 'var(--red)', fontSize: '14px', textAlign: 'center', marginTop: '12px' }}>
           <span>{error}</span>
           <button 
-            className="btn-secondary" 
             onClick={handleDismissError}
-            style={{ marginLeft: '12px', padding: '6px 12px', fontSize: '13px' }}
+            style={{ background: 'transparent', border: '1px solid var(--red)', color: 'var(--red)', padding: '4px 12px', fontSize: '12px', cursor: 'pointer', fontFamily: 'Space Mono, monospace' }}
           >
             Dismiss
           </button>
@@ -238,86 +352,38 @@ export const Uploader = ({ onNext }) => {
 
       {/* File size warning */}
       {fileSizeWarning && !error && (
-        <div className="uploader-warning" role="alert">
+        <div style={{ background: 'rgba(240,194,41,.15)', border: '1px solid rgba(240,194,41,.3)', padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', color: 'var(--yellow)', fontSize: '13px', textAlign: 'center', marginTop: '12px' }}>
           <span>📦 Large file detected — conversion may take a few seconds</span>
         </div>
       )}
 
-      {/* Main upload area */}
-      <div 
-        className={`uploader-dropzone ${isDragging ? 'dragging' : ''} ${isProcessing ? 'processing' : ''}`}
-        onClick={!isProcessing ? handleClick : undefined}
-      >
-        {/* Hidden file input */}
-        <input
-          type="file"
-          ref={fileInputRef}
-          accept="image/jpeg,image/png,image/heic,image/heif"
-          onChange={handleFileSelect}
-          style={{ display: 'none' }}
-          disabled={isProcessing}
-        />
-
-        {/* Content */}
-        <div className="uploader-content">
-          {!isProcessing ? (
-            <>
-              <div className="uploader-icon" role="img" aria-label="Upload photo">
-                📷
-              </div>
-              
-              {fileInfo ? (
-                <div className="uploader-file-info">
-                  <strong>Selected: {fileInfo.name}</strong>
-                  <span>({fileInfo.size})</span>
-                  <p style={{ marginTop: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>
-                    {isProcessing ? 'Converting your iPhone photo...' : 'Ready to upload'}
-                  </p>
-                </div>
-              ) : (
-                <>
-                  <h2 className="uploader-title">Upload your Photo</h2>
-                  <p className="uploader-subtitle">
-                    PNG, JPG, or HEIC format
-                  </p>
-                  <p className="uploader-hint">
-                    Drag & drop or tap to select
-                  </p>
-                </>
-              )}
-
-              <button 
-                className="btn-primary uploader-btn"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleClick();
-                }}
-                disabled={isProcessing}
-              >
-                {fileInfo ? 'Continue' : 'Select File'}
-              </button>
-            </>
-          ) : (
-            <div className="uploader-loading">
-              <div className="spinner"></div>
-              <p style={{ marginTop: '16px', color: 'var(--text-secondary)' }}>
-                {fileInfo?.name ? `Converting ${fileInfo.name}...` : 'Processing...'}
-              </p>
-            </div>
-          )}
+      {/* Browser compatibility notice for HEIC */}
+      {!isWasmSupported() && (
+        <div style={{ marginTop: '12px', textAlign: 'center' }}>
+          <small style={{ color: 'var(--fade)', fontSize: '11px' }}>
+            Note: Your browser doesn't support HEIC conversion. Please upload JPG or PNG.
+          </small>
         </div>
-
-        {/* Browser compatibility notice for HEIC */}
-        {!isWasmSupported() && (
-          <div className="uploader-compat-notice">
-            <small style={{ color: 'var(--text-muted)', fontSize: '11px' }}>
-              Note: Your browser doesn't support HEIC conversion. Please upload JPG or PNG.
-            </small>
-          </div>
-        )}
-      </div>
+      )}
     </div>
   );
 };
+
+/* Spinner animation */
+const spinnerStyle = document.createElement('style');
+spinnerStyle.textContent = `
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--fade);
+    border-top-color: var(--yellow);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+`;
+document.head.appendChild(spinnerStyle);
 
 export default Uploader;
