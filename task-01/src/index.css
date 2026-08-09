@@ -2,13 +2,19 @@
 html, body, #root {
   height: 100%;
 }
+html, body, #root {
+  width: 100%;
+  max-width: 100%;
+}
 body {
   background: #111;
   font-family: 'Space Mono', monospace;
   padding: 12px;
+  overflow-x: hidden;
 }
 .app-root {
   height: 100%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
 }
@@ -43,12 +49,14 @@ body {
   background: var(--ink); padding: 8px 14px;
   display: flex; align-items: center; justify-content: space-between;
   border-bottom: 2px solid var(--yellow);
+  min-width: 0;
 }
 .windowbar-title {
   font-family: 'Space Mono', monospace;
   font-size: 9px; color: var(--yellow); letter-spacing: .14em;
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.wbtns { display: flex; gap: 7px; }
+.wbtns { display: flex; gap: 7px; flex-shrink: 0; }
 .wbtn { width: 13px; height: 13px; border-radius: 50%; border: 2px solid rgba(0,0,0,.3); }
 
 /* Ticker (used on landing + mobile) */
@@ -60,7 +68,8 @@ body {
   display: flex;
   flex-direction: column;
   width: 100%;
-  z-index: 1000;
+  /* Stay above the large fixed poster artwork on tablet-sized screens. */
+  z-index: 1100;
 }
 .ticker-outer {
   background: var(--ink); overflow: hidden;
@@ -195,10 +204,7 @@ body {
 ============================================ */
 .form-screen {
   background: var(--ink); border: 4px solid var(--cream);
-  position: relative;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+  position: relative; overflow: hidden;
 }
 
 .form-poster-bg {
@@ -212,8 +218,6 @@ body {
 
 .form-body {
   padding: 28px 22px;
-  overflow-y: auto;
-  flex: 1;
 }
 
 .form-eyebrow {
@@ -340,7 +344,7 @@ body {
 ============================================ */
 .hero {
   background: var(--red);
-  position: relative; overflow-y: auto;
+  position: relative;
   border: 4px solid var(--ink);
   min-height: 640px;
 }
@@ -866,55 +870,132 @@ body {
 }
 
 /* ============================================
-   RESPONSIVE STYLES
+   RESPONSIVE LAYOUT
 ============================================ */
-@media (max-width: 480px) {
-  /* Landing screen */
-  .pbt-hacker { font-size: 90px; opacity: 0.08; }
-  .pbt-goa { font-size: 120px; opacity: 0.05; }
-  .pbt-2026 { font-size: 60px; opacity: 0.1; }
+@media (max-width: 600px) {
+  body { padding: 6px; }
+
+  .windowbar { padding: 8px 10px; gap: 8px; }
+  .windowbar-title { font-size: 7px; letter-spacing: .08em; }
   .menubar { display: none; }
+
+  /* Decorative artwork stays clipped to the poster instead of widening it. */
+  .pbt-hacker { left: -26px; font-size: 90px; }
+  .pbt-goa { position: absolute; right: -20px; font-size: 120px; }
+  .pbt-2026 { display: none; }
   .hero-flower-tr { width: 70px; height: 70px; }
   .hero-flower-bl { width: 90px; height: 90px; }
   .corner-orn { display: none; }
-  .poster-headline { font-size: 52px !important; }
-  
-  /* Form screen */
-  .form-heading-big { font-size: 36px; }
-  .field-inp { font-size: 22px; }
+
+  .hero-body { padding: 16px 12px 14px; }
+
+  /* On mobile the annotation owns its space; the band remains a clean label. */
+  .hero-annotation {
+    position: relative;
+    top: auto;
+    right: auto;
+    width: max-content;
+    max-width: 100%;
+    margin: 0 0 10px auto;
+  }
+  .diagonal-band {
+    display: block;
+    width: 100%;
+    margin: 0 0 8px;
+    padding: 6px 8px;
+    transform: none;
+  }
+  .diagonal-band-text {
+    display: block;
+    font-size: clamp(6px, 2vw, 8px);
+    line-height: 1.35;
+    letter-spacing: .08em;
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+  .poster-headline { font-size: clamp(45px, 14.2vw, 72px); letter-spacing: -2px; }
+  .poster-sub-hindi { font-size: 16px; }
+  .year-pill { max-width: 100%; font-size: 18px; padding-inline: 10px; }
+
+  .inner-window-top { gap: 8px; }
+  .inner-window-top span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .upload-area { margin: 8px; padding: 18px 10px; }
+  .upload-big { font-size: clamp(18px, 6vw, 26px); }
+  .upload-sub { letter-spacing: .08em; overflow-wrap: anywhere; }
+
+  .hero-info-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 4px;
+    padding: 10px 12px;
+  }
+  .info-chip { font-size: 7px; }
+
+  .form-body { padding: 22px 16px; }
+  .form-heading-big { font-size: clamp(34px, 11vw, 48px); }
+  .field-inp { font-size: 24px; }
   .tags-row { gap: 5px; }
-  .tag { font-size: 8px; padding: 4px 9px; }
-  .generate-btn { font-size: 13px; padding: 14px 10px; }
-  
-  /* Scan screen */
-  .scan-headline { font-size: 28px; }
-  .scan-bg-text { font-size: 120px; }
-  
-  /* Result screen */
-  .result-big { font-size: 32px; }
-  .act-btn { font-size: 11px; padding: 12px 10px; }
-  .result-mini-card { min-height: 120px; }
-  .rmc-name { font-size: 12px; }
-  .rmc-title { font-size: 11px; }
-  .rmc-stack { font-size: 6px; }
-  .rmc-badge { font-size: 6px; }
-  
-  /* PFP screen */
-  .pfp-outer { width: 240px; height: 240px; }
-  .pfp-name { font-size: 18px; }
-  .pfp-title-bar { font-size: 6px; }
-  
-  /* Artifact screens */
-  .art-name-display { font-size: 32px; }
-  .art-title-text { font-size: 14px; }
+  .tag { font-size: 8px; padding-inline: 9px; }
+  .title-box { align-items: flex-start; flex-wrap: wrap; padding: 10px 12px; }
+  .title-box-name { min-width: 0; font-size: 18px; }
+  .title-box-regen { margin-left: auto; }
+  .generate-btn { font-size: 13px; padding-inline: 10px; }
+
+  .scan-body { padding: 22px 16px; }
+  .scan-eyebrow { letter-spacing: .1em; }
+  .scan-headline { font-size: clamp(28px, 10vw, 38px); }
+  .scan-line { gap: 8px; align-items: flex-start; }
+  .scan-result { margin-left: auto; text-align: right; overflow-wrap: anywhere; }
+  .scan-progress-text { font-size: 9px; letter-spacing: .06em; }
+
+  .result-top { padding: 20px 14px; gap: 10px; align-items: flex-start; }
+  .result-big { font-size: clamp(30px, 10vw, 48px); }
+  .result-sub { font-size: 7px; letter-spacing: .08em; }
+  .result-check { font-size: 42px; }
+  .result-body { padding: 14px 12px; }
+  .rmc-body { min-width: 0; }
+  .rmc-badge { max-width: 100%; overflow-wrap: anywhere; }
+  .act-btn { font-size: 11px; padding-inline: 10px; }
+  .caption-text { overflow-wrap: anywhere; }
+
+  .back-header { gap: 12px; padding: 14px 12px; flex-wrap: wrap; }
+  .back-header-brand { font-size: clamp(22px, 8vw, 28px); }
+  .back-header-batch { overflow-wrap: anywhere; }
+  .back-body { padding: 14px 12px; }
+  .ing-table { table-layout: fixed; font-size: 7px; }
+  .ing-table td { overflow-wrap: anywhere; }
+  .ing-table td:first-child { width: 52%; }
+  .mfg-block { align-items: flex-start; gap: 8px; }
+
+  .pfp-outer { width: min(280px, calc(100vw - 48px)); height: min(280px, calc(100vw - 48px)); }
+  .pfp-person { width: 72%; height: 72%; }
+
+  /* Artifact navigation rows must wrap instead of forcing a wider viewport. */
+  .act-btn { max-width: 100%; }
+  .artifact-actions { flex-wrap: wrap; padding-inline: 10px !important; }
 }
 
-/* Safe area insets for iPhone notch/Dynamic Island */
+/* iPad Safari can drop fixed descendants inside a full-height flex layout. */
+@media (min-width: 601px) and (max-width: 1200px) {
+  .ticker-shell {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+  }
+}
+
+@media (max-width: 380px) {
+  .anno-pill { font-size: 6px; letter-spacing: .06em; padding-inline: 6px; }
+  .anno-stamp { padding-inline: 8px; }
+  .result-top { flex-wrap: wrap; }
+  .result-check { margin-left: auto; }
+  .mfg-hindi { font-size: 26px; }
+}
+
+/* Shared safe-area and touch-target rules. */
 .generate-btn, .act-btn, .tag {
   padding-bottom: max(4px, env(safe-area-inset-bottom));
-}
-
-/* Ensure all buttons have minimum touch target size */
-.generate-btn, .act-btn, .tag {
   min-height: 44px;
 }

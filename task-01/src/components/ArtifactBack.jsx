@@ -132,7 +132,7 @@ export const ArtifactBack = ({ setStep, formData }) => {
         <div className="art-top-band"></div>
       </div>
 
-      <div style={{ display: 'flex', gap: '10px', padding: '16px', background: '#111', justifyContent: 'center' }}>
+      <div className="artifact-actions" style={{ display: 'flex', gap: '10px', padding: '16px', background: '#111', justifyContent: 'center' }}>
         <button className="act-btn ghost" onClick={() => setStep('artifact-front')}>
           ← FLIP BACK
         </button>

@@ -34,7 +34,7 @@ export const ArtifactFront = ({ setStep, cardDataURL }) => {
         </div>
       )}
 
-      <div style={{ display: 'flex', gap: '10px', marginTop: '16px', justifyContent: 'center' }}>
+      <div className="artifact-actions" style={{ display: 'flex', gap: '10px', marginTop: '16px', justifyContent: 'center' }}>
         <button 
           className="act-btn primary" 
           onClick={() => setStep('artifact-back')}
