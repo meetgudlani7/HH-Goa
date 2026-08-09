@@ -53,20 +53,20 @@ Before running the project locally, ensure you have the following installed on y
 ## 🛠️ How to Run Locally
 
 1. **Navigate to the `task-01` directory:**
+
    ```bash
    cd task-01
    ```
-
 2. **Install dependencies:**
+
    ```bash
    npm install
    ```
-
 3. **Start the development server:**
+
    ```bash
    npm run dev
    ```
-
 4. **Open in browser:**
    Open [http://localhost:5173](http://localhost:5173) in your browser to view the application.
 
@@ -84,11 +84,11 @@ In the `task-01` directory, you can run:
 
 ## 📌 Implementation Progress
 
-- [x] **Phase 0:** Project Scaffold & Multi-step State Machine Architecture
-- [ ] **Phase 1:** Upload & Client-side HEIC Conversion
-- [ ] **Phase 2:** Crop & Framing UI
-- [ ] **Phase 3:** Form Fields & Builder Title Selection
-- [ ] **Phase 4:** HTML5 Canvas ID Card Rendering
-- [ ] **Phase 5:** Reveal Animation & PNG Download
-- [ ] **Phase 6:** Share to X (Twitter Web Intent)
-- [ ] **Phase 7:** Mobile Polish & Safe Area Adjustments
+- [X]  **Phase 0:** Project Scaffold & Multi-step State Machine Architecture
+- [X]  **Phase 1:** Upload & Client-side HEIC Conversion
+- [ ]  **Phase 2:** Crop & Framing UI
+- [ ]  **Phase 3:** Form Fields & Builder Title Selection
+- [ ]  **Phase 4:** HTML5 Canvas ID Card Rendering
+- [ ]  **Phase 5:** Reveal Animation & PNG Download
+- [ ]  **Phase 6:** Share to X (Twitter Web Intent)
+- [ ]  **Phase 7:** Mobile Polish & Safe Area Adjustments

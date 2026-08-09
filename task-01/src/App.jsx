@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './styles/tokens.css';
 import './index.css';
 import { Uploader } from './components/Uploader';
@@ -32,11 +32,32 @@ export const App = () => {
 
   const handleReset = () => {
     console.log('Resetting state machine to step 0');
+    
+    // Revoke object URLs to prevent memory leaks
+    if (photoData?.objectURL) {
+      URL.revokeObjectURL(photoData.objectURL);
+    }
+    if (croppedPhotoData?.objectURL) {
+      URL.revokeObjectURL(croppedPhotoData.objectURL);
+    }
+    
     setStep('upload');
     setPhotoData(null);
     setCroppedPhotoData(null);
     setBadgeData(null);
   };
+
+  // Clean up object URLs when component unmounts or when data changes
+  useEffect(() => {
+    return () => {
+      if (photoData?.objectURL) {
+        URL.revokeObjectURL(photoData.objectURL);
+      }
+      if (croppedPhotoData?.objectURL) {
+        URL.revokeObjectURL(croppedPhotoData.objectURL);
+      }
+    };
+  }, [photoData, croppedPhotoData]);
 
   return (
     <div className="container">
@@ -71,7 +92,7 @@ export const App = () => {
       </main>
 
       <footer style={{ marginTop: '40px', textAlign: 'center', borderTop: '1px solid var(--border-subtle)', paddingTop: '20px', color: 'var(--text-muted)', fontSize: '12px' }}>
-        GOA &bull; JAN 2026 &bull; goa.hackathon.com
+        GOA &bull; AUG 2026 &bull; placeholder@email.com
       </footer>
     </div>
   );
