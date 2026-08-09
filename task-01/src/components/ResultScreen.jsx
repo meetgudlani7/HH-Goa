@@ -16,12 +16,13 @@ import canvasConfetti from 'canvas-confetti';
 export const ResultScreen = ({ croppedPhotoData, badgeData, onReset }) => {
   const [isRevealed, setIsRevealed] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
   const [cardImageUrl, setCardImageUrl] = useState(null);
   const [error, setError] = useState(null);
   
   const cardContainerRef = useRef(null);
   
-  const { renderCard, isRendering } = useCardRenderer();
+  const { renderCard, getCardBlob, isRendering } = useCardRenderer();
 
   /**
    * Render the card on component mount
@@ -83,37 +84,90 @@ export const ResultScreen = ({ croppedPhotoData, badgeData, onReset }) => {
   }, []);
 
   /**
+   * Download the card image using a temporary anchor link.
+   * Uses the hi-res 1080x1350 export blob (not the low-res preview data URL).
+   */
+  const downloadCardFile = useCallback(async () => {
+    if (!cardImageUrl) {
+      throw new Error('Card not ready yet');
+    }
+
+    const blob = await getCardBlob();
+    const objectURL = URL.createObjectURL(blob);
+    const filename = `hh-goa-2026-${badgeData?.name?.toLowerCase().replace(/\s+/g, '-') || 'builder'}-card.png`;
+    const link = document.createElement('a');
+    link.href = objectURL;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    // Revoke after a tick so the download has time to start
+    setTimeout(() => URL.revokeObjectURL(objectURL), 1000);
+
+    if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+      setTimeout(() => {
+        alert('If the download did not start, long-press the card image and select "Save Image"');
+      }, 500);
+    }
+  }, [cardImageUrl, badgeData, getCardBlob]);
+
+  /**
    * Handle download
    */
-  const handleDownload = useCallback(() => {
-    if (!cardImageUrl) return;
-    
+  const handleDownload = useCallback(async () => {
     setIsDownloading(true);
-    
+    setError(null);
+
     try {
-      // Create a temporary anchor element
-      const link = document.createElement('a');
-      link.href = cardImageUrl;
-      link.download = `hh-goa-2026-${badgeData?.name?.toLowerCase().replace(/\s+/g, '-') || 'builder'}-card.png`;
-      
-      // Append to body, click, and remove
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      // For iOS, also show a message about long-press
-      if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-        setTimeout(() => {
-          alert('If the download did not start, long-press the card image and select "Save Image"');
-        }, 500);
+      if (!cardImageUrl) {
+        throw new Error('Card not ready yet');
+      }
+
+      const filename = `hh-goa-2026-${badgeData?.name?.toLowerCase().replace(/\s+/g, '-') || 'builder'}-card.png`;
+      const canShareFiles = navigator.canShare && navigator.canShare({ files: [] });
+
+      if (canShareFiles) {
+        const blob = await getCardBlob();
+        const file = new File([blob], filename, { type: 'image/png' });
+        await navigator.share({ files: [file], text: 'My HH Goa 2026 Builder Card', title: 'HH Goa Builder ID' });
+      } else {
+        await downloadCardFile();
       }
     } catch (err) {
       console.error('Download failed:', err);
-      setError('Failed to download. Please try again.');
+      setError('Could not save your card. Please try again.');
     } finally {
       setIsDownloading(false);
     }
-  }, [cardImageUrl, badgeData]);
+  }, [cardImageUrl, badgeData, getCardBlob, downloadCardFile]);
+
+  /**
+   * Handle share
+   */
+  const handleShare = useCallback(async () => {
+    if (!cardImageUrl) return;
+
+    setIsSharing(true);
+    setError(null);
+
+    try {
+      const shareText = `Check out my HH Goa 2026 Builder Card! #HHGoa2026`;
+      const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
+      const sharePayload = { title: 'HH Goa Builder ID', text: shareText, url: window.location.href };
+
+      if (navigator.canShare && navigator.canShare(sharePayload)) {
+        await navigator.share(sharePayload);
+      } else {
+        await downloadCardFile();
+        window.open(tweetUrl, '_blank', 'noopener,noreferrer');
+      }
+    } catch (err) {
+      console.error('Share failed:', err);
+      setError('Unable to share right now. Try saving and sharing manually.');
+    } finally {
+      setIsSharing(false);
+    }
+  }, [cardImageUrl, downloadCardFile]);
 
   /**
    * Handle make another
@@ -189,7 +243,7 @@ export const ResultScreen = ({ croppedPhotoData, badgeData, onReset }) => {
         <button 
           className="btn-secondary"
           onClick={handleMakeAnother}
-          disabled={isDownloading}
+          disabled={isDownloading || isSharing}
         >
           Make Another
         </button>
@@ -197,9 +251,18 @@ export const ResultScreen = ({ croppedPhotoData, badgeData, onReset }) => {
         <button 
           className="btn-primary"
           onClick={handleDownload}
-          disabled={!cardImageUrl || isDownloading}
+          disabled={!cardImageUrl || isDownloading || isSharing}
         >
-          {isDownloading ? 'Downloading...' : 'Save Card 💾'}
+          {isDownloading ? 'Saving...' : 'Save Card 💾'}
+        </button>
+        
+        <button
+          type="button"
+          className="btn-secondary"
+          onClick={handleShare}
+          disabled={!cardImageUrl || isDownloading || isSharing}
+        >
+          {isSharing ? 'Sharing...' : 'Share Card'}
         </button>
       </div>
 

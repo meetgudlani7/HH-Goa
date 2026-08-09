@@ -12,6 +12,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
 }
 
 #root {
@@ -25,7 +26,7 @@ body {
   max-width: 600px;
   width: 100%;
   margin: 0 auto;
-  padding: 24px 16px;
+  padding: calc(24px + env(safe-area-inset-top, 0)) calc(16px + env(safe-area-inset-right, 0)) calc(24px + env(safe-area-inset-bottom, 0)) calc(16px + env(safe-area-inset-left, 0));
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -839,13 +840,29 @@ button:disabled {
   gap: 12px;
   justify-content: center;
   flex-wrap: wrap;
+  width: 100%;
+  align-items: center;
 }
 
 .result-actions button {
   flex: 1;
   min-width: 140px;
-  padding: 12px 24px;
-  font-size: 14px;
+  padding: 14px 22px;
+  font-size: 15px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .result-card-container,
+  .uploader-dropzone,
+  .cropper-wrapper,
+  .form-actions,
+  .cropper-actions {
+    transition: none !important;
+  }
+
+  .spinner {
+    animation: none;
+  }
 }
 
 /* Error state */

@@ -225,30 +225,50 @@ export const useCardRenderer = () => {
   }, []);
 
   /**
+   * Create an export canvas at the final output size
+   */
+  const createExportCanvas = useCallback(() => {
+    const sourceCanvas = canvasRef.current;
+    if (!sourceCanvas) {
+      throw new Error('Canvas not initialized. Call renderCard() first.');
+    }
+
+    const exportCanvas = document.createElement('canvas');
+    exportCanvas.width = CARD_CONFIG.outputWidth;
+    exportCanvas.height = CARD_CONFIG.outputHeight;
+
+    const exportCtx = exportCanvas.getContext('2d');
+    if (!exportCtx) {
+      throw new Error('Could not create export canvas context');
+    }
+
+    exportCtx.drawImage(sourceCanvas, 0, 0, CARD_CONFIG.outputWidth, CARD_CONFIG.outputHeight);
+    return exportCanvas;
+  }, []);
+
+  /**
    * Get the card as PNG data URL
    */
   const getCardDataURL = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) {
-      throw new Error('Canvas not initialized. Call renderCard() first.');
-    }
-    return canvas.toDataURL('image/png');
-  }, []);
+    const exportCanvas = createExportCanvas();
+    return exportCanvas.toDataURL('image/png');
+  }, [createExportCanvas]);
 
   /**
    * Get the card as Blob for download
    */
   const getCardBlob = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) {
-      throw new Error('Canvas not initialized. Call renderCard() first.');
-    }
-    return new Promise((resolve) => {
-      canvas.toBlob((blob) => {
+    const exportCanvas = createExportCanvas();
+    return new Promise((resolve, reject) => {
+      exportCanvas.toBlob((blob) => {
+        if (!blob) {
+          reject(new Error('Unable to create PNG blob')); 
+          return;
+        }
         resolve(blob);
       }, 'image/png');
     });
-  }, []);
+  }, [createExportCanvas]);
 
   // ===== Layer Drawing Functions =====
 
