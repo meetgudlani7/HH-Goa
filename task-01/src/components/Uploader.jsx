@@ -224,7 +224,7 @@ export const Uploader = ({ setStep, processImage, setCroppedImageURL }) => {
       <div className="border-strip-top"></div>
 
       <div className="windowbar">
-        <div className="windowbar-title">⬛ HH GOA BUILDER PAINT v2.26 — [UNTITLED.BUILDER]</div>
+        <div className="windowbar-title"></div>
         <div className="wbtns">
           <div className="wbtn" style={{ background: '#E8407A' }}></div>
           <div className="wbtn" style={{ background: '#F0C229' }}></div>
@@ -232,12 +232,12 @@ export const Uploader = ({ setStep, processImage, setCroppedImageURL }) => {
         </div>
       </div>
       <div className="menubar">
-        <span className="menuitem">File</span>
-        <span className="menuitem">Edit</span>
-        <span className="menuitem" style={{ textDecoration: 'underline', textDecorationStyle: 'dotted' }}>Builder</span>
-        <span className="menuitem">View</span>
-        <span className="menuitem">Jugaad</span>
-        <span className="menuitem">Help</span>
+        <span className="menuitem"></span>
+        <span className="menuitem"></span>
+        <span className="menuitem" style={{ textDecoration: 'underline', textDecorationStyle: 'dotted' }}></span>
+        <span className="menuitem"></span>
+        <span className="menuitem"></span>
+        <span className="menuitem"></span>
       </div>
 
       <div className="hero-body">
@@ -306,36 +306,38 @@ export const Uploader = ({ setStep, processImage, setCroppedImageURL }) => {
         </div>
 
         {/* Illustrated coconut annotation */}
-        <div style={{ marginTop: '12px', display: 'flex', gap: '10px', alignItems: 'center' }}>
-          <div style={{ fontFamily: 'Space Mono, monospace', fontSize: '7px', color: 'rgba(245,237,216,.5)', letterSpacing: '.1em' }}>
+        <div className="hero-note-row">
+          <div className="hero-note-text">
             🥥 BEST ENJOYED NEAR THE ARABIAN SEA
           </div>
-          <div style={{ flex: 1, height: '1px', background: 'rgba(245,237,216,.15)' }}></div>
-          <div style={{ fontFamily: 'Space Mono, monospace', fontSize: '7px', color: 'rgba(245,237,216,.5)' }}>
+          <div className="hero-note-divider"></div>
+          <div className="hero-note-text">
             BUILT IN GOA · MADE TO SHIP
           </div>
         </div>
       </div>
 
-      <div className="ticker-outer">
-        <span className="ticker-inner">
-          🌊 JUGAAD KARO · SHIP KARO · REPEAT 🌴 GOA COMPATIBILITY: 100% 🥥 247 BUILDERS FROM 20,500+ APPLICANTS ★ $50K+ BOUNTIES 🌺 PRIVATE BEACH RESORT 🐚 AI × CRYPTO 🛵 WORKS ON MY MACHINE ⚡ COFFEE: CRITICAL ✦ JUGAAD KARO · SHIP KARO · REPEAT 🌊 GOA COMPATIBILITY: 100% 🌴 247 BUILDERS ★ $50K+ BOUNTIES 🥥 PRIVATE BEACH RESORT 🛵 AI × CRYPTO 🌺 WORKS ON MY MACHINE ⚡
-        </span>
+      <div className="ticker-shell">
+        <div className="ticker-outer">
+          <span className="ticker-inner">
+            🌊 JUGAAD KARO · SHIP KARO · REPEAT 🌴 GOA COMPATIBILITY: 100% 🥥 247 BUILDERS FROM 20,500+ APPLICANTS ★ $50K+ BOUNTIES 🌺 PRIVATE BEACH RESORT 🐚 AI × CRYPTO 🛵 WORKS ON MY MACHINE ⚡ COFFEE: CRITICAL ✦ JUGAAD KARO · SHIP KARO · REPEAT 🌊 GOA COMPATIBILITY: 100% 🌴 247 BUILDERS ★ $50K+ BOUNTIES 🥥 PRIVATE BEACH RESORT 🛵 AI × CRYPTO 🌺 WORKS ON MY MACHINE ⚡
+          </span>
+        </div>
+
+        <div className="hero-info-row">
+          <span className="info-chip">// BUILDER DETECTED</span>
+          <span className="info-chip"><strong>28–31 OCTOBER · GOA, INDIA</strong></span>
+          <span className="info-chip">hhgoa.com</span>
+        </div>
+
+        {/* Corner ornaments */}
+        <div className="corner-orn tl"></div>
+        <div className="corner-orn tr"></div>
+        <div className="corner-orn bl"></div>
+        <div className="corner-orn br"></div>
+
+        <div className="border-strip-bottom"></div>
       </div>
-
-      <div className="hero-info-row">
-        <span className="info-chip">// BUILDER DETECTED</span>
-        <span className="info-chip"><strong>28–31 OCTOBER · GOA, INDIA</strong></span>
-        <span className="info-chip">hhgoa.com</span>
-      </div>
-
-      {/* Corner ornaments */}
-      <div className="corner-orn tl"></div>
-      <div className="corner-orn tr"></div>
-      <div className="corner-orn bl"></div>
-      <div className="corner-orn br"></div>
-
-      <div className="border-strip-bottom"></div>
 
       {/* Error state */}
       {error && (
