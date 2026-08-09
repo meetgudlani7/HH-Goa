@@ -14,7 +14,7 @@ export const ArtifactBack = ({ setStep, formData }) => {
   const stackItems = getStackItems();
 
   return (
-    <div style={{ maxWidth: '540px', margin: '0 auto' }}>
+    <div>
       <div className="screen-label">BUILDER ARTIFACT — BACK</div>
       <div className="card-back">
         <div className="art-top-band"></div>

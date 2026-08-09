@@ -11,9 +11,7 @@ export const PfpScreen = ({ setStep, formData, croppedImageURL }) => {
       display: 'flex', 
       flexDirection: 'column', 
       alignItems: 'center', 
-      gap: '16px',
-      maxWidth: '540px', 
-      margin: '0 auto'
+      gap: '16px'
     }}>
       <div className="screen-label">AVATAR / PFP VERSION</div>
 

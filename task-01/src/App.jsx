@@ -127,7 +127,7 @@ export const App = () => {
   };
 
   return (
-    <div style={{ maxWidth: '540px', margin: '0 auto' }}>
+    <div className="app-root">
       {screens[step]}
     </div>
   );

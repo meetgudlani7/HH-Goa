@@ -36,7 +36,7 @@ export const ScanningScreen = ({ setStep, formData, onComplete }) => {
   const progressPercent = Math.min(100, (lineProgress / SCAN_LINES.length) * 100);
 
   return (
-    <div className="scan-screen" style={{ maxWidth: '540px', margin: '0 auto' }}>
+    <div className="scan-screen">
       <div className="scan-bg-text">SCAN</div>
       <div className="border-strip-top"></div>
       <div className="windowbar" style={{ borderColor: 'var(--yellow)' }}>

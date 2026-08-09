@@ -153,7 +153,7 @@ export const ResultScreen = ({ setStep, formData, getDataURL, croppedImageURL, o
   }, []);
 
   return (
-    <div className="result-screen" style={{ maxWidth: '540px', margin: '0 auto' }}>
+    <div className="result-screen">
       <div className="result-poster-bg">SHIP<br />SHIP</div>
       <div className="border-strip-top"></div>
       <div className="windowbar">

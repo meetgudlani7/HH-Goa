@@ -2,7 +2,7 @@ import React from 'react';
 
 export const ArtifactFront = ({ setStep, cardDataURL }) => {
   return (
-    <div style={{ background: '#111', padding: '20px 12px', maxWidth: '540px', margin: '0 auto' }}>
+    <div style={{ background: '#111', padding: '20px 12px' }}>
       <div className="screen-label">YOUR BUILDER ARTIFACT</div>
       
       {cardDataURL ? (

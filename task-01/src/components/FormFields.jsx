@@ -80,7 +80,7 @@ export const FormFields = ({ setStep, formData, setFormData }) => {
   }, [formData, isFormValid, setStep]);
 
   return (
-    <div className="form-screen" style={{ maxWidth: '540px', margin: '0 auto' }}>
+    <div className="form-screen">
       <div className="form-poster-bg">BUILD</div>
       <div className="border-strip-top"></div>
       

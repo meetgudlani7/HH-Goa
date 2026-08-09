@@ -172,9 +172,7 @@ export const Cropper = ({ setStep, originalBlob, setCroppedImageURL }) => {
   return (
     <div style={{ 
       background: 'var(--cream)', 
-      border: '4px solid var(--ink)',
-      maxWidth: '540px', 
-      margin: '0 auto'
+      border: '4px solid var(--ink)'
     }}>
       <div className="border-strip-top"></div>
       
