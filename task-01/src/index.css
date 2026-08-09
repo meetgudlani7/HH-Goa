@@ -238,3 +238,268 @@ button:disabled {
     font-size: 20px;
   }
 }
+
+/* ===== Cropper Component Styles ===== */
+.cropper-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.cropper-header {
+  text-align: center;
+}
+
+.cropper-title {
+  font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 8px 0;
+}
+
+.cropper-subtitle {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin: 0 0 4px 0;
+}
+
+.cropper-hint {
+  color: var(--text-muted);
+  font-size: 12px;
+  margin: 0;
+}
+
+.cropper-main {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 20px;
+  align-items: start;
+}
+
+.cropper-wrapper {
+  width: 100%;
+  height: 400px;
+  min-height: 300px;
+  background: var(--bg-card);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* react-easy-crop custom styles */
+.react-easy-crop-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.react-easy-crop-crop-area {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  overflow: hidden;
+}
+
+.react-easy-crop-media {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Cropper preview */
+.cropper-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  background: var(--bg-card);
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+}
+
+.cropper-preview h3 {
+  font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.preview-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.preview-photo {
+  width: 80px;
+  height: 106.67px; /* 3:4 aspect ratio, scaled down */
+  position: relative;
+  overflow: hidden;
+  background: var(--surface-raised);
+  border-radius: 6px;
+  border: 1px solid var(--border-subtle);
+}
+
+.preview-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Cropper controls */
+.cropper-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  background: var(--bg-card);
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+}
+
+.cropper-control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cropper-control-label {
+  font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cropper-zoom-slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--surface-raised);
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.cropper-zoom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.cropper-zoom-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 8px var(--accent-primary);
+}
+
+.cropper-zoom-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  cursor: pointer;
+  border: none;
+}
+
+.cropper-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.cropper-actions button {
+  flex: 1;
+  min-width: 100px;
+  padding: 10px 16px;
+  font-size: 14px;
+}
+
+/* Error state */
+.cropper-error {
+  background: rgba(249, 115, 22, 0.1);
+  border: 1px solid var(--accent-hot);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--accent-hot);
+  font-size: 14px;
+  text-align: center;
+}
+
+.cropper-mobile-tip {
+  text-align: center;
+}
+
+/* Responsive adjustments for cropper */
+@media (max-width: 768px) {
+  .cropper-main {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .cropper-wrapper {
+    height: 350px;
+  }
+  
+  .cropper-preview {
+    order: -1; /* Move preview above cropper on mobile */
+  }
+  
+  .cropper-actions {
+    flex-direction: column;
+  }
+  
+  .cropper-actions button {
+    width: 100%;
+  }
+  
+  .cropper-title {
+    font-size: 20px;
+  }
+  
+  .cropper-wrapper {
+    height: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cropper-wrapper {
+    height: 250px;
+  }
+  
+  .preview-photo {
+    width: 60px;
+    height: 80px;
+  }
+}
+
+/* Ensure touch targets are large enough */
+.cropper-actions button {
+  min-height: 44px;
+}

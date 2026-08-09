@@ -31,8 +31,13 @@ export const Uploader = ({ onNext }) => {
    * Handle file selection from input
    */
   const handleFileSelect = useCallback(async (event) => {
+    console.log('Uploader: handleFileSelect called');
     const file = event.target.files?.[0];
-    if (!file) return;
+    console.log('Uploader: file selected:', file?.name, file?.type, file?.size);
+    if (!file) {
+      console.log('Uploader: no file, returning');
+      return;
+    }
 
     // Clear drag state
     setIsDragging(false);

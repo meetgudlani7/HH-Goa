@@ -13,7 +13,7 @@ export const App = () => {
   const [badgeData, setBadgeData] = useState(null);
 
   const handleUploadNext = (data) => {
-    console.log('Upload Step Complete:', data);
+    console.log('App: handleUploadNext called with data:', data?.fileName, data?.isHeic);
     setPhotoData(data);
     setStep('crop');
   };
@@ -31,8 +31,6 @@ export const App = () => {
   };
 
   const handleReset = () => {
-    console.log('Resetting state machine to step 0');
-    
     // Revoke object URLs to prevent memory leaks
     if (photoData?.objectURL) {
       URL.revokeObjectURL(photoData.objectURL);
@@ -47,7 +45,9 @@ export const App = () => {
     setBadgeData(null);
   };
 
-  // Clean up object URLs when component unmounts or when data changes
+  // Clean up object URLs when component unmounts
+  // Note: We don't clean up on data changes because handleReset already does that
+  // and we want to avoid double revocation
   useEffect(() => {
     return () => {
       if (photoData?.objectURL) {
@@ -57,7 +57,7 @@ export const App = () => {
         URL.revokeObjectURL(croppedPhotoData.objectURL);
       }
     };
-  }, [photoData, croppedPhotoData]);
+  }, []);
 
   return (
     <div className="container">
