@@ -7,15 +7,48 @@
  */
 export const IMAGE_MAGIC_BYTES = {
   // JPEG: starts with 0xFFD8FF
-  JPEG: [0xFF, 0xD8, 0xFF],
-  
+  JPEG: [0xff, 0xd8, 0xff],
+
   // PNG: starts with 0x89 0x50 0x4E 0x47 0x0D 0x0A 0x1A 0x0A
-  PNG: [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A],
-  
+  PNG: [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a],
+
   // HEIC/HEIF: contains "ftyp" box followed by brand identifier
   // The "ftyp" box is at offset 4, followed by 4-byte brand
   HEIC: { ftyp: 'ftyp', brands: ['heic', 'heif', 'heix', 'hev1'] },
 };
+
+export const getCroppedImg = (image, croppedAreaPixels, rotation = 0) =>
+  new Promise((resolve, reject) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return reject(new Error('Could not create canvas context'));
+    const { x, y, width, height } = croppedAreaPixels;
+    const rotated = rotation === 90 || rotation === 270;
+    canvas.width = rotated ? height : width;
+    canvas.height = rotated ? width : height;
+    ctx.save();
+    if (rotation) {
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate((rotation * Math.PI) / 180);
+      ctx.drawImage(image, x, y, width, height, -width / 2, -height / 2, width, height);
+    } else {
+      ctx.drawImage(image, x, y, width, height, 0, 0, width, height);
+    }
+    ctx.restore();
+    canvas.toBlob(
+      (blob) => {
+        if (!blob) return reject(new Error('Failed to create cropped image blob'));
+        resolve({
+          blob,
+          objectURL: URL.createObjectURL(blob),
+          width: canvas.width,
+          height: canvas.height,
+        });
+      },
+      'image/jpeg',
+      0.92
+    );
+  });
 
 /**
  * Check if a file is a valid image based on its magic bytes
@@ -26,45 +59,45 @@ export const getImageTypeFromBytes = async (file) => {
   try {
     const buffer = await file.slice(0, 32).arrayBuffer();
     const bytes = new Uint8Array(buffer);
-    
+
     // Check for JPEG
-    if (bytes.length >= 3 && 
-        bytes[0] === 0xFF && 
-        bytes[1] === 0xD8 && 
-        bytes[2] === 0xFF) {
+    if (bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) {
       return { type: 'image/jpeg', isValid: true };
     }
-    
+
     // Check for PNG
-    if (bytes.length >= 8 &&
-        bytes[0] === 0x89 &&
-        bytes[1] === 0x50 &&
-        bytes[2] === 0x4E &&
-        bytes[3] === 0x47 &&
-        bytes[4] === 0x0D &&
-        bytes[5] === 0x0A &&
-        bytes[6] === 0x1A &&
-        bytes[7] === 0x0A) {
+    if (
+      bytes.length >= 8 &&
+      bytes[0] === 0x89 &&
+      bytes[1] === 0x50 &&
+      bytes[2] === 0x4e &&
+      bytes[3] === 0x47 &&
+      bytes[4] === 0x0d &&
+      bytes[5] === 0x0a &&
+      bytes[6] === 0x1a &&
+      bytes[7] === 0x0a
+    ) {
       return { type: 'image/png', isValid: true };
     }
-    
+
     // Check for HEIC/HEIF
     if (bytes.length >= 12) {
       // Look for "ftyp" at offset 4
       const ftypStart = bytes.subarray(4, 8);
       const ftypStr = String.fromCharCode(...ftypStart);
-      
+
       if (ftypStr === 'ftyp') {
         const brand = bytes.subarray(8, 12);
+        // eslint-disable-next-line no-control-regex -- stripping null-byte padding from the raw 4-byte brand field
         const brandStr = String.fromCharCode(...brand).replace(/\x00/g, '');
-        
+
         const validBrands = ['heic', 'heif', 'heix', 'hev1', 'mif1', 'msf1'];
-        if (validBrands.some(b => brandStr.includes(b))) {
+        if (validBrands.some((b) => brandStr.includes(b))) {
           return { type: 'image/heic', isValid: true };
         }
       }
     }
-    
+
     return { type: null, isValid: false };
   } catch (error) {
     console.warn('Could not read file magic bytes:', error);
@@ -79,7 +112,7 @@ export const getImageTypeFromBytes = async (file) => {
 export const isWasmSupported = () => {
   try {
     return typeof WebAssembly === 'object' && WebAssembly.validate !== undefined;
-  } catch (error) {
+  } catch {
     return false;
   }
 };
@@ -124,16 +157,19 @@ export const isHeicFile = async (file) => {
   try {
     const buffer = await file.slice(0, 12).arrayBuffer();
     const bytes = new Uint8Array(buffer);
-    
+
     if (bytes.length >= 12) {
       const ftypStart = bytes.subarray(4, 8);
       const heicMarker = bytes.subarray(8, 12);
-      
+
       const ftypStr = String.fromCharCode(...ftypStart);
       const heicStr = String.fromCharCode(...heicMarker);
-      
+
       // Check for "ftyp" followed by HEIC brands
-      if (ftypStr === 'ftyp' && (heicStr === 'heic' || heicStr === 'heif' || heicStr === 'heix' || heicStr === 'hev1')) {
+      if (
+        ftypStr === 'ftyp' &&
+        (heicStr === 'heic' || heicStr === 'heif' || heicStr === 'heix' || heicStr === 'hev1')
+      ) {
         return true;
       }
     }

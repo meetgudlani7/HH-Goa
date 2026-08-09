@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
 /**
  * ScanningScreen Component - Phase 5 Implementation
@@ -6,48 +6,46 @@ import React, { useState, useEffect } from 'react';
  * Matches hh_goa_v2_upgraded.html Screen 3 exactly
  * Triggers card rendering during animation to hide render time
  */
-export const ScanningScreen = ({ setStep, formData, croppedImageURL, renderCard, setCardDataURL, onComplete }) => {
+export const ScanningScreen = ({ formData, onComplete }) => {
   const [lineProgress, setLineProgress] = useState(0);
-  const [isRendering, setIsRendering] = useState(false);
 
-  const SCAN_LINES = [
-    { main: 'SCANNING BUILDER VIBES', sub: 'FACE FOUND · AESTHETIC CONFIRMED', result: '✓ OK' },
-    { main: `ANALYSING STACK POTENTIAL`, sub: `${formData.stack || 'REACT'} DETECTED`, result: '✓ OK' },
-    { main: 'DETECTING JUGAAD COEFFICIENT', sub: 'CHECKING CHAOS TOLERANCE', result: '✓ HIGH' },
-    { main: 'MEASURING SHIP VELOCITY…', sub: 'CALCULATING 3AM PRODUCTIVITY INDEX', result: '97%' },
-    { main: 'CALCULATING GOA COMPATIBILITY', sub: 'CHECKING ARABIAN SEA PROXIMITY TOLERANCE' },
-    { main: 'GENERATING ARTIFACT…', sub: 'COMPOSING VINTAGE POSTER · APPLYING INK TEXTURES' }
-  ];
+  const SCAN_LINES = useMemo(
+    () => [
+      { main: 'SCANNING BUILDER VIBES', sub: 'FACE FOUND · AESTHETIC CONFIRMED', result: '✓ OK' },
+      {
+        main: `ANALYSING STACK POTENTIAL`,
+        sub: `${formData.stack || 'REACT'} DETECTED`,
+        result: '✓ OK',
+      },
+      { main: 'DETECTING JUGAAD COEFFICIENT', sub: 'CHECKING CHAOS TOLERANCE', result: '✓ HIGH' },
+      {
+        main: 'MEASURING SHIP VELOCITY…',
+        sub: 'CALCULATING 3AM PRODUCTIVITY INDEX',
+        result: '97%',
+      },
+      { main: 'CALCULATING GOA COMPATIBILITY', sub: 'CHECKING ARABIAN SEA PROXIMITY TOLERANCE' },
+      { main: 'GENERATING ARTIFACT…', sub: 'COMPOSING VINTAGE POSTER · APPLYING INK TEXTURES' },
+    ],
+    [formData.stack]
+  );
 
   useEffect(() => {
-    let renderPromise = null;
-    
     const interval = setInterval(() => {
-      setLineProgress(prev => {
+      setLineProgress((prev) => {
         if (prev >= SCAN_LINES.length) {
           clearInterval(interval);
           setTimeout(() => onComplete && onComplete(), 400);
           return prev;
         }
-        
-        if (prev === 0 && renderCard && !isRendering && croppedImageURL) {
-          setIsRendering(true);
-          renderPromise = renderCard(formData, croppedImageURL)
-            .then(url => setCardDataURL(url))
-            .catch(err => console.error('Card render failed:', err));
-        }
-        
+
         return prev + 1;
       });
     }, 600);
 
     return () => {
       clearInterval(interval);
-      if (renderPromise) {
-        renderPromise.catch(() => {});
-      }
     };
-  }, [onComplete, formData, renderCard, setCardDataURL, isRendering]);
+  }, [onComplete, SCAN_LINES]);
 
   const getLineState = (index) => {
     if (lineProgress > index) return 'done';
@@ -64,7 +62,14 @@ export const ScanningScreen = ({ setStep, formData, croppedImageURL, renderCard,
       <div className="windowbar" style={{ borderColor: 'var(--yellow)' }}>
         <div className="windowbar-title">⬛ BUILDER AUTHENTICATION IN PROGRESS</div>
         <div className="wbtns">
-          <div className="wbtn" style={{ background: lineProgress < SCAN_LINES.length ? 'var(--yellow)' : 'var(--fade)', animation: lineProgress < SCAN_LINES.length ? 'pulse .8s ease infinite alternate' : 'none' }}></div>
+          <div
+            className="wbtn"
+            style={{
+              background: lineProgress < SCAN_LINES.length ? 'var(--yellow)' : 'var(--fade)',
+              animation:
+                lineProgress < SCAN_LINES.length ? 'pulse .8s ease infinite alternate' : 'none',
+            }}
+          ></div>
           <div className="wbtn" style={{ background: 'var(--fade)' }}></div>
           <div className="wbtn" style={{ background: 'var(--fade)' }}></div>
         </div>
@@ -72,7 +77,11 @@ export const ScanningScreen = ({ setStep, formData, croppedImageURL, renderCard,
 
       <div className="scan-body">
         <div className="scan-eyebrow">// IDENTITY AUTHENTICATION IN PROGRESS</div>
-        <div className="scan-headline">SCANNING<br />BUILDER…</div>
+        <div className="scan-headline">
+          SCANNING
+          <br />
+          BUILDER…
+        </div>
 
         {SCAN_LINES.map((line, index) => {
           const state = getLineState(index);
@@ -81,13 +90,9 @@ export const ScanningScreen = ({ setStep, formData, croppedImageURL, renderCard,
 
           return (
             <div className="scan-line" key={index}>
-              <div className={`scan-icon ${state}`}>
-                {isDone ? '✓' : isActive ? '→' : '○'}
-              </div>
+              <div className={`scan-icon ${state}`}>{isDone ? '✓' : isActive ? '→' : '○'}</div>
               <div className="scan-text-wrap">
-                <div className={`scan-text-main ${state}`}>
-                  {line.main}
-                </div>
+                <div className={`scan-text-main ${state}`}>{line.main}</div>
                 <div className="scan-text-sub">{line.sub}</div>
               </div>
               {line.result && <div className="scan-result">{line.result}</div>}
@@ -108,7 +113,9 @@ export const ScanningScreen = ({ setStep, formData, croppedImageURL, renderCard,
 
         <div className="gen-bar">
           GENERATING ARTIFACT · <span>GOA COMPATIBILITY: CALCULATING</span> · DO NOT CLOSE TAB
-          <span style={{ color: 'var(--fade)', fontSize: '6px', marginTop: '4px', display: 'block' }}>
+          <span
+            style={{ color: 'var(--fade)', fontSize: '6px', marginTop: '4px', display: 'block' }}
+          >
             // COFFEE: CRITICAL · 404: SLEEP NOT FOUND · WORKS ON MY MACHINE
           </span>
         </div>

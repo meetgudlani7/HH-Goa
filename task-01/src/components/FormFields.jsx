@@ -26,27 +26,33 @@ export const FormFields = ({ setStep, formData, setFormData }) => {
     );
   }, [formData]);
 
-  const handleInputChange = useCallback((e) => {
-    const { name, value } = e.target;
-    
-    if (name === 'xHandle') {
-      setFormData(prev => ({ ...prev, [name]: value.replace(/@/g, '') }));
-    } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
-    }
-    
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: null }));
-    }
-  }, [errors, setFormData]);
+  const handleInputChange = useCallback(
+    (e) => {
+      const { name, value } = e.target;
 
-  const handleTitleSelect = useCallback((index) => {
-    setFormData(prev => ({
-      ...prev,
-      builderTitle: BUILDER_TITLES[index],
-    }));
-    setErrors(prev => ({ ...prev, builderTitle: null }));
-  }, [setFormData]);
+      if (name === 'xHandle') {
+        setFormData((prev) => ({ ...prev, [name]: value.replace(/@/g, '') }));
+      } else {
+        setFormData((prev) => ({ ...prev, [name]: value }));
+      }
+
+      if (errors[name]) {
+        setErrors((prev) => ({ ...prev, [name]: null }));
+      }
+    },
+    [errors, setFormData]
+  );
+
+  const handleTitleSelect = useCallback(
+    (index) => {
+      setFormData((prev) => ({
+        ...prev,
+        builderTitle: BUILDER_TITLES[index],
+      }));
+      setErrors((prev) => ({ ...prev, builderTitle: null }));
+    },
+    [setFormData]
+  );
 
   const regenerateTitle = useCallback(() => {
     const randomIndex = Math.floor(Math.random() * BUILDER_TITLES.length);
@@ -68,7 +74,7 @@ export const FormFields = ({ setStep, formData, setFormData }) => {
 
   const handleSubmit = useCallback(() => {
     const isValid = isFormValid();
-    
+
     if (!isValid) {
       const newErrors = {};
       if (!formData.name.trim()) newErrors.name = 'Name is required';
@@ -88,7 +94,7 @@ export const FormFields = ({ setStep, formData, setFormData }) => {
     <div className="form-screen">
       <div className="form-poster-bg">BUILD</div>
       <div className="border-strip-top"></div>
-      
+
       <div className="windowbar">
         <div className="windowbar-title">⬛ NAAM KYA HAI, BUILDER? — STEP 2 OF 3</div>
         <div className="wbtns">
@@ -99,16 +105,33 @@ export const FormFields = ({ setStep, formData, setFormData }) => {
       </div>
 
       <div className="form-body">
+        <button
+          type="button"
+          className="act-btn ghost"
+          style={{
+            marginBottom: '16px',
+            display: 'inline-block',
+            padding: '8px 14px',
+            color: 'var(--cream)',
+            borderColor: 'var(--cream)',
+          }}
+          onClick={() => setStep('crop')}
+          disabled={isSubmitting}
+        >
+          ← BACK
+        </button>
         <div className="form-eyebrow">// IDENTITY CONFIGURATION IN PROGRESS</div>
         <div className="form-heading-big">
-          TERI<br />
-          <span className="hl">IDENTITY</span><br />
+          TERI
+          <br />
+          <span className="hl">IDENTITY</span>
+          <br />
           KYA HAI?
         </div>
 
         <div className="field-group">
           <div className="field-label">TERA NAAM KYA HAI? / Your name</div>
-          <input 
+          <input
             className="field-inp"
             value={formData.name}
             onChange={handleInputChange}
@@ -125,7 +148,7 @@ export const FormFields = ({ setStep, formData, setFormData }) => {
 
         <div className="field-group">
           <div className="field-label">KYA CHALTA HAI MACHINE MEIN? / Your stack</div>
-          <input 
+          <input
             className="field-inp"
             value={formData.stack}
             onChange={handleInputChange}
@@ -141,7 +164,7 @@ export const FormFields = ({ setStep, formData, setFormData }) => {
 
         <div className="field-group">
           <div className="field-label">KAHAN SE AAYA HAI? / City, Country</div>
-          <input 
+          <input
             className="field-inp"
             value={formData.city}
             onChange={handleInputChange}
@@ -155,7 +178,7 @@ export const FormFields = ({ setStep, formData, setFormData }) => {
 
         <div className="field-group">
           <div className="field-label">TU X PE KYA HAI? / @handle</div>
-          <input 
+          <input
             className="field-inp"
             value={formData.xHandle}
             onChange={handleInputChange}
@@ -174,7 +197,7 @@ export const FormFields = ({ setStep, formData, setFormData }) => {
             <button
               key={role}
               className={`tag ${formData.role === role ? 'active' : ''}`}
-              onClick={() => setFormData(prev => ({ ...prev, role }))}
+              onClick={() => setFormData((prev) => ({ ...prev, role }))}
               disabled={isSubmitting}
             >
               {role}
@@ -183,14 +206,17 @@ export const FormFields = ({ setStep, formData, setFormData }) => {
         </div>
 
         <div className="back-pattern-row">
-          <div className="bp-diamond"></div><div className="bp-circle"></div>
-          <div className="bp-diamond"></div><div className="bp-circle"></div>
-          <div className="bp-diamond"></div><div className="bp-circle"></div>
+          <div className="bp-diamond"></div>
+          <div className="bp-circle"></div>
+          <div className="bp-diamond"></div>
+          <div className="bp-circle"></div>
+          <div className="bp-diamond"></div>
+          <div className="bp-circle"></div>
           <div className="bp-diamond"></div>
         </div>
 
         <div className="tags-label">// GENERATED BUILDER TITLE</div>
-        
+
         {builderTitleMode === 'pick' && (
           <>
             <div className="title-box">
@@ -199,7 +225,7 @@ export const FormFields = ({ setStep, formData, setFormData }) => {
                 ↻ EK AUR
               </button>
             </div>
-            
+
             <div className="tags-row" style={{ marginTop: '8px' }}>
               {BUILDER_TITLES.slice(0, 8).map((title, index) => (
                 <button
@@ -229,7 +255,7 @@ export const FormFields = ({ setStep, formData, setFormData }) => {
 
         {builderTitleMode === 'type' && (
           <div className="field-group">
-            <input 
+            <input
               className="field-inp"
               value={formData.builderTitle}
               onChange={handleInputChange}
@@ -239,19 +265,36 @@ export const FormFields = ({ setStep, formData, setFormData }) => {
               autoComplete="off"
               disabled={isSubmitting}
             />
-            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: '7px', color: 'var(--fade)', letterSpacing: '.08em', marginTop: '4px' }}>
-              {formData.builderTitle.length}/32
+            <div
+              style={{
+                fontFamily: 'Space Mono, monospace',
+                fontSize: '7px',
+                color: 'var(--fade)',
+                letterSpacing: '.08em',
+                marginTop: '4px',
+              }}
+            >
+              {formatCharCount()}
             </div>
           </div>
         )}
 
-        <button type="button" className="title-mode-toggle" onClick={toggleBuilderTitleMode} disabled={isSubmitting}>
+        <button
+          type="button"
+          className="title-mode-toggle"
+          onClick={toggleBuilderTitleMode}
+          disabled={isSubmitting}
+        >
           {builderTitleMode === 'pick' ? '✏ TYPE MY OWN' : 'Back to chips'}
         </button>
 
         {errors.builderTitle && <div className="field-error">{errors.builderTitle}</div>}
 
-        <button className="generate-btn" onClick={handleSubmit} disabled={!isFormValid() || isSubmitting}>
+        <button
+          className="generate-btn"
+          onClick={handleSubmit}
+          disabled={!isFormValid() || isSubmitting}
+        >
           JUGAAD KARO → GENERATE MY ARTIFACT
         </button>
       </div>

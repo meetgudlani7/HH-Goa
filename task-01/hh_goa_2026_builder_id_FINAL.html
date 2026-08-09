@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HH GOA 2026 — Builder ID Card · Final</title>
+<link href="https://fonts.googleapis.com/css2?family=Teko:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Abril+Fatface&family=Unbounded:wght@400;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+
+<!--
+  ╔══════════════════════════════════════════════════════════════╗
+  ║  HACKER HOUSE GOA 2026 — BUILDER ID CARD                    ║
+  ║  Art direction: Indian Matchbox × Truck Art × Vintage Label  ║
+  ║  Front (collectible artifact) + Back (product label)         ║
+  ╚══════════════════════════════════════════════════════════════╝
+
+  CUSTOMISATION GUIDE — search for each tag to find the right line:
+  [NAME_FIRST]   Builder's first name
+  [NAME_LAST]    Builder's last name
+  [ALIAS]        Builder's creative alias / hacker name
+  [STACK]        Tech stack (3 items max look best)
+  [SERIAL]       Builder serial number (e.g. 247)
+  [BATCH]        Batch code on the back (e.g. GOA-26-247)
+  [CITY]         Builder's home city (optional, back label)
+  [PHOTO]        Replace the placeholder div with an <img> tag
+  [CERTIFIER]    Credit / studio handle on back label
+-->
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --red:    #C8001E;
+  --yellow: #F0C229;
+  --pink:   #E8407A;
+  --green:  #2A7A4B;
+  --blue:   #2B5FA0;
+  --cream:  #F5EDD8;
+  --paper:  #EDE4C8;
+  --ink:    #1A1008;
+  --rust:   #A83210;
+  --fade:   #C8A882;
+  --navy:   #0D2340;
+}
+
+body {
+  background: #0e0a06;
+  font-family: 'Space Mono', monospace;
+  padding: 48px 20px 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 60px;
+}
+
+/* ───────────────────────────────────────────────
+   SCREEN LABELS
+─────────────────────────────────────────────── */
+.screen-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .3em;
+  color: #444;
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+/* ───────────────────────────────────────────────
+   SHARED: SERRATED PERFORATIONS
+─────────────────────────────────────────────── */
+.perf-top {
+  height: 14px;
+  background:
+    radial-gradient(circle at 50% 100%, var(--cream) 55%, transparent 56%) -7px 0 / 14px 14px,
+    var(--ink);
+  background-repeat: repeat-x;
+}
+.perf-bot {
+  height: 14px;
+  background:
+    radial-gradient(circle at 50% 0%, var(--cream) 55%, transparent 56%) -7px 0 / 14px 14px,
+    var(--ink);
+  background-repeat: repeat-x;
+}
+
+/* ───────────────────────────────────────────────
+   FRONT CARD
+─────────────────────────────────────────────── */
+.card-front {
+  width: 340px;
+  background: var(--cream);
+  border: 3px solid var(--ink);
+  box-shadow: 8px 8px 0 var(--ink);
+  position: relative;
+  overflow: hidden; /* clip internal elements; floating seal uses overflow:visible wrapper */
+  font-family: 'Space Mono', monospace;
+}
+
+/* ── LEFT BORDER SPINE (textile / truck art) ── */
+.f-left-border {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 36px;
+  background: var(--ink);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 3px;
+  gap: 0;
+  overflow: hidden;
+  z-index: 10;
+}
+.f-lb-stripe { width: 28px; height: 5px; flex-shrink: 0; }
+.f-lb-stripe.r { background: var(--red); }
+.f-lb-stripe.y { background: var(--yellow); }
+.f-lb-stripe.g { background: var(--green); }
+.f-lb-stripe.p { background: var(--pink); }
+.f-lb-stripe.b { background: var(--blue); }
+.f-lb-stripe.w { background: var(--cream); }
+
+.f-lb-text {
+  font-family: 'Teko', sans-serif;
+  font-weight: 700;
+  font-size: 8px;
+  color: var(--yellow);
+  letter-spacing: .2em;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  text-transform: uppercase;
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+.f-lb-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  color: var(--red);
+  line-height: 1;
+}
+
+/* ── MAIN CANVAS (offset left for spine) ── */
+.f-main {
+  margin-left: 36px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Dot-grid texture overlay */
+.f-main::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(168,50,16,0.06) 1px, transparent 1px);
+  background-size: 14px 14px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── TOP HEADER (red block, big broken type) ── */
+.f-top-block {
+  background: var(--red);
+  padding: 10px 10px 0;
+  border-bottom: 3px solid var(--ink);
+  position: relative;
+  overflow: hidden;
+}
+/* Subtle diagonal accent on header */
+.f-top-block::after {
+  content: '';
+  position: absolute;
+  top: -10px; right: 40px;
+  width: 3px; height: 120%;
+  background: rgba(240,194,41,.18);
+  transform: rotate(-15deg);
+}
+
+.f-hh-big {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 52px;
+  color: var(--yellow);
+  line-height: .82;
+  letter-spacing: 2px;
+  position: relative;
+  z-index: 2;
+  text-shadow: 3px 3px 0 rgba(0,0,0,.28);
+}
+/* "HOUSE" rendered as outline only */
+.f-hh-big .word2 {
+  color: transparent;
+  -webkit-text-stroke: 2px var(--yellow);
+}
+
+.f-header-row2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-bottom: 8px;
+  position: relative;
+  z-index: 2;
+}
+.f-header-hindi {
+  font-family: serif;
+  font-size: 14px;
+  color: rgba(240,194,41,.8);
+  line-height: 1.25;
+}
+.f-header-goa {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 30px;
+  color: var(--cream);
+  letter-spacing: 3px;
+  line-height: 1;
+  text-align: right;
+}
+.f-header-year {
+  font-family: 'Space Mono', monospace;
+  font-size: 6.5px;
+  color: rgba(240,194,41,.7);
+  letter-spacing: .18em;
+  text-align: right;
+}
+
+/* ── COLOUR BAR ── */
+.f-color-bar {
+  height: 8px;
+  background: repeating-linear-gradient(90deg,
+    var(--red)    0,  var(--red)    12px,
+    var(--yellow) 12px, var(--yellow) 24px,
+    var(--green)  24px, var(--green)  36px,
+    var(--pink)   36px, var(--pink)   48px,
+    var(--blue)   48px, var(--blue)   60px,
+    var(--ink)    60px, var(--ink)    72px
+  );
+  border-top: 2px solid var(--ink);
+  border-bottom: 2px solid var(--ink);
+}
+
+/* ── BODY: person + info floating composition ── */
+.f-body {
+  position: relative;
+  min-height: 220px;
+}
+
+/* Person zone — editorial diagonal clip, not an ID box */
+.f-person-zone {
+  position: absolute;
+  right: 0; top: 0;
+  width: 145px; height: 224px;
+  background: var(--blue);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 15% 100%, 0 85%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/*
+ * [PHOTO] — to replace the placeholder with a real photo:
+ *
+ *   <img src="path/to/photo.jpg"
+ *        style="width:100%;height:100%;object-fit:cover;object-position:top center;">
+ *
+ * Recommended photo: portrait, face centred, chest-up, plain or blurred background.
+ * The clip-path will mask the bottom-right corner automatically.
+ */
+.f-person-ph {
+  font-family: 'Space Mono', monospace;
+  font-size: 6px;
+  color: rgba(240,194,41,.55);
+  letter-spacing: .08em;
+  text-align: center;
+  line-height: 2.4;
+  padding: 18px;
+  /* DELETE this entire <div class="f-person-ph"> block once photo is inserted */
+}
+
+/* Sticker ON the person zone */
+.f-person-sticker {
+  position: absolute;
+  top: 12px; right: 8px;
+  background: var(--yellow);
+  border: 2px solid var(--ink);
+  padding: 2px 8px;
+  transform: rotate(5deg);
+  font-family: 'Teko', sans-serif;
+  font-weight: 700;
+  font-size: 9px;
+  color: var(--ink);
+  letter-spacing: .1em;
+  z-index: 20;
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+/* Annotation that bleeds off the person zone — breaks the grid */
+.f-person-annotation {
+  position: absolute;
+  bottom: 28px; right: 0;
+  background: var(--red);
+  border: 2px solid var(--ink);
+  border-right: none;
+  padding: 3px 8px;
+  font-family: 'Space Mono', monospace;
+  font-size: 5px;
+  color: var(--yellow);
+  letter-spacing: .15em;
+  z-index: 20;
+  white-space: nowrap;
+}
+
+/* ── INFO LEFT ── */
+.f-info-left {
+  position: absolute;
+  left: 0; top: 0;
+  width: 150px;
+  padding: 12px 8px 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  z-index: 5;
+}
+.f-eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 5.5px;
+  color: var(--rust);
+  letter-spacing: .22em;
+  text-transform: uppercase;
+}
+/* [NAME_FIRST] */
+.f-name-first {
+  font-family: 'Unbounded', sans-serif;
+  font-weight: 900;
+  font-size: 22px;
+  color: var(--red);
+  line-height: .85;
+  text-transform: uppercase;
+  letter-spacing: -1px;
+}
+/* [NAME_LAST] */
+.f-name-last {
+  font-family: 'Unbounded', sans-serif;
+  font-weight: 900;
+  font-size: 22px;
+  color: var(--ink);
+  line-height: .85;
+  text-transform: uppercase;
+  letter-spacing: -1px;
+  -webkit-text-stroke: 1px var(--ink);
+}
+/* [ALIAS] */
+.f-title-box {
+  background: var(--ink);
+  padding: 4px 8px;
+  transform: rotate(-.8deg);
+  border-left: 4px solid var(--yellow);
+  margin-top: 2px;
+  display: inline-block;
+}
+.f-title-box span {
+  font-family: 'Abril Fatface', serif;
+  font-size: 9.5px;
+  color: var(--yellow);
+  letter-spacing: .03em;
+}
+/* [STACK] */
+.f-stack {
+  border-top: 1.5px dashed var(--fade);
+  padding-top: 6px;
+}
+.f-stack-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 5px;
+  color: #8A6840;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+}
+.f-stack-val {
+  font-family: 'Teko', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--ink);
+  letter-spacing: .04em;
+  line-height: 1.05;
+}
+
+/* Floating "SHIP IT" label — overlaps info/person boundary */
+.f-float-label {
+  position: absolute;
+  bottom: 14px; left: 6px;
+  background: var(--pink);
+  border: 2px solid var(--ink);
+  padding: 2px 7px;
+  font-family: 'Teko', sans-serif;
+  font-weight: 700;
+  font-size: 9px;
+  color: var(--cream);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  box-shadow: 2px 2px 0 var(--ink);
+  z-index: 30;
+  transform: rotate(-1.5deg);
+}
+
+/* Circular seal — bleeds across body/goa-band border */
+.f-float-seal {
+  position: absolute;
+  bottom: -22px; right: 10px;
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  background: var(--yellow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 3px 3px 0 var(--ink);
+  z-index: 50;
+  text-align: center;
+  text-transform: uppercase;
+  line-height: 1.25;
+}
+.f-float-seal .seal-big {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 13px;
+  color: var(--rust);
+  font-weight: 900;
+}
+.f-float-seal .seal-sm {
+  font-family: 'Teko', sans-serif;
+  font-weight: 700;
+  font-size: 6.5px;
+  color: var(--ink);
+  letter-spacing: .05em;
+}
+
+/* ── GOA ILLUSTRATION BAND ── */
+.f-goa-band {
+  background: var(--green);
+  border-top: 2.5px solid var(--ink);
+  border-bottom: 2.5px solid var(--ink);
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  margin-top: 22px; /* room for the floating seal overlap */
+}
+.f-goa-band::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(90deg,
+    rgba(255,255,255,.04) 0,
+    rgba(255,255,255,.04) 2px,
+    transparent 2px,
+    transparent 14px
+  );
+}
+.f-goa-elements {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+.f-goa-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 26px;
+  color: var(--yellow);
+  letter-spacing: 2px;
+  position: relative;
+  z-index: 2;
+}
+.f-goa-sub {
+  font-family: 'Space Mono', monospace;
+  font-size: 5px;
+  color: rgba(240,194,41,.7);
+  letter-spacing: .15em;
+  position: relative;
+  z-index: 2;
+}
+
+/* ── EASTER EGG STRIP ── */
+.f-easter-strip {
+  background: var(--ink);
+  padding: 5px 10px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.f-e-chip {
+  font-family: 'Space Mono', monospace;
+  font-size: 5px;
+  color: var(--yellow);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  border: 1px solid rgba(240,194,41,.3);
+  padding: 2px 5px;
+  white-space: nowrap;
+}
+
+/* ── BOTTOM BAR ── */
+.f-bottom {
+  background: var(--yellow);
+  border-top: 2.5px solid var(--ink);
+  padding: 5px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.f-bottom-l {
+  font-family: 'Teko', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--ink);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.f-bottom-r {
+  font-family: 'Space Mono', monospace;
+  font-size: 5.5px;
+  color: var(--rust);
+  letter-spacing: .15em;
+}
+
+
+/* ═══════════════════════════════════════════════
+   BACK CARD — VINTAGE PRODUCT LABEL
+═══════════════════════════════════════════════ */
+.card-back {
+  width: 340px;
+  background: var(--cream);
+  border: 3px solid var(--ink);
+  box-shadow: 8px 8px 0 var(--ink);
+  position: relative;
+  overflow: hidden;
+  font-family: 'Space Mono', monospace;
+}
+
+.back-top-stripe {
+  height: 10px;
+  background: repeating-linear-gradient(90deg,
+    var(--blue)   0,  var(--blue)   12px,
+    var(--pink)   12px, var(--pink)   24px,
+    var(--yellow) 24px, var(--yellow) 36px,
+    var(--green)  36px, var(--green)  48px,
+    var(--red)    48px, var(--red)    60px
+  );
+  border-bottom: 2.5px solid var(--ink);
+}
+
+/* Large ghost watermark */
+.back-wm {
+  position: absolute;
+  top: 20px; right: -20px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 130px;
+  color: rgba(26,16,8,.05);
+  line-height: 1;
+  letter-spacing: -2px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── BACK HEADER ── */
+.back-header {
+  background: var(--blue);
+  border-bottom: 3px solid var(--ink);
+  padding: 8px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+.back-header::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(90deg,
+    rgba(255,255,255,.04) 0,
+    rgba(255,255,255,.04) 2px,
+    transparent 2px,
+    transparent 14px
+  );
+}
+.back-h-brand {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 24px;
+  color: var(--yellow);
+  letter-spacing: 3px;
+  line-height: .9;
+  position: relative;
+  z-index: 2;
+}
+.back-h-sub {
+  font-family: 'Space Mono', monospace;
+  font-size: 5px;
+  color: rgba(240,194,41,.65);
+  letter-spacing: .18em;
+  position: relative;
+  z-index: 2;
+  margin-top: 3px;
+}
+.back-batch-box {
+  text-align: right;
+  position: relative;
+  z-index: 2;
+}
+/* [BATCH] */
+.back-batch-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 17px;
+  color: var(--yellow);
+  letter-spacing: 1px;
+}
+.back-batch-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 5px;
+  color: rgba(240,194,41,.5);
+  letter-spacing: .2em;
+  display: block;
+}
+
+/* Inner perf (decorative) */
+.back-perf-inner {
+  height: 10px;
+  background:
+    radial-gradient(circle at 50% 100%, var(--cream) 55%, transparent 56%) -5px 0 / 10px 10px,
+    var(--ink);
+  background-repeat: repeat-x;
+}
+
+/* ── BACK BODY ── */
+.back-body {
+  padding: 10px 14px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Portuguese tile / textile row divider */
+.back-tile-row {
+  height: 12px;
+  background: repeating-linear-gradient(90deg,
+    var(--blue)   0, var(--blue)   6px, var(--cream) 6px, var(--cream) 7px,
+    var(--red)    7px, var(--red)   13px, var(--cream) 13px, var(--cream) 14px,
+    var(--green)  14px, var(--green) 20px, var(--cream) 20px, var(--cream) 21px
+  );
+  opacity: .5;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+  margin-bottom: 8px;
+}
+
+/* Hacker stamps */
+.back-stamps-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+  align-items: center;
+}
+.h-stamp {
+  display: inline-block;
+  border: 2px solid var(--green);
+  padding: 2px 7px;
+  font-family: 'Teko', sans-serif;
+  font-weight: 700;
+  font-size: 9px;
+  color: var(--green);
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  transform: rotate(-2deg);
+}
+.h-stamp.red  { border-color: var(--red);  color: var(--red);  transform: rotate(2.5deg); }
+.h-stamp.blue { border-color: var(--blue); color: var(--blue); transform: rotate(-1deg); }
+
+/* Section labels */
+.back-section-label {
+  font-family: 'Teko', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  color: var(--rust);
+  letter-spacing: .25em;
+  text-transform: uppercase;
+  border-bottom: 1.5px solid var(--rust);
+  margin-bottom: 6px;
+  padding-bottom: 2px;
+}
+
+/* Ingredients table */
+.ing-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 8px;
+}
+.ing-table td {
+  font-family: 'Space Mono', monospace;
+  font-size: 6px;
+  color: var(--ink);
+  padding: 3.5px 0;
+  vertical-align: middle;
+  border-bottom: 1px dotted var(--fade);
+}
+.ing-table td:first-child { width: 54%; color: #3A2810; }
+.ing-table td:last-child  { text-align: right; color: var(--rust); font-weight: 700; width: 14%; }
+
+.bar-track {
+  background: #D8CDB0;
+  height: 5px;
+  border: 1px solid var(--fade);
+  position: relative;
+}
+.bar-fill { height: 100%; position: absolute; left: 0; top: 0; background: var(--red); }
+.bar-fill.y { background: var(--yellow); }
+.bar-fill.g { background: var(--green); }
+.bar-fill.b { background: var(--blue); }
+.bar-fill.p { background: var(--pink); }
+
+/* Directions */
+.directions { margin-bottom: 8px; }
+.directions li {
+  font-family: 'Space Mono', monospace;
+  font-size: 5.5px;
+  color: #2A1408;
+  padding: 2.5px 0 2.5px 14px;
+  border-bottom: 1px dotted #D8C8A8;
+  position: relative;
+  list-style: none;
+  line-height: 1.6;
+}
+.directions li::before { content: '→'; position: absolute; left: 0; color: var(--red); }
+
+/* Caution box */
+.back-warning {
+  background: var(--yellow);
+  border: 2px solid var(--ink);
+  padding: 6px 8px 5px;
+  margin-bottom: 8px;
+  position: relative;
+}
+.back-warning::before {
+  content: '⚠ CAUTION';
+  position: absolute;
+  top: -9px; left: 8px;
+  background: var(--red);
+  border: 1.5px solid var(--ink);
+  font-family: 'Teko', sans-serif;
+  font-weight: 700;
+  font-size: 8px;
+  color: var(--yellow);
+  letter-spacing: .15em;
+  padding: 0 5px;
+}
+.back-warning-text {
+  font-family: 'Space Mono', monospace;
+  font-size: 5.5px;
+  color: var(--ink);
+  line-height: 1.75;
+  margin-top: 3px;
+}
+
+/* MFG block */
+.back-mfg {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 8px;
+}
+.back-mfg-text {
+  font-family: 'Space Mono', monospace;
+  font-size: 5.5px;
+  color: var(--ink);
+  line-height: 1.9;
+  letter-spacing: .04em;
+}
+.back-mfg-hindi {
+  font-family: serif;
+  font-size: 44px;
+  color: rgba(200,0,30,.1);
+  line-height: 1;
+  font-weight: 900;
+}
+
+/* Barcode */
+.back-barcode {
+  border-top: 1.5px solid var(--rust);
+  padding-top: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+.back-bars { display: flex; align-items: stretch; height: 24px; }
+.bbar   { width: 2px; background: var(--ink); display: inline-block; }
+.bbar.w { width: 4px; background: var(--cream); }
+.bbar.m { width: 3px; background: var(--ink); }
+.bbar.g { width: 5px; background: var(--cream); }
+.back-barnum {
+  font-family: 'Space Mono', monospace;
+  font-size: 5.5px;
+  color: var(--ink);
+  letter-spacing: .12em;
+}
+
+.back-bot-stripe {
+  height: 8px;
+  background: repeating-linear-gradient(90deg,
+    var(--red)    0,  var(--red)    10px,
+    var(--yellow) 10px, var(--yellow) 20px,
+    var(--green)  20px, var(--green)  30px,
+    var(--blue)   30px, var(--blue)   40px,
+    var(--pink)   40px, var(--pink)   50px
+  );
+  border-top: 2px solid var(--ink);
+}
+</style>
+</head>
+<body>
+
+<!-- ╔══════════════════════════════════════════════════════╗
+     ║  FRONT CARD                                          ║
+     ╚══════════════════════════════════════════════════════╝ -->
+<div>
+  <div class="screen-label">FRONT · BUILDER ARTIFACT</div>
+
+  <div class="card-front">
+
+    <!-- Serrated perf — top -->
+    <div class="perf-top"></div>
+
+    <!-- ── Textile / truck-art left spine ── -->
+    <div class="f-left-border">
+      <div class="f-lb-stripe r"></div>
+      <div class="f-lb-stripe y"></div>
+      <div class="f-lb-stripe g"></div>
+      <div class="f-lb-stripe p"></div>
+      <div class="f-lb-stripe b"></div>
+      <div class="f-lb-stripe w"></div>
+      <div class="f-lb-stripe r"></div>
+      <div class="f-lb-stripe y"></div>
+      <div class="f-lb-stripe g"></div>
+      <div class="f-lb-stripe p"></div>
+      <div class="f-lb-stripe b"></div>
+      <div class="f-lb-text">REGISTERED BUILDER</div>
+      <div class="f-lb-stripe r"></div>
+      <div class="f-lb-stripe y"></div>
+      <div class="f-lb-stripe g"></div>
+      <div class="f-lb-stripe p"></div>
+      <div class="f-lb-stripe b"></div>
+      <!-- [YEAR] -->
+      <div class="f-lb-num">26</div>
+    </div>
+
+    <!-- ── Main canvas ── -->
+    <div class="f-main">
+
+      <!-- TOP HEADER: Big broken type -->
+      <div class="f-top-block">
+        <div class="f-hh-big">
+          HACKER<br><span class="word2">HOUSE</span>
+        </div>
+        <div class="f-header-row2">
+          <div class="f-header-hindi">हैकर<br>हाउस</div>
+          <div>
+            <div class="f-header-goa">GOA</div>
+            <div class="f-header-year">OCT 28–31 · ARAMBOL BEACH</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Colour bar -->
+      <div class="f-color-bar"></div>
+
+      <!-- BODY: floating composition -->
+      <div class="f-body">
+
+        <!-- Person zone — diagonal editorial cutout -->
+        <div class="f-person-zone">
+          <!--
+            [PHOTO] — REPLACE THIS DIV WITH:
+            <img src="YOUR_PHOTO.jpg"
+                 style="width:100%;height:100%;object-fit:cover;object-position:top center;">
+          -->
+          <div class="f-person-ph">
+            YOUR<br>
+            FACE<br>
+            GOES<br>
+            HERE<br>
+            (BIG<br>
+            AND<br>
+            COOL)
+          </div>
+        </div>
+
+        <!-- Sticker on person -->
+        <div class="f-person-sticker">★ 100% SHIPPED</div>
+
+        <!-- Annotation bleeding off person zone -->
+        <div class="f-person-annotation">QUALITY BUILDER · BUILT IN GOA</div>
+
+        <!-- Info: left side -->
+        <div class="f-info-left">
+          <!-- [SERIAL] -->
+          <div class="f-eyebrow">// REGISTERED BUILDER #247</div>
+          <!-- [NAME_FIRST] -->
+          <div class="f-name-first">SRISHTI</div>
+          <!-- [NAME_LAST] -->
+          <div class="f-name-last">DUGGAL</div>
+          <!-- [ALIAS] -->
+          <div class="f-title-box"><span>THE PIXEL ALCHEMIST</span></div>
+          <!-- [STACK] -->
+          <div class="f-stack">
+            <div class="f-stack-label">STACK / KYA CHALTA HAI</div>
+            <div class="f-stack-val">REACT<br>TYPESCRIPT<br>AI</div>
+          </div>
+        </div>
+
+        <!-- Floating "SHIP IT" label — crosses zone boundary -->
+        <div class="f-float-label">SHIP IT →</div>
+
+        <!-- Circular GOA COMPAT. seal — bleeds into goa band -->
+        <div class="f-float-seal">
+          <div class="seal-big">GOA</div>
+          <div class="seal-sm">COMPAT.</div>
+          <div class="seal-sm">100%</div>
+        </div>
+
+      </div><!-- /f-body -->
+
+      <!-- GOA BAND: Goa cultural illustrations -->
+      <div class="f-goa-band">
+        <div class="f-goa-elements">
+          <!-- Coconut palm -->
+          <svg width="16" height="28" viewBox="0 0 16 28" aria-hidden="true" style="opacity:.85">
+            <rect x="6" y="11" width="3" height="17" rx="1.5" fill="#F0C229"/>
+            <ellipse cx="8" cy="9" rx="7" ry="4.5" fill="#F5EDD8" transform="rotate(-10 8 9)"/>
+            <ellipse cx="8" cy="6" rx="5.5" ry="3.5" fill="#F0C229" transform="rotate(8 8 6)"/>
+          </svg>
+          <!-- Nautilus shell -->
+          <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" style="opacity:.85">
+            <circle cx="7" cy="7" r="5" fill="none" stroke="#F0C229" stroke-width="1.5"/>
+            <path d="M7 2 Q11.5 7 7 12" fill="none" stroke="#F0C229" stroke-width="1"/>
+            <path d="M7 2 Q2.5 7 7 12" fill="none" stroke="#F0C229" stroke-width="1"/>
+            <circle cx="7" cy="7" r="1.2" fill="#F0C229"/>
+          </svg>
+          <!-- Wave -->
+          <svg width="24" height="12" viewBox="0 0 24 12" aria-hidden="true" style="opacity:.85">
+            <path d="M0 6 Q6 0 12 6 Q18 12 24 6" fill="none" stroke="#F0C229" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <!-- Portuguese tile cross motif -->
+          <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" style="opacity:.65">
+            <rect width="14" height="14" rx="2" fill="none" stroke="#F0C229" stroke-width="1"/>
+            <line x1="7" y1="0" x2="7" y2="14" stroke="#F0C229" stroke-width=".8"/>
+            <line x1="0" y1="7" x2="14" y2="7" stroke="#F0C229" stroke-width=".8"/>
+            <circle cx="7" cy="7" r="2" fill="#F0C229"/>
+          </svg>
+          <!-- Flower -->
+          <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" style="opacity:.75">
+            <circle cx="7" cy="7" r="2" fill="#F0C229"/>
+            <circle cx="7" cy="2.5" r="2" fill="#F0C229" opacity=".5"/>
+            <circle cx="7" cy="11.5" r="2" fill="#F0C229" opacity=".5"/>
+            <circle cx="2.5" cy="7" r="2" fill="#F0C229" opacity=".5"/>
+            <circle cx="11.5" cy="7" r="2" fill="#F0C229" opacity=".5"/>
+          </svg>
+        </div>
+        <div style="text-align:right;position:relative;z-index:2;">
+          <div class="f-goa-text">GOA</div>
+          <div class="f-goa-sub">गोवा · 2026</div>
+        </div>
+      </div>
+
+      <!-- EASTER EGG STRIP -->
+      <div class="f-easter-strip">
+        <div class="f-e-chip">GIT PUSH</div>
+        <div class="f-e-chip">404: SLEEP NOT FOUND</div>
+        <div class="f-e-chip">LOCALHOST</div>
+        <div class="f-e-chip">BUILD: PASSED</div>
+        <div class="f-e-chip">JUGAAD v2.6</div>
+        <div class="f-e-chip">SHIP IT</div>
+      </div>
+
+      <!-- BOTTOM BAR -->
+      <div class="f-bottom">
+        <div class="f-bottom-l">MADE IN GOA</div>
+        <div class="f-bottom-r">HHGOA.COM · OCT 2026</div>
+      </div>
+
+      <!-- Serrated perf — bottom -->
+      <div class="perf-bot"></div>
+
+    </div><!-- /f-main -->
+  </div><!-- /card-front -->
+</div>
+
+
+<!-- ╔══════════════════════════════════════════════════════╗
+     ║  BACK CARD                                           ║
+     ╚══════════════════════════════════════════════════════╝ -->
+<div>
+  <div class="screen-label">BACK · VINTAGE PRODUCT LABEL</div>
+
+  <div class="card-back">
+    <div class="back-top-stripe"></div>
+
+    <!-- Ghost watermark -->
+    <div class="back-wm">HH</div>
+
+    <!-- Header -->
+    <div class="back-header">
+      <div>
+        <div class="back-h-brand">PRODUCT INFO</div>
+        <div class="back-h-sub">CERTIFIED BUILDER UNIT · HACKER HOUSE GOA 2026</div>
+      </div>
+      <div class="back-batch-box">
+        <!-- [BATCH] -->
+        <div class="back-batch-num">GOA-26-247</div>
+        <span class="back-batch-label">BATCH NO.</span>
+      </div>
+    </div>
+
+    <!-- Inner decorative perf -->
+    <div class="back-perf-inner"></div>
+
+    <div class="back-body">
+
+      <!-- Tile border row -->
+      <div class="back-tile-row"></div>
+
+      <!-- Hacker stamps (look like packaging certification stamps) -->
+      <div class="back-stamps-row">
+        <span class="h-stamp">BUILT IN GOA</span>
+        <span class="h-stamp red">100% SHIPPED</span>
+        <span class="h-stamp blue">GIT PUSH ✓</span>
+      </div>
+
+      <!-- INGREDIENTS -->
+      <div class="back-section-label">INGREDIENTS (PER BUILDER)</div>
+      <table class="ing-table">
+        <tr>
+          <!-- [STACK] — first entry mirrors the front -->
+          <td>REACT / TYPESCRIPT / AI</td>
+          <td><div class="bar-track"><div class="bar-fill" style="width:62%"></div></div></td>
+          <td>62%</td>
+        </tr>
+        <tr>
+          <td>CONTROLLED CHAOS</td>
+          <td><div class="bar-track"><div class="bar-fill p" style="width:18%"></div></div></td>
+          <td>18%</td>
+        </tr>
+        <tr>
+          <td>BLACK COFFEE (ARABICA)</td>
+          <td><div class="bar-track"><div class="bar-fill y" style="width:10%"></div></div></td>
+          <td>10%</td>
+        </tr>
+        <tr>
+          <td>GOA SUNLIGHT (UV-GRADE)</td>
+          <td><div class="bar-track"><div class="bar-fill g" style="width:7%"></div></div></td>
+          <td>7%</td>
+        </tr>
+        <tr>
+          <td>QUESTIONABLE IDEAS (TRACE)</td>
+          <td><div class="bar-track"><div class="bar-fill b" style="width:3%"></div></div></td>
+          <td>3%</td>
+        </tr>
+      </table>
+
+      <!-- Tile border row -->
+      <div class="back-tile-row"></div>
+
+      <!-- DIRECTIONS -->
+      <div class="back-section-label">DIRECTIONS FOR USE</div>
+      <ul class="directions">
+        <li>Deploy to production at 3AM. No exceptions. No mercy.</li>
+        <li>Pair with strong chai. Replace dinner with one more sprint.</li>
+        <li>If stuck: blame Wi-Fi. Blame humidity. Ship anyway.</li>
+        <li>In case of BUILD FAILED — see JUGAAD manual, appendix D.</li>
+        <li>Valid only: Arambol Beach, Goa · Oct 28–31, 2026.</li>
+      </ul>
+
+      <!-- CAUTION -->
+      <div class="back-warning">
+        <div class="back-warning-text">
+          MAY CAUSE: Involuntary side projects, 3AM deployments, excessive API burn,
+          unsolicited opinions on tech stacks, tropical dehydration, sand in the keyboard,
+          and uncontrollable urge to rewrite everything in TypeScript. Keep away from
+          sleep schedules, reasonable deadlines, and anyone who says "let's not ship this yet."
+        </div>
+      </div>
+
+      <!-- MFG DETAILS -->
+      <div class="back-mfg">
+        <div class="back-mfg-text">
+          <!-- [NAME_FIRST] [NAME_LAST] -->
+          FOR: SRISHTI DUGGAL<br>
+          <!-- [ALIAS] -->
+          ALIAS: THE PIXEL ALCHEMIST<br>
+          MFG. AT: HACKER HOUSE, GOA, INDIA<br>
+          MFG. DATE: OCTOBER 2026<br>
+          BEST BEFORE: HEAT DEATH OF UNIVERSE<br>
+          <!-- [CERTIFIER] -->
+          CERTIFIED BY: @247PMSTUDIO
+        </div>
+        <div class="back-mfg-hindi">गोवा</div>
+      </div>
+
+      <!-- BARCODE -->
+      <div class="back-barcode">
+        <div class="back-bars">
+          <div class="bbar"></div><div class="bbar w"></div><div class="bbar"></div><div class="bbar m"></div><div class="bbar w"></div>
+          <div class="bbar"></div><div class="bbar"></div><div class="bbar g"></div><div class="bbar m"></div><div class="bbar w"></div>
+          <div class="bbar"></div><div class="bbar m"></div><div class="bbar w"></div><div class="bbar"></div><div class="bbar g"></div>
+          <div class="bbar"></div><div class="bbar m"></div><div class="bbar"></div><div class="bbar g"></div><div class="bbar w"></div>
+          <div class="bbar"></div><div class="bbar"></div><div class="bbar m"></div><div class="bbar g"></div><div class="bbar"></div>
+          <div class="bbar w"></div><div class="bbar"></div><div class="bbar m"></div><div class="bbar"></div><div class="bbar w"></div>
+          <div class="bbar"></div><div class="bbar g"></div><div class="bbar"></div><div class="bbar m"></div><div class="bbar w"></div>
+          <div class="bbar"></div><div class="bbar"></div><div class="bbar m"></div><div class="bbar g"></div><div class="bbar"></div>
+        </div>
+        <!-- [NAME_LAST] [SERIAL] -->
+        <div class="back-barnum">HH-GOA-2026-247-DUGGAL</div>
+      </div>
+
+    </div><!-- /back-body -->
+
+    <div class="back-bot-stripe"></div>
+  </div><!-- /card-back -->
+</div>
+
+<div style="height:60px;"></div>
+</body>
+</html>

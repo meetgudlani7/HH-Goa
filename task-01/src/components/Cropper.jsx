@@ -1,11 +1,26 @@
 import React, { useState, useRef, useCallback, useEffect, lazy, Suspense } from 'react';
-import { getCroppedImg } from '../utils/canvasHelpers';
+import { getCroppedImg } from '../utils/imageUtils';
 
 const EasyCrop = lazy(() => import('react-easy-crop'));
 
 /**
+ * Aspect ratio for the crop - 3:4 portrait
+ */
+const aspectRatio = 3 / 4;
+
+/**
+ * react-easy-crop's own `objectFit="contain"` mode already guarantees the
+ * whole photo is visible at zoom=1 (it fits the image inside the crop area
+ * itself, independent of the image's own aspect ratio) — no custom minZoom
+ * math is needed, and a hand-rolled one here previously fought that default
+ * and produced badly over-zoomed starting crops for some real-world photos
+ * (e.g. ones with EXIF orientation, which synthetic test images don't have).
+ */
+const MIN_ZOOM = 1;
+
+/**
  * Cropper Component - Phase 2 Implementation (Fixed)
- * 
+ *
  * Features:
  * - react-easy-crop integration with 3:4 aspect ratio (portrait)
  * - Zoom slider control
@@ -23,15 +38,9 @@ export const Cropper = ({ setStep, originalBlob, setCroppedImageURL }) => {
   const [imageSrc, setImageSrc] = useState(null);
   const [error, setError] = useState(null);
   const [mediaDimensions, setMediaDimensions] = useState(null);
-  const [fileInfo, setFileInfo] = useState(null);
 
   const cropperContainerRef = useRef(null);
   const easyCropRef = useRef(null);
-
-  /**
-   * Aspect ratio for the crop - 3:4 portrait
-   */
-  const aspectRatio = 3 / 4;
 
   /**
    * Load the image from originalBlob
@@ -39,16 +48,13 @@ export const Cropper = ({ setStep, originalBlob, setCroppedImageURL }) => {
   useEffect(() => {
     if (originalBlob?.objectURL) {
       setImageSrc(originalBlob.objectURL);
-      // Store file info for display
-      setFileInfo({
-        name: originalBlob.fileName || 'photo.jpg',
-        size: formatFileSize(originalBlob.fileSize || 0)
-      });
     }
   }, [originalBlob]);
 
   /**
-   * Handle media loaded - get natural dimensions
+   * Handle media loaded - just capture natural dimensions for the preview
+   * thumbnail's object-position math. Zoom starts at MIN_ZOOM (1) and
+   * `objectFit="contain"` on EasyCrop takes care of showing the whole photo.
    */
   const onMediaLoaded = useCallback((mediaSize) => {
     setMediaDimensions({
@@ -56,27 +62,6 @@ export const Cropper = ({ setStep, originalBlob, setCroppedImageURL }) => {
       naturalHeight: mediaSize.naturalHeight,
     });
   }, []);
-
-  /**
-   * Calculate minimum zoom for the cropper
-   */
-  const calculateMinZoom = useCallback((naturalWidth, naturalHeight) => {
-    const mediaAspect = naturalWidth / naturalHeight;
-    
-    if (mediaAspect > aspectRatio) {
-      return naturalHeight / (naturalWidth / aspectRatio);
-    } else {
-      return naturalWidth / (naturalHeight * aspectRatio);
-    }
-  }, []);
-
-  /**
-   * Get the minimum zoom value
-   */
-  const getMinZoom = useCallback(() => {
-    if (!mediaDimensions) return 1;
-    return calculateMinZoom(mediaDimensions.naturalWidth, mediaDimensions.naturalHeight);
-  }, [mediaDimensions, calculateMinZoom]);
 
   /**
    * Handle crop completion - store the pixel coordinates
@@ -122,15 +107,10 @@ export const Cropper = ({ setStep, originalBlob, setCroppedImageURL }) => {
         });
       }
 
-      const { blob, objectURL } = await getCroppedImg(
-        image,
-        croppedAreaPixels,
-        rotation
-      );
+      const { objectURL } = await getCroppedImg(image, croppedAreaPixels, rotation);
 
       setCroppedImageURL(objectURL);
       setStep('form');
-
     } catch (err) {
       console.error('Failed to crop image:', err);
       setError('Failed to process your crop. Please try again.');
@@ -160,22 +140,24 @@ export const Cropper = ({ setStep, originalBlob, setCroppedImageURL }) => {
     if (!croppedAreaPixels || !mediaDimensions) {
       return '50% 50%';
     }
-    
+
     const centerX = croppedAreaPixels.x + croppedAreaPixels.width / 2;
     const centerY = croppedAreaPixels.y + croppedAreaPixels.height / 2;
     const percentX = (centerX / mediaDimensions.naturalWidth) * 100;
     const percentY = (centerY / mediaDimensions.naturalHeight) * 100;
-    
+
     return `${percentX}% ${percentY}%`;
   }, [croppedAreaPixels, mediaDimensions]);
 
   return (
-    <div style={{ 
-      background: 'var(--cream)', 
-      border: '4px solid var(--ink)'
-    }}>
+    <div
+      style={{
+        background: 'var(--cream)',
+        border: '4px solid var(--ink)',
+      }}
+    >
       <div className="border-strip-top"></div>
-      
+
       <div className="windowbar">
         <div className="windowbar-title">⬛ APNI PHOTO FRAME KAR — STEP 1 OF 3</div>
         <div className="wbtns">
@@ -187,63 +169,76 @@ export const Cropper = ({ setStep, originalBlob, setCroppedImageURL }) => {
 
       <div style={{ padding: '18px' }}>
         {/* Eyebrow */}
-        <div style={{ 
-          fontFamily: 'Space Mono, monospace', 
-          fontSize: '8px', 
-          letterSpacing: '.2em', 
-          color: 'var(--fade)', 
-          textTransform: 'uppercase',
-          marginBottom: '4px'
-        }}>
+        <div
+          style={{
+            fontFamily: 'Space Mono, monospace',
+            fontSize: '8px',
+            letterSpacing: '.2em',
+            color: 'var(--fade)',
+            textTransform: 'uppercase',
+            marginBottom: '4px',
+          }}
+        >
           // FRAME YOUR FACE · PORTRAIT CROP LOCKED
         </div>
-        
+
         {/* Heading */}
-        <h2 style={{ 
-          fontFamily: 'Unbounded, sans-serif', 
-          fontWeight: '900',
-          fontSize: '22px', 
-          color: 'var(--ink)', 
-          textTransform: 'uppercase',
-          lineHeight: '1',
-          marginBottom: '16px',
-          borderBottom: '4px solid var(--ink)',
-          paddingBottom: '10px'
-        }}>
-          KAISA<br />
-          DIKHNA<br />
+        <h2
+          style={{
+            fontFamily: 'Unbounded, sans-serif',
+            fontWeight: '900',
+            fontSize: '22px',
+            color: 'var(--ink)',
+            textTransform: 'uppercase',
+            lineHeight: '1',
+            marginBottom: '16px',
+            borderBottom: '4px solid var(--ink)',
+            paddingBottom: '10px',
+          }}
+        >
+          KAISA
+          <br />
+          DIKHNA
+          <br />
           HAI?
         </h2>
 
         {/* Main cropper area */}
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: '1fr', 
-          gap: '16px',
-          alignItems: 'start'
-        }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr',
+            gap: '16px',
+            alignItems: 'start',
+          }}
+        >
           {/* The actual cropper */}
-          <div 
-            className="cropper-wrapper" 
+          <div
+            className="cropper-wrapper"
             ref={cropperContainerRef}
-            style={{ 
-              width: '100%', 
-              height: '350px',
-              minHeight: '300px',
+            style={{
+              width: '100%',
+              maxWidth: '360px',
+              aspectRatio: `${aspectRatio}`,
+              margin: '0 auto',
               background: 'var(--cream)',
               border: '4px solid var(--ink)',
               position: 'relative',
-              overflow: 'hidden'
+              overflow: 'hidden',
             }}
           >
-            <Suspense fallback={<div style={{ padding: '20px', textAlign: 'center' }}>Loading cropper...</div>}>
+            <Suspense
+              fallback={
+                <div style={{ padding: '20px', textAlign: 'center' }}>Loading cropper...</div>
+              }
+            >
               <EasyCrop
                 ref={easyCropRef}
                 image={imageSrc}
                 crop={crop}
                 zoom={zoom}
                 aspect={aspectRatio}
-                minZoom={getMinZoom()}
+                minZoom={MIN_ZOOM}
                 maxZoom={3}
                 zoomSpeed={0.5}
                 onCropChange={setCrop}
@@ -253,7 +248,6 @@ export const Cropper = ({ setStep, originalBlob, setCroppedImageURL }) => {
                 rotation={rotation}
                 objectFit="contain"
                 showGrid={false}
-                disableAutomaticStylesInjection={true}
                 classes={{
                   containerClassName: 'react-easy-crop-container',
                   cropAreaClassName: 'react-easy-crop-crop-area',
@@ -279,35 +273,41 @@ export const Cropper = ({ setStep, originalBlob, setCroppedImageURL }) => {
           </div>
 
           {/* Preview */}
-          <div style={{ 
-            display: 'flex', 
-            flexDirection: 'column', 
-            alignItems: 'center', 
-            gap: '8px',
-            padding: '16px',
-            background: 'var(--cream)',
-            border: '1px solid var(--ink)',
-            order: -1
-          }}>
-            <h3 style={{ 
-              fontFamily: 'Teko, sans-serif', 
-              fontSize: '13px', 
-              fontWeight: '600',
-              color: 'var(--ink)',
-              margin: '0',
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px'
-            }}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '16px',
+              background: 'var(--cream)',
+              border: '1px solid var(--ink)',
+              order: -1,
+            }}
+          >
+            <h3
+              style={{
+                fontFamily: 'Teko, sans-serif',
+                fontSize: '13px',
+                fontWeight: '600',
+                color: 'var(--ink)',
+                margin: '0',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+              }}
+            >
               PREVIEW
             </h3>
-            <div style={{ 
-              width: '80px', 
-              height: '106.67px',
-              position: 'relative',
-              overflow: 'hidden',
-              background: 'var(--paper)',
-              border: '1px solid var(--ink)',
-            }}>
+            <div
+              style={{
+                width: '80px',
+                height: '106.67px',
+                position: 'relative',
+                overflow: 'hidden',
+                background: 'var(--paper)',
+                border: '1px solid var(--ink)',
+              }}
+            >
               {croppedAreaPixels && imageSrc && (
                 <img
                   src={imageSrc}
@@ -327,39 +327,45 @@ export const Cropper = ({ setStep, originalBlob, setCroppedImageURL }) => {
                 />
               )}
             </div>
-            <p style={{ 
-              marginTop: '8px', 
-              fontSize: '11px', 
-              color: 'var(--fade)',
-              fontFamily: 'Space Mono, monospace'
-            }}>
+            <p
+              style={{
+                marginTop: '8px',
+                fontSize: '11px',
+                color: 'var(--fade)',
+                fontFamily: 'Space Mono, monospace',
+              }}
+            >
               Photo area (260×320)
             </p>
           </div>
 
           {/* Controls */}
-          <div style={{ 
-            display: 'flex', 
-            flexDirection: 'column', 
-            gap: '16px', 
-            padding: '16px', 
-            background: 'var(--cream)',
-            border: '1px solid var(--ink)'
-          }}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '16px',
+              padding: '16px',
+              background: 'var(--cream)',
+              border: '1px solid var(--ink)',
+            }}
+          >
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <label style={{ 
-                fontFamily: 'Teko, sans-serif', 
-                fontSize: '13px', 
-                fontWeight: '600',
-                color: 'var(--ink)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px'
-              }}>
+              <label
+                style={{
+                  fontFamily: 'Teko, sans-serif',
+                  fontSize: '13px',
+                  fontWeight: '600',
+                  color: 'var(--ink)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                }}
+              >
                 Zoom: {formatZoom(zoom)}
               </label>
               <input
                 type="range"
-                min={getMinZoom()}
+                min={MIN_ZOOM}
                 max={3}
                 step={0.1}
                 value={zoom}
@@ -371,19 +377,21 @@ export const Cropper = ({ setStep, originalBlob, setCroppedImageURL }) => {
                   background: 'var(--paper)',
                   outline: 'none',
                   cursor: 'pointer',
-                  borderBottom: '3px solid var(--ink)'
+                  borderBottom: '3px solid var(--ink)',
                 }}
                 disabled={isProcessing}
               />
             </div>
 
-            <div style={{ 
-              display: 'flex', 
-              gap: '12px', 
-              justifyContent: 'center',
-              flexWrap: 'wrap'
-            }}>
-              <button 
+            <div
+              style={{
+                display: 'flex',
+                gap: '12px',
+                justifyContent: 'center',
+                flexWrap: 'wrap',
+              }}
+            >
+              <button
                 className="tag"
                 onClick={handleRotate}
                 disabled={isProcessing}
@@ -391,16 +399,12 @@ export const Cropper = ({ setStep, originalBlob, setCroppedImageURL }) => {
               >
                 ROTATE
               </button>
-              
-              <button 
-                className="tag"
-                onClick={() => setStep('upload')}
-                disabled={isProcessing}
-              >
+
+              <button className="tag" onClick={() => setStep('upload')} disabled={isProcessing}>
                 BACK
               </button>
-              
-              <button 
+
+              <button
                 className="generate-btn"
                 onClick={handleCropConfirm}
                 disabled={isProcessing || !croppedAreaPixels}
@@ -412,13 +416,15 @@ export const Cropper = ({ setStep, originalBlob, setCroppedImageURL }) => {
         </div>
 
         {/* Mobile tip */}
-        <div style={{ 
-          textAlign: 'center', 
-          marginTop: '12px',
-          color: 'var(--fade)',
-          fontSize: '11px',
-          fontFamily: 'Space Mono, monospace'
-        }}>
+        <div
+          style={{
+            textAlign: 'center',
+            marginTop: '12px',
+            color: 'var(--fade)',
+            fontSize: '11px',
+            fontFamily: 'Space Mono, monospace',
+          }}
+        >
           Tip: Pinch to zoom, drag to reposition
         </div>
       </div>
@@ -427,30 +433,32 @@ export const Cropper = ({ setStep, originalBlob, setCroppedImageURL }) => {
 
       {/* Error state */}
       {error && (
-        <div style={{ 
-          background: 'rgba(200,0,30,.15)', 
-          border: '1px solid var(--red)', 
-          padding: '12px', 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'center', 
-          gap: '8px', 
-          color: 'var(--red)', 
-          fontSize: '14px', 
-          textAlign: 'center',
-          marginTop: '12px'
-        }}>
+        <div
+          style={{
+            background: 'rgba(200,0,30,.15)',
+            border: '1px solid var(--red)',
+            padding: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            color: 'var(--red)',
+            fontSize: '14px',
+            textAlign: 'center',
+            marginTop: '12px',
+          }}
+        >
           <span>{error}</span>
-          <button 
+          <button
             onClick={handleDismissError}
-            style={{ 
-              background: 'transparent', 
-              border: '1px solid var(--red)', 
-              color: 'var(--red)', 
-              padding: '4px 12px', 
-              fontSize: '12px', 
-              cursor: 'pointer', 
-              fontFamily: 'Space Mono, monospace'
+            style={{
+              background: 'transparent',
+              border: '1px solid var(--red)',
+              color: 'var(--red)',
+              padding: '4px 12px',
+              fontSize: '12px',
+              cursor: 'pointer',
+              fontFamily: 'Space Mono, monospace',
             }}
           >
             Dismiss
@@ -459,15 +467,6 @@ export const Cropper = ({ setStep, originalBlob, setCroppedImageURL }) => {
       )}
     </div>
   );
-};
-
-/**
- * Format file size in human-readable format
- */
-const formatFileSize = (bytes) => {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 };
 
 export default Cropper;

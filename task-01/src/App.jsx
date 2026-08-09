@@ -9,7 +9,6 @@ import { ScanningScreen } from './components/ScanningScreen';
 import { ArtifactFront } from './components/ArtifactFront';
 import { ArtifactBack } from './components/ArtifactBack';
 import { PfpScreen } from './components/PfpScreen';
-import { useCardRenderer } from './hooks/useCardRenderer';
 import { useImageProcessor } from './hooks/useImageProcessor';
 
 export const App = () => {
@@ -21,26 +20,17 @@ export const App = () => {
     role: 'Builder',
     builderTitle: '',
     city: '',
-    xHandle: ''
+    xHandle: '',
   });
-  const [cardDataURL, setCardDataURL] = useState(null);
+  // Only the setter is used — ArtifactFront pre-renders the front card as a
+  // validation/warm-up step and reports back via this, but nothing reads
+  // the resulting data URL anymore now that ResultScreen renders its own
+  // fresh combined front+back image on demand.
+  const [, setCardDataURL] = useState(null);
+  const [builderSerial] = useState(() => String(Math.floor(Math.random() * 900) + 100));
 
   const { processImage, originalBlob } = useImageProcessor();
-  const { renderCard, getCardDataURL } = useCardRenderer();
-
-  const handleScanComplete = useCallback(async () => {
-    try {
-      // Render the card during scanning phase
-      const canvas = await renderCard(formData, croppedImageURL);
-      const dataURL = canvas.toDataURL('image/png');
-      setCardDataURL(dataURL);
-      setStep('artifact-front');
-    } catch (err) {
-      console.error('Failed to render card during scanning:', err);
-      // Proceed to artifact-front anyway (may show error state)
-      setStep('artifact-front');
-    }
-  }, [formData, croppedImageURL, renderCard, setStep]);
+  const handleScanComplete = useCallback(() => setStep('artifact-front'), [setStep]);
 
   const handleReset = useCallback(() => {
     if (croppedImageURL) {
@@ -57,93 +47,64 @@ export const App = () => {
       role: 'Builder',
       builderTitle: '',
       city: '',
-      xHandle: ''
+      xHandle: '',
     });
     setCardDataURL(null);
   }, [croppedImageURL, originalBlob]);
 
   useEffect(() => {
+    // NOTE: only depend on the URLs actually being revoked here. Adding
+    // cardDataURL (or anything else) to this array would re-run the cleanup
+    // — and revoke the still-in-use croppedImageURL/originalBlob URLs —
+    // every time cardDataURL changes, e.g. right after the card finishes
+    // rendering. That's what caused the front photo to go blank/broken the
+    // moment you flipped to the back and came back.
     return () => {
       if (croppedImageURL) {
         URL.revokeObjectURL(croppedImageURL);
-      }
-      if (cardDataURL) {
-        URL.revokeObjectURL(cardDataURL);
       }
       if (originalBlob?.objectURL) {
         URL.revokeObjectURL(originalBlob.objectURL);
       }
     };
-  }, [croppedImageURL, cardDataURL, originalBlob]);
+  }, [croppedImageURL, originalBlob]);
 
   const screens = {
-    'upload': (
-      <Uploader 
-        setStep={setStep} 
-        processImage={processImage} 
-        setCroppedImageURL={setCroppedImageURL} 
+    upload: <Uploader setStep={setStep} processImage={processImage} />,
+    crop: (
+      <Cropper
+        setStep={setStep}
+        originalBlob={originalBlob}
+        setCroppedImageURL={setCroppedImageURL}
       />
     ),
-    'crop': (
-      <Cropper 
-        setStep={setStep} 
-        originalBlob={originalBlob} 
-        setCroppedImageURL={setCroppedImageURL} 
-      />
-    ),
-    'form': (
-      <FormFields 
-        setStep={setStep} 
-        formData={formData} 
-        setFormData={setFormData} 
-      />
-    ),
-    'scanning': (
-      <ScanningScreen 
-        setStep={setStep} 
-        formData={formData} 
-        croppedImageURL={croppedImageURL}
-        renderCard={renderCard} 
-        setCardDataURL={setCardDataURL}
-        onComplete={handleScanComplete} 
-      />
+    form: <FormFields setStep={setStep} formData={formData} setFormData={setFormData} />,
+    scanning: (
+      <ScanningScreen setStep={setStep} formData={formData} onComplete={handleScanComplete} />
     ),
     'artifact-front': (
-      <ArtifactFront 
-        setStep={setStep} 
-        cardDataURL={cardDataURL} 
-      />
-    ),
-    'artifact-back': (
-      <ArtifactBack 
-        setStep={setStep} 
-        formData={formData} 
-      />
-    ),
-    'result': (
-      <ResultScreen 
-        setStep={setStep} 
-        formData={formData} 
-        getDataURL={getCardDataURL} 
+      <ArtifactFront
+        setStep={setStep}
+        formData={formData}
         croppedImageURL={croppedImageURL}
+        serial={builderSerial}
+        onCardReady={setCardDataURL}
+      />
+    ),
+    'artifact-back': <ArtifactBack setStep={setStep} formData={formData} serial={builderSerial} />,
+    result: (
+      <ResultScreen
+        setStep={setStep}
+        formData={formData}
+        croppedImageURL={croppedImageURL}
+        serial={builderSerial}
         onReset={handleReset}
       />
     ),
-    'pfp': (
-      <PfpScreen 
-        setStep={setStep} 
-        formData={formData} 
-        croppedImageURL={croppedImageURL}
-        cardDataURL={cardDataURL}
-      />
-    ),
+    pfp: <PfpScreen setStep={setStep} formData={formData} croppedImageURL={croppedImageURL} />,
   };
 
-  return (
-    <div className="app-root">
-      {screens[step]}
-    </div>
-  );
+  return <div className="app-root">{screens[step]}</div>;
 };
 
 export default App;

@@ -2,5 +2,3 @@
 export * as imageUtils from './imageUtils';
 export * as canvasHelpers from './canvasHelpers';
 export * from './titlesList';
-
-

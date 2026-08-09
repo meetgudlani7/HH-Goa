@@ -1,48 +1,78 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import CardFront from './CardFront';
+import { useCardRenderer } from '../hooks/useCardRenderer';
 
-export const ArtifactFront = ({ setStep, cardDataURL }) => {
+export const ArtifactFront = ({ setStep, formData, croppedImageURL, serial, onCardReady }) => {
+  const cardRef = useRef(null);
+  const { renderFront } = useCardRenderer();
+  const [rendering, setRendering] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    const capture = async () => {
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 150));
+        const dataURL = await renderFront(cardRef);
+        if (active) onCardReady(dataURL);
+      } catch (error) {
+        console.error('Card render failed:', error);
+      } finally {
+        if (active) setRendering(false);
+      }
+    };
+    capture();
+    return () => {
+      active = false;
+    };
+  }, [onCardReady, renderFront]);
+
   return (
-    <div style={{ background: '#111', padding: '20px 12px' }}>
-      <div className="screen-label">YOUR BUILDER ARTIFACT</div>
-      
-      {cardDataURL ? (
-        <img
-          src={cardDataURL}
-          alt="Your HH Goa Builder Artifact"
-          style={{ 
-            width: '100%', 
-            maxWidth: '540px', 
-            display: 'block', 
-            margin: '0 auto',
-            border: '4px solid var(--ink)', 
-            boxShadow: '8px 8px 0 var(--ink)' 
-          }}
+    <div style={{ background: '#0e0a06', padding: '28px 16px' }}>
+      <div className="screen-label">04 · YOUR BUILDER ARTIFACT · FRONT</div>
+      <div className="card-display-wrapper">
+        <CardFront
+          formData={formData}
+          croppedImageURL={croppedImageURL}
+          serial={serial}
+          cardRef={cardRef}
         />
-      ) : (
-        <div style={{ 
-          width: '100%', 
-          aspectRatio: '9/16', 
-          background: 'var(--cream)', 
-          border: '4px solid var(--ink)',
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'center',
-          color: 'var(--ink)',
-          fontFamily: 'Space Mono, monospace'
-        }}>
-          Rendering your artifact...
+      </div>
+      {rendering && (
+        <div
+          style={{
+            textAlign: 'center',
+            marginTop: '12px',
+            fontFamily: 'Space Mono',
+            fontSize: '8px',
+            color: '#888',
+            letterSpacing: '.15em',
+          }}
+        >
+          // GENERATING HIGH-RES PNG…
         </div>
       )}
-
-      <div style={{ display: 'flex', gap: '10px', marginTop: '16px', justifyContent: 'center' }}>
-        <button 
-          className="act-btn primary" 
-          onClick={() => setStep('artifact-back')}
+      <div
+        style={{
+          display: 'flex',
+          gap: '10px',
+          marginTop: '20px',
+          justifyContent: 'center',
+          flexWrap: 'wrap',
+        }}
+      >
+        <button
+          className="act-btn ghost"
+          style={{ color: 'var(--cream)', borderColor: 'var(--cream)' }}
+          onClick={() => setStep('form')}
         >
+          ← BACK
+        </button>
+        <button className="act-btn primary" onClick={() => setStep('artifact-back')}>
           FLIP → SEE BACK
         </button>
-        <button 
-          className="act-btn ghost" 
+        <button
+          className="act-btn ghost"
+          style={{ color: 'var(--cream)', borderColor: 'var(--cream)' }}
           onClick={() => setStep('result')}
         >
           SKIP TO DOWNLOAD

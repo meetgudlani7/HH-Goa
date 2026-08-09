@@ -89,6 +89,6 @@ In the `task-01` directory, you can run:
 - [X]  **Phase 2:** Crop & Framing UI
 - [X]  **Phase 3:** Form Fields & Builder Title Selection
 - [X]  **Phase 4:** HTML5 Canvas ID Card Rendering
-- [ ]  **Phase 5:** Reveal Animation & PNG Download
-- [ ]  **Phase 6:** Share to X (Twitter Web Intent)
-- [ ]  **Phase 7:** Mobile Polish & Safe Area Adjustments
+- [X]  **Phase 5:** Reveal Animation & PNG Download
+- [X]  **Phase 6:** Share to X (Twitter Web Intent)
+- [X]  **Phase 7:** Mobile Polish & Safe Area Adjustments
