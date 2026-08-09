@@ -195,7 +195,10 @@ body {
 ============================================ */
 .form-screen {
   background: var(--ink); border: 4px solid var(--cream);
-  position: relative; overflow: hidden;
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .form-poster-bg {
@@ -209,6 +212,8 @@ body {
 
 .form-body {
   padding: 28px 22px;
+  overflow-y: auto;
+  flex: 1;
 }
 
 .form-eyebrow {
@@ -858,4 +863,58 @@ body {
   font-family: 'Space Mono', monospace; font-size: 7px;
   color: var(--yellow); letter-spacing: .1em;
   text-align: center; z-index: 3;
+}
+
+/* ============================================
+   RESPONSIVE STYLES
+============================================ */
+@media (max-width: 480px) {
+  /* Landing screen */
+  .pbt-hacker { font-size: 90px; opacity: 0.08; }
+  .pbt-goa { font-size: 120px; opacity: 0.05; }
+  .pbt-2026 { font-size: 60px; opacity: 0.1; }
+  .menubar { display: none; }
+  .hero-flower-tr { width: 70px; height: 70px; }
+  .hero-flower-bl { width: 90px; height: 90px; }
+  .corner-orn { display: none; }
+  .poster-headline { font-size: 52px !important; }
+  
+  /* Form screen */
+  .form-heading-big { font-size: 36px; }
+  .field-inp { font-size: 22px; }
+  .tags-row { gap: 5px; }
+  .tag { font-size: 8px; padding: 4px 9px; }
+  .generate-btn { font-size: 13px; padding: 14px 10px; }
+  
+  /* Scan screen */
+  .scan-headline { font-size: 28px; }
+  .scan-bg-text { font-size: 120px; }
+  
+  /* Result screen */
+  .result-big { font-size: 32px; }
+  .act-btn { font-size: 11px; padding: 12px 10px; }
+  .result-mini-card { min-height: 120px; }
+  .rmc-name { font-size: 12px; }
+  .rmc-title { font-size: 11px; }
+  .rmc-stack { font-size: 6px; }
+  .rmc-badge { font-size: 6px; }
+  
+  /* PFP screen */
+  .pfp-outer { width: 240px; height: 240px; }
+  .pfp-name { font-size: 18px; }
+  .pfp-title-bar { font-size: 6px; }
+  
+  /* Artifact screens */
+  .art-name-display { font-size: 32px; }
+  .art-title-text { font-size: 14px; }
+}
+
+/* Safe area insets for iPhone notch/Dynamic Island */
+.generate-btn, .act-btn, .tag {
+  padding-bottom: max(4px, env(safe-area-inset-bottom));
+}
+
+/* Ensure all buttons have minimum touch target size */
+.generate-btn, .act-btn, .tag {
+  min-height: 44px;
 }

@@ -1,11 +1,11 @@
 /**
- * Curated list of Builder Titles for HH Goa 2026
- * From the DesignDoc Section 9
+ * Curated list of Builder Titles for HH Goa 2026 V2
+ * From the V2 Implementation Doc
  */
 export const BUILDER_TITLES = [
+  "THE PIXEL ALCHEMIST",
   "VIBE ENGINEER",
   "FULL STACK GREMLIN",
-  "SHIP IT OR SKIP IT",
   "PROMPT WHISPERER",
   "API ABUSER",
   "SERIAL SIDE PROJECTER",
@@ -22,7 +22,11 @@ export const BUILDER_TITLES = [
   "MVP FACTORY",
   "GIT PUSH THERAPIST",
   "ZERO TO DEPLOYED",
-  "BUILDING IN PUBLIC"
+  "BUILDING IN PUBLIC",
+  "CHAOS AGENT CERTIFIED",
+  "JUGAAD ENGINEER",
+  "WILL SHIP FOR CHAI",
+  "404: SLEEP NOT FOUND"
 ];
 
 /**
