@@ -1,6 +1,11 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { BUILDER_TITLES } from '../utils/titlesList';
 
+/**
+ * FormFields Component - Phase 4 Implementation
+ * Screen 2: Builder Form
+ * Matches hh_goa_v2_upgraded.html Screen 2 exactly
+ */
 export const FormFields = ({ setStep, formData, setFormData }) => {
   const [builderTitleMode, setBuilderTitleMode] = useState('pick');
   const [errors, setErrors] = useState({});
@@ -177,7 +182,7 @@ export const FormFields = ({ setStep, formData, setFormData }) => {
           ))}
         </div>
 
-        <div className="back-pattern-row" style={{ margin: '14px 0' }}>
+        <div className="back-pattern-row">
           <div className="bp-diamond"></div><div className="bp-circle"></div>
           <div className="bp-diamond"></div><div className="bp-circle"></div>
           <div className="bp-diamond"></div><div className="bp-circle"></div>
@@ -245,13 +250,6 @@ export const FormFields = ({ setStep, formData, setFormData }) => {
         </button>
 
         {errors.builderTitle && <div className="field-error">{errors.builderTitle}</div>}
-
-        <div className="back-pattern-row" style={{ margin: '14px 0' }}>
-          <div className="bp-diamond"></div><div className="bp-circle"></div>
-          <div className="bp-diamond"></div><div className="bp-circle"></div>
-          <div className="bp-diamond"></div><div className="bp-circle"></div>
-          <div className="bp-diamond"></div>
-        </div>
 
         <button className="generate-btn" onClick={handleSubmit} disabled={!isFormValid() || isSubmitting}>
           JUGAAD KARO → GENERATE MY ARTIFACT

@@ -30,18 +30,24 @@ export const App = () => {
 
   const handleScanComplete = useCallback(async () => {
     try {
-      const url = await renderCard(formData, croppedImageURL);
-      setCardDataURL(url);
+      // Render the card during scanning phase
+      const canvas = await renderCard(formData, croppedImageURL);
+      const dataURL = canvas.toDataURL('image/png');
+      setCardDataURL(dataURL);
       setStep('artifact-front');
     } catch (err) {
       console.error('Failed to render card during scanning:', err);
-      setStep('result');
+      // Proceed to artifact-front anyway (may show error state)
+      setStep('artifact-front');
     }
-  }, [formData, croppedImageURL, renderCard]);
+  }, [formData, croppedImageURL, renderCard, setStep]);
 
   const handleReset = useCallback(() => {
     if (croppedImageURL) {
       URL.revokeObjectURL(croppedImageURL);
+    }
+    if (originalBlob?.objectURL) {
+      URL.revokeObjectURL(originalBlob.objectURL);
     }
     setStep('upload');
     setCroppedImageURL(null);
@@ -54,7 +60,7 @@ export const App = () => {
       xHandle: ''
     });
     setCardDataURL(null);
-  }, [croppedImageURL]);
+  }, [croppedImageURL, originalBlob]);
 
   useEffect(() => {
     return () => {
@@ -64,8 +70,11 @@ export const App = () => {
       if (cardDataURL) {
         URL.revokeObjectURL(cardDataURL);
       }
+      if (originalBlob?.objectURL) {
+        URL.revokeObjectURL(originalBlob.objectURL);
+      }
     };
-  }, [croppedImageURL, cardDataURL]);
+  }, [croppedImageURL, cardDataURL, originalBlob]);
 
   const screens = {
     'upload': (
@@ -93,6 +102,9 @@ export const App = () => {
       <ScanningScreen 
         setStep={setStep} 
         formData={formData} 
+        croppedImageURL={croppedImageURL}
+        renderCard={renderCard} 
+        setCardDataURL={setCardDataURL}
         onComplete={handleScanComplete} 
       />
     ),
@@ -121,7 +133,8 @@ export const App = () => {
       <PfpScreen 
         setStep={setStep} 
         formData={formData} 
-        croppedImageURL={croppedImageURL} 
+        croppedImageURL={croppedImageURL}
+        cardDataURL={cardDataURL}
       />
     ),
   };

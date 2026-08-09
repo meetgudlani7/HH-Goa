@@ -60,7 +60,8 @@ export const Uploader = ({ setStep, processImage, setCroppedImageURL }) => {
     try {
       const processedData = await processImage(file);
 
-      setCroppedImageURL(processedData.objectURL);
+      // Don't set croppedImageURL here - this is the original uncropped image
+      // The cropped version will be set in the Cropper component
       setFileInfo(null);
       setStep('crop');
 

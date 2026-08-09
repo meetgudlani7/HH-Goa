@@ -1,7 +1,232 @@
-import React from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 
-export const PfpScreen = ({ setStep, formData, croppedImageURL }) => {
+export const PfpScreen = ({ setStep, formData, croppedImageURL, cardDataURL }) => {
   const firstName = formData?.name?.split(' ')[0] || formData?.name || 'BUILDER';
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [pfpRoundURL, setPfpRoundURL] = useState(null);
+  const [pfpSquareURL, setPfpSquareURL] = useState(null);
+  const canvasRef = useRef(null);
+
+  // Generate PFP images on mount
+  React.useEffect(() => {
+    const generatePFPImages = async () => {
+      if (croppedImageURL) {
+        const roundURL = await generateRoundPFP();
+        const squareURL = await generateSquarePFP();
+        setPfpRoundURL(roundURL);
+        setPfpSquareURL(squareURL);
+      }
+    };
+    generatePFPImages();
+  }, [croppedImageURL, formData]);
+
+  const generateRoundPFP = useCallback(async () => {
+    if (!croppedImageURL) return null;
+    
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        if (!ctx) {
+          resolve(null);
+          return;
+        }
+        
+        // Canvas size for round PFP
+        const size = 500;
+        canvas.width = size;
+        canvas.height = size;
+        
+        // Yellow top half background
+        ctx.fillStyle = '#F0C229';
+        ctx.beginPath();
+        ctx.rect(0, 0, size, size / 2);
+        ctx.fill();
+        
+        // Red bottom half
+        ctx.fillStyle = '#C8001E';
+        ctx.beginPath();
+        ctx.rect(0, size / 2, size, size / 2);
+        ctx.fill();
+        
+        // Decorative inner border
+        ctx.strokeStyle = 'rgba(240,194,41,.4)';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(size / 2, size / 2, size / 2 - 6, 0, 2 * Math.PI);
+        ctx.stroke();
+        
+        // Draw photo as circle
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(size / 2, size / 2, size / 2 - 12, 0, 2 * Math.PI);
+        ctx.clip();
+        
+        const imgAspect = img.width / img.height;
+        const drawSize = (size / 2 - 12) * 2;
+        
+        if (imgAspect > 1) {
+          // Image is wider - fit to width
+          ctx.drawImage(img, size / 2 - drawSize / 2, size / 2 - drawSize / 2, drawSize, drawSize);
+        } else {
+          // Image is taller - fit to height
+          ctx.drawImage(img, size / 2 - drawSize / 2, size / 2 - drawSize / 2, drawSize, drawSize);
+        }
+        ctx.restore();
+        
+        // HH GOA label at top
+        ctx.font = '7px Space Mono';
+        ctx.fillStyle = '#C8001E';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        ctx.fillText('HH GOA 2026', size / 2, 8);
+        
+        // Name
+        ctx.font = '22px Unbounded';
+        ctx.fillStyle = '#F5EDD8';
+        ctx.textBaseline = 'bottom';
+        ctx.fillText(firstName.toUpperCase(), size / 2, size - 20);
+        
+        // Bottom title bar
+        ctx.fillStyle = '#1A1008';
+        ctx.beginPath();
+        ctx.rect(0, size - 16, size, 16);
+        ctx.fill();
+        
+        ctx.font = '7px Space Mono';
+        ctx.fillStyle = '#F0C229';
+        ctx.textBaseline = 'middle';
+        ctx.fillText((formData?.builderTitle || 'BUILDER').toUpperCase(), size / 2, size - 8);
+        
+        const url = canvas.toDataURL('image/png');
+        canvasRef.current = canvas;
+        resolve(url);
+      };
+      img.onerror = () => resolve(null);
+      img.src = croppedImageURL;
+    });
+  }, [croppedImageURL, firstName, formData]);
+
+  const generateSquarePFP = useCallback(async () => {
+    if (!croppedImageURL) return null;
+    
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        if (!ctx) {
+          resolve(null);
+          return;
+        }
+        
+        const size = 500;
+        canvas.width = size;
+        canvas.height = size;
+        
+        // Cream background
+        ctx.fillStyle = '#F5EDD8';
+        ctx.fillRect(0, 0, size, size);
+        
+        // Ink border
+        ctx.strokeStyle = '#1A1008';
+        ctx.lineWidth = 4;
+        ctx.strokeRect(0, 0, size, size);
+        
+        // Tricolor top stripe
+        ctx.fillStyle = '#C8001E';
+        ctx.fillRect(0, 0, size, 6);
+        ctx.fillStyle = '#F0C229';
+        ctx.fillRect(size / 3, 0, size / 3, 6);
+        ctx.fillStyle = '#2A7A4B';
+        ctx.fillRect(size * 2 / 3, 0, size / 3, 6);
+        
+        // Yellow header area
+        ctx.fillStyle = '#F0C229';
+        ctx.fillRect(0, 6, size, 80);
+        
+        // Draw photo
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(size / 2, 50, 60, 0, 2 * Math.PI);
+        ctx.clip();
+        
+        const imgAspect = img.width / img.height;
+        const drawSize = 120;
+        
+        ctx.drawImage(img, size / 2 - 60, 50 - 60, 120, 120);
+        ctx.restore();
+        
+        // Ink border around photo
+        ctx.strokeStyle = '#1A1008';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(size / 2, 50, 62, 0, 2 * Math.PI);
+        ctx.stroke();
+        
+        // Name
+        ctx.font = '16px Unbounded';
+        ctx.fillStyle = '#C8001E';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        
+        const fullName = formData?.name || 'BUILDER';
+        const nameParts = fullName.toUpperCase().split(' ');
+        if (nameParts.length > 1) {
+          ctx.fillText(nameParts[0], size / 2, 150);
+          ctx.fillText(nameParts.slice(1).join(' '), size / 2, 170);
+        } else {
+          ctx.fillText(nameParts[0], size / 2, 160);
+        }
+        
+        // Builder title
+        ctx.font = '6px Space Mono';
+        ctx.fillStyle = '#B8A882';
+        ctx.textBaseline = 'middle';
+        ctx.fillText((formData?.builderTitle || 'BUILDER').toUpperCase(), size / 2, 185);
+        
+        // Tricolor bottom stripe
+        ctx.fillStyle = '#2A7A4B';
+        ctx.fillRect(0, size - 6, size / 3, 6);
+        ctx.fillStyle = '#F0C229';
+        ctx.fillRect(size / 3, size - 6, size / 3, 6);
+        ctx.fillStyle = '#E8407A';
+        ctx.fillRect(size * 2 / 3, size - 6, size / 3, 6);
+        
+        const url = canvas.toDataURL('image/png');
+        resolve(url);
+      };
+      img.onerror = () => resolve(null);
+      img.src = croppedImageURL;
+    });
+  }, [croppedImageURL, formData]);
+
+  const handleDownloadRound = useCallback(() => {
+    if (!pfpRoundURL) return;
+    setIsDownloading(true);
+    const link = document.createElement('a');
+    link.href = pfpRoundURL;
+    link.download = `hh-goa-2026-${firstName.toLowerCase()}-pfp-round.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setIsDownloading(false);
+  }, [pfpRoundURL, firstName]);
+
+  const handleDownloadSquare = useCallback(() => {
+    if (!pfpSquareURL) return;
+    setIsDownloading(true);
+    const link = document.createElement('a');
+    link.href = pfpSquareURL;
+    link.download = `hh-goa-2026-${firstName.toLowerCase()}-pfp-square.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setIsDownloading(false);
+  }, [pfpSquareURL, firstName]);
 
   return (
     <div style={{ 
@@ -224,9 +449,21 @@ export const PfpScreen = ({ setStep, formData, croppedImageURL }) => {
         justifyContent: 'center',
         flexWrap: 'wrap',
       }}>
-        <button className="act-btn primary">⬇ DOWNLOAD ROUND PFP</button>
-        <button className="act-btn x">⬇ DOWNLOAD SQUARE PFP</button>
-        <button className="act-btn ghost" onClick={() => setStep('result')}>
+        <button 
+          className="act-btn primary" 
+          onClick={handleDownloadRound}
+          disabled={isDownloading || !pfpRoundURL}
+        >
+          {isDownloading ? 'SAVING...' : '⬇ DOWNLOAD ROUND PFP'}
+        </button>
+        <button 
+          className="act-btn x" 
+          onClick={handleDownloadSquare}
+          disabled={isDownloading || !pfpSquareURL}
+        >
+          {isDownloading ? 'SAVING...' : '⬇ DOWNLOAD SQUARE PFP'}
+        </button>
+        <button className="act-btn ghost" onClick={() => setStep('result')} disabled={isDownloading}>
           ← BACK
         </button>
       </div>

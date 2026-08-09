@@ -200,6 +200,13 @@ export const ResultScreen = ({ setStep, formData, getDataURL, croppedImageURL, o
           <button className="act-btn ghost" onClick={handleMakeAnother} disabled={isDownloading || isSharing}>
             ↻ MAKE ANOTHER / REGEN TITLE
           </button>
+          <button 
+            className="act-btn " 
+            style={{ background: 'var(--blue)', color: 'var(--cream)' }}
+            onClick={() => setStep('pfp')}
+          >
+            → SEE YOUR PFP VERSION
+          </button>
         </div>
 
         {/* Pre-filled caption */}

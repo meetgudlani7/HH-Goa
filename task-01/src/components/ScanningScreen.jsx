@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from 'react';
 
-export const ScanningScreen = ({ setStep, formData, onComplete }) => {
+/**
+ * ScanningScreen Component - Phase 5 Implementation
+ * Screen 3: Scanning/Loading
+ * Matches hh_goa_v2_upgraded.html Screen 3 exactly
+ * Triggers card rendering during animation to hide render time
+ */
+export const ScanningScreen = ({ setStep, formData, croppedImageURL, renderCard, setCardDataURL, onComplete }) => {
   const [lineProgress, setLineProgress] = useState(0);
+  const [isRendering, setIsRendering] = useState(false);
 
   const SCAN_LINES = [
     { main: 'SCANNING BUILDER VIBES', sub: 'FACE FOUND · AESTHETIC CONFIRMED', result: '✓ OK' },
@@ -13,6 +20,8 @@ export const ScanningScreen = ({ setStep, formData, onComplete }) => {
   ];
 
   useEffect(() => {
+    let renderPromise = null;
+    
     const interval = setInterval(() => {
       setLineProgress(prev => {
         if (prev >= SCAN_LINES.length) {
@@ -20,12 +29,25 @@ export const ScanningScreen = ({ setStep, formData, onComplete }) => {
           setTimeout(() => onComplete && onComplete(), 400);
           return prev;
         }
+        
+        if (prev === 0 && renderCard && !isRendering && croppedImageURL) {
+          setIsRendering(true);
+          renderPromise = renderCard(formData, croppedImageURL)
+            .then(url => setCardDataURL(url))
+            .catch(err => console.error('Card render failed:', err));
+        }
+        
         return prev + 1;
       });
     }, 600);
 
-    return () => clearInterval(interval);
-  }, [onComplete]);
+    return () => {
+      clearInterval(interval);
+      if (renderPromise) {
+        renderPromise.catch(() => {});
+      }
+    };
+  }, [onComplete, formData, renderCard, setCardDataURL, isRendering]);
 
   const getLineState = (index) => {
     if (lineProgress > index) return 'done';

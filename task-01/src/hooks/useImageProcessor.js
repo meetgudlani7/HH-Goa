@@ -61,6 +61,7 @@ const isWasmSupported = () => {
 export const useImageProcessor = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState(null);
+  const [originalBlob, setOriginalBlob] = useState(null);
 
   /**
    * Process an uploaded file:
@@ -158,13 +159,17 @@ export const useImageProcessor = () => {
         await verifyImage(objectURL);
       }
 
-      return {
+      // Store the processed blob in state for the Cropper component
+      const result = {
         blob: processedBlob,
         objectURL,
         isHeic,
         fileName: file.name,
         fileSize: file.size,
       };
+      setOriginalBlob(result);
+      
+      return result;
     } catch (err) {
       setError(err.message);
       throw err;
@@ -202,6 +207,7 @@ export const useImageProcessor = () => {
     error,
     setError,
     isWasmSupported,
+    originalBlob,
   };
 };
 
