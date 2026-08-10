@@ -13,6 +13,22 @@ const CANVAS_OPTS = {
   windowHeight: document.documentElement.scrollHeight,
 };
 
+/**
+ * Wraps canvas.toBlob in a promise. We use Blob + object URLs (not
+ * toDataURL's base64 strings) throughout this hook — for a combined
+ * front+back card at scale:3 the canvas is large enough that the base64
+ * form runs multiple MB, which is exactly the size range where Safari/iOS
+ * has historically been unreliable about honoring the <a download> anchor
+ * on data: URIs.
+ */
+const canvasToBlob = (canvas) =>
+  new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (blob) resolve(blob);
+      else reject(new Error('Could not generate image from canvas'));
+    }, 'image/png');
+  });
+
 export const useCardRenderer = () => {
   const [isRendering, setIsRendering] = useState(false);
   const [error, setError] = useState(null);
@@ -29,7 +45,7 @@ export const useCardRenderer = () => {
       try {
         await document.fonts.ready;
         const canvas = await renderCanvas(cardDomRef);
-        return canvas.toDataURL('image/png');
+        return await canvasToBlob(canvas);
       } catch (renderError) {
         setError(renderError);
         throw renderError;
@@ -42,7 +58,7 @@ export const useCardRenderer = () => {
 
   /**
    * Renders front + back card DOM nodes and stitches them into a single
-   * PNG, front stacked above back, so the whole collectible artifact
+   * PNG blob, front stacked above back, so the whole collectible artifact
    * downloads/shares as one image.
    */
   const renderCombined = useCallback(
@@ -69,7 +85,7 @@ export const useCardRenderer = () => {
         ctx.drawImage(frontCanvas, (width - frontCanvas.width) / 2, 0);
         ctx.drawImage(backCanvas, (width - backCanvas.width) / 2, frontCanvas.height + gap);
 
-        return combined.toDataURL('image/png');
+        return await canvasToBlob(combined);
       } catch (renderError) {
         setError(renderError);
         throw renderError;

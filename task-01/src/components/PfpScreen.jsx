@@ -110,9 +110,8 @@ export const PfpScreen = ({ setStep, formData, croppedImageURL }) => {
         ctx.textBaseline = 'middle';
         ctx.fillText((formData?.builderTitle || 'BUILDER').toUpperCase(), size / 2, size - 8);
 
-        const url = canvas.toDataURL('image/png');
         canvasRef.current = canvas;
-        resolve(url);
+        canvas.toBlob((blob) => resolve(blob), 'image/png');
       };
       img.onerror = () => resolve(null);
       img.src = croppedImageURL;
@@ -203,25 +202,39 @@ export const PfpScreen = ({ setStep, formData, croppedImageURL }) => {
         ctx.fillStyle = '#E8407A';
         ctx.fillRect((size * 2) / 3, size - 6, size / 3, 6);
 
-        const url = canvas.toDataURL('image/png');
-        resolve(url);
+        canvas.toBlob((blob) => resolve(blob), 'image/png');
       };
       img.onerror = () => resolve(null);
       img.src = croppedImageURL;
     });
   }, [croppedImageURL, formData]);
 
-  // Generate PFP images once the cropped photo / form data are ready
+  // Generate PFP images once the cropped photo / form data are ready. The
+  // object URLs created here are revoked in this same effect's cleanup —
+  // scoped to local variables, not component state — so regenerating (or
+  // unmounting) never revokes a URL some other render is still using.
   React.useEffect(() => {
+    let active = true;
+    let roundBlobUrl;
+    let squareBlobUrl;
+
     const generatePFPImages = async () => {
-      if (croppedImageURL) {
-        const roundURL = await generateRoundPFP();
-        const squareURL = await generateSquarePFP();
-        setPfpRoundURL(roundURL);
-        setPfpSquareURL(squareURL);
-      }
+      if (!croppedImageURL) return;
+      const [roundBlob, squareBlob] = await Promise.all([generateRoundPFP(), generateSquarePFP()]);
+      if (!active) return;
+
+      roundBlobUrl = roundBlob ? URL.createObjectURL(roundBlob) : null;
+      squareBlobUrl = squareBlob ? URL.createObjectURL(squareBlob) : null;
+      setPfpRoundURL(roundBlobUrl);
+      setPfpSquareURL(squareBlobUrl);
     };
     generatePFPImages();
+
+    return () => {
+      active = false;
+      if (roundBlobUrl) URL.revokeObjectURL(roundBlobUrl);
+      if (squareBlobUrl) URL.revokeObjectURL(squareBlobUrl);
+    };
   }, [croppedImageURL, formData, generateRoundPFP, generateSquarePFP]);
 
   const handleDownloadRound = useCallback(() => {

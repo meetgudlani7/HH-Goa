@@ -25,7 +25,7 @@ export const ResultScreen = ({ setStep, formData, croppedImageURL, serial, onRes
       });
   }, []);
 
-  const getCombinedCardURL = useCallback(
+  const getCombinedCardBlob = useCallback(
     () => renderCombined(cardRef, backCardRef),
     [renderCombined]
   );
@@ -33,10 +33,12 @@ export const ResultScreen = ({ setStep, formData, croppedImageURL, serial, onRes
   const download = useCallback(async () => {
     setIsDownloading(true);
     setError(null);
+    let blobUrl;
     try {
-      const url = await getCombinedCardURL();
+      const blob = await getCombinedCardBlob();
+      blobUrl = URL.createObjectURL(blob);
       const link = document.createElement('a');
-      link.href = url;
+      link.href = blobUrl;
       link.download = `hh-goa-2026-${builderName}.png`;
       document.body.appendChild(link);
       link.click();
@@ -46,38 +48,61 @@ export const ResultScreen = ({ setStep, formData, croppedImageURL, serial, onRes
       setError('Could not save your card. Please try again.');
     } finally {
       setIsDownloading(false);
+      // Give the browser a moment to actually start the save before we free the URL.
+      if (blobUrl) setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
     }
-  }, [builderName, getCombinedCardURL]);
+  }, [builderName, getCombinedCardBlob]);
 
   const share = useCallback(async () => {
     setIsSharing(true);
     setError(null);
+
+    const text =
+      'Just got my Builder Artifact from Hacker House Goa 2026.\nShipping at a private beach resort in October.\nFind me there. 🌴🛵\n\n#FrameInGoa #HackerHouseGoa @247pmstudio';
+    const supportsNativeShare = typeof navigator.share === 'function';
+    // Open the fallback tab synchronously, in direct response to the click —
+    // by the time the card finishes rendering below we're several `await`s
+    // removed from the user gesture, and Safari/most browsers will silently
+    // block a window.open() that happens that late.
+    const shareWindow = supportsNativeShare ? null : window.open('', '_blank');
+
+    let blobUrl;
     try {
-      const url = await getCombinedCardURL();
+      const blob = await getCombinedCardBlob();
+      const fileName = `hh-goa-2026-${builderName}.png`;
+
+      if (supportsNativeShare) {
+        const file = new File([blob], fileName, { type: 'image/png' });
+        if (!navigator.canShare || navigator.canShare({ files: [file] })) {
+          await navigator.share({ files: [file], text });
+          return;
+        }
+      }
+
+      // Fallback: download the PNG, then hand the pre-opened tab off to the X intent.
+      blobUrl = URL.createObjectURL(blob);
       const link = document.createElement('a');
-      link.href = url;
-      link.download = `hh-goa-2026-${builderName}.png`;
+      link.href = blobUrl;
+      link.download = fileName;
       document.body.appendChild(link);
       link.click();
       link.remove();
-      const text =
-        'Just got my Builder Artifact from Hacker House Goa 2026.\nShipping at a private beach resort in October.\nFind me there. 🌴🛵\n\n#FrameInGoa #HackerHouseGoa @247pmstudio';
-      setTimeout(
-        () =>
-          window.open(
-            `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`,
-            '_blank',
-            'noopener,noreferrer'
-          ),
-        300
-      );
+
+      const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+      if (shareWindow) shareWindow.location.href = tweetUrl;
+      else window.open(tweetUrl, '_blank', 'noopener,noreferrer');
     } catch (shareError) {
-      console.error(shareError);
-      setError('Unable to share right now. Try saving and sharing manually.');
+      shareWindow?.close();
+      // AbortError just means the user closed the native share sheet — not a failure.
+      if (shareError?.name !== 'AbortError') {
+        console.error(shareError);
+        setError('Unable to share right now. Try saving and sharing manually.');
+      }
     } finally {
       setIsSharing(false);
+      if (blobUrl) setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
     }
-  }, [builderName, getCombinedCardURL]);
+  }, [builderName, getCombinedCardBlob]);
 
   return (
     <div className="result-screen">

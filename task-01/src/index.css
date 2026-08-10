@@ -1547,15 +1547,18 @@ body {
 }
 
 @keyframes hero-annotation-flicker {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
     transform: translateY(0) scale(1);
   }
-  20%, 80% {
-    opacity: 0.0;
+  20%,
+  80% {
+    opacity: 0;
     transform: translateY(-1px) scale(0.99);
   }
-  40%, 60% {
+  40%,
+  60% {
     opacity: 0.7;
     transform: translateY(0) scale(1);
   }
