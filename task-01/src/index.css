@@ -1538,13 +1538,29 @@ body {
 /* Below ~480px the diagonal welcome band wraps to 2 lines and the poster
    headline grows wide enough that both collide with the OPEN TRIALS stamp
    cluster (.hero-annotation), which sits on top of them. Rather than resize
-   or reposition anything, timeshare the space: the stamp cluster crossfades
-   out on a loop so the headline/band are fully readable for most of the
-   cycle, then crossfades back in fully readable itself — all three pieces
-   of content surface over time with the layout completely unchanged. */
+   or reposition anything, the stamp cluster flickers gently so the headline
+   and band remain readable while the annotation stays visible. */
 @media (max-width: 480px) and (prefers-reduced-motion: no-preference) {
   .hero-annotation {
-    animation: crossfade-cycle 7s ease-in-out infinite;
+    animation: hero-annotation-flicker 7s ease-in-out infinite;
+  }
+}
+
+@keyframes hero-annotation-flicker {
+  0%,
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  20%,
+  80% {
+    opacity: 0;
+    transform: translateY(-1px) scale(0.99);
+  }
+  40%,
+  60% {
+    opacity: 0.7;
+    transform: translateY(0) scale(1);
   }
 }
 
