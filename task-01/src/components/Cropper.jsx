@@ -196,11 +196,11 @@ export const Cropper = ({ setStep, originalBlob, setCroppedImageURL }) => {
             paddingBottom: '10px',
           }}
         >
-          KAISA
+          CHOOSE
           <br />
-          DIKHNA
+          YOUR
           <br />
-          HAI?
+          STYLE
         </h2>
 
         {/* Main cropper area */}
