@@ -128,15 +128,14 @@ export const FormFields = ({ setStep, formData, setFormData }) => {
         </button>
         <div className="form-eyebrow">// IDENTITY CONFIGURATION IN PROGRESS</div>
         <div className="form-heading-big">
-          TERI
+          WHO'S
           <br />
-          <span className="hl">IDENTITY</span>
+          <span className="hl">BUILDING?</span>
           <br />
-          KYA HAI?
         </div>
 
         <div className="field-group">
-          <div className="field-label">TERA NAAM KYA HAI? / Your name</div>
+          <div className="field-label">WHAT DO WE CALL YOU? / Your name</div>
           <input
             className="field-inp"
             value={formData.name}
@@ -154,7 +153,7 @@ export const FormFields = ({ setStep, formData, setFormData }) => {
         </div>
 
         <div className="field-group">
-          <div className="field-label">KAHAN SE AAYA HAI? / City, Country</div>
+          <div className="field-label">BUILDER ORIGIN? / City, Country</div>
           <input
             className="field-inp"
             value={formData.city}
@@ -168,7 +167,7 @@ export const FormFields = ({ setStep, formData, setFormData }) => {
         </div>
 
         <div className="field-group">
-          <div className="field-label">TU X PE KYA HAI? / @handle</div>
+          <div className="field-label"> X HANDLE? / @handle</div>
           <input
             className="field-inp"
             value={formData.xHandle}
@@ -182,7 +181,7 @@ export const FormFields = ({ setStep, formData, setFormData }) => {
           <div className="field-hint">No @ needed</div>
         </div>
 
-        <div className="tags-label">TU KYA BANATA HAI? / Your role</div>
+        <div className="tags-label">WHAT DO YOU BREAK AND FIX? / Your role</div>
         <div className="tags-row">
           {['Builder', 'Designer', 'Founder', 'AI Hacker', 'Chaos Agent'].map((role) => (
             <button
@@ -213,7 +212,7 @@ export const FormFields = ({ setStep, formData, setFormData }) => {
             <div className="title-box">
               <div className="title-box-name">{formData.builderTitle || 'Select a title...'}</div>
               <button className="title-box-regen" onClick={regenerateTitle} disabled={isSubmitting}>
-                ↻ EK AUR
+                ↻ ROLL AGAIN
               </button>
             </div>
 
@@ -316,7 +315,7 @@ export const FormFields = ({ setStep, formData, setFormData }) => {
           onClick={handleSubmit}
           disabled={!isFormValid() || isSubmitting}
         >
-          JUGAAD KARO → GENERATE MY ARTIFACT
+          GENERATE MY ARTIFACT
         </button>
       </div>
       <div className="border-strip-bottom"></div>

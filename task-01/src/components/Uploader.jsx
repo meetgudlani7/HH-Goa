@@ -472,9 +472,9 @@ export const Uploader = ({ setStep, processImage }) => {
             ) : (
               <>
                 <span className="upload-big">
-                  APNA FACE
+                  UPLOAD PORTRAIT →
                   <br />
-                  DAALO →
+                  
                 </span>
                 <span className="upload-arrow-big">⇪</span>
                 <div className="upload-sub">JPG · PNG · HEIC — ANY CROP WORKS — MOBILE OK</div>
