@@ -296,7 +296,7 @@ export const Cropper = ({ setStep, originalBlob, setCroppedImageURL }) => {
                 letterSpacing: '0.5px',
               }}
             >
-              PREVIEW
+              ORIGINAL IMAGE
             </h3>
             <div
               style={{

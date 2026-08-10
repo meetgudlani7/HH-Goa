@@ -6,9 +6,13 @@ const stripes = ['r', 'y', 'g', 'p', 'b', 'w', 'r', 'y', 'g', 'p', 'b'];
 export default function CardFront({ formData = {}, croppedImageURL, serial, cardRef }) {
   const fallbackSerial = useRef(String(Math.floor(Math.random() * 900) + 100));
   const cardSerial = serial || fallbackSerial.current;
+  // Only treat extra words as a surname when they actually exist — a
+  // single-word name (very common) used to get a literal "NAME" appended
+  // as a fake last name instead of just showing the one name given.
   const nameParts = (formData.name || '').trim().split(/\s+/).filter(Boolean);
   const firstName = nameParts[0] || 'YOUR';
-  const lastName = nameParts.slice(1).join(' ') || 'NAME';
+  const lastName =
+    nameParts.length > 1 ? nameParts.slice(1).join(' ') : nameParts.length === 0 ? 'NAME' : '';
 
   return (
     <div className="card-front" ref={cardRef}>
@@ -80,10 +84,11 @@ export default function CardFront({ formData = {}, croppedImageURL, serial, card
           <div className="f-info-left">
             <div className="f-eyebrow">// REGISTERED BUILDER #{cardSerial}</div>
             <div className="f-name-first">{firstName}</div>
-            <div className="f-name-last">{lastName}</div>
+            {lastName && <div className="f-name-last">{lastName}</div>}
             <div className="f-title-box">
               <span>{formData.builderTitle || 'BUILDER ALIAS'}</span>
             </div>
+            {formData.xHandle && <div className="f-xhandle">𝕏 @{formData.xHandle}</div>}
           </div>
           <div className="f-float-label">SHIP IT →</div>
           <div className="f-float-seal">

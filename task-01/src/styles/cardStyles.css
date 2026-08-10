@@ -338,6 +338,14 @@
   color: var(--yellow);
   letter-spacing: 0.03em;
 }
+/* [X_HANDLE] */
+.f-xhandle {
+  font-family: 'Space Mono', monospace;
+  font-size: 6px;
+  color: var(--rust);
+  letter-spacing: 0.08em;
+  margin-top: 4px;
+}
 /* Floating "SHIP IT" label — overlaps info/person boundary */
 .f-float-label {
   position: absolute;
