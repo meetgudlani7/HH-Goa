@@ -47,7 +47,12 @@ const barcode = [
 
 export default function CardBack({ formData = {}, serial, cardRef }) {
   const name = (formData.name || 'BUILDER').toUpperCase();
-  const lastName = name.trim().split(/\s+/).slice(1).join('-') || 'BUILDER';
+  // Barcode suffix: use the surname if given, else the one name the user
+  // did give (not a fake "BUILDER" bolted on after a real first name —
+  // that literal fallback should only kick in when there's no name at all).
+  const nameParts = name.trim().split(/\s+/).filter(Boolean);
+  const lastName =
+    (nameParts.length > 1 ? nameParts.slice(1).join('-') : nameParts[0]) || 'BUILDER';
   const ingredientValues = formData.ingredients || DEFAULT_INGREDIENTS;
   const batch = `GOA-26-${serial}`;
   return (

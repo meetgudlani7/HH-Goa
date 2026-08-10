@@ -1041,6 +1041,18 @@ body {
   margin-top: 16px;
 }
 
+.share-hint {
+  background: var(--yellow);
+  border: 2px solid var(--ink);
+  color: var(--ink);
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.03em;
+  line-height: 1.5;
+  padding: 10px 12px;
+  margin-top: 12px;
+}
+
 .caption-label {
   font-family: 'Space Mono', monospace;
   font-size: 7px;

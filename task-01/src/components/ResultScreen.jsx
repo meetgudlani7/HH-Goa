@@ -12,7 +12,15 @@ export const ResultScreen = ({ setStep, formData, croppedImageURL, serial, onRes
   const [isDownloading, setIsDownloading] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
   const [error, setError] = useState(null);
+  // Twitter/X's web intent can't attach an image or show a link-preview
+  // graphic — that only works via the native OS share sheet. When we fall
+  // back to the web intent (no Web Share API support), tell the user their
+  // PNG downloaded separately and needs to be attached by hand.
+  const [showManualAttachHint, setShowManualAttachHint] = useState(false);
   const builderName = (formData?.name || 'builder').toLowerCase().replace(/\s+/g, '-');
+  const nameParts = (formData?.name || '').trim().split(/\s+/).filter(Boolean);
+  const displayFirstName = nameParts[0] || 'BUILDER';
+  const displayLastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
 
   useEffect(() => {
     setIsRevealed(true);
@@ -56,6 +64,7 @@ export const ResultScreen = ({ setStep, formData, croppedImageURL, serial, onRes
   const share = useCallback(async () => {
     setIsSharing(true);
     setError(null);
+    setShowManualAttachHint(false);
 
     const text =
       'Just got my Builder Artifact from Hacker House Goa 2026.\nShipping at a private beach resort in October.\nFind me there. 🌴🛵\n\n#FrameInGoa #HackerHouseGoa @247pmstudio';
@@ -91,6 +100,7 @@ export const ResultScreen = ({ setStep, formData, croppedImageURL, serial, onRes
       const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
       if (shareWindow) shareWindow.location.href = tweetUrl;
       else window.open(tweetUrl, '_blank', 'noopener,noreferrer');
+      setShowManualAttachHint(true);
     } catch (shareError) {
       shareWindow?.close();
       // AbortError just means the user closed the native share sheet — not a failure.
@@ -254,9 +264,13 @@ export const ResultScreen = ({ setStep, formData, croppedImageURL, serial, onRes
           <div className="rmc-left" />
           <div className="rmc-body">
             <div className="rmc-name">
-              {(formData?.name || 'BUILDER').toUpperCase().split(' ')[0]}
-              <br />
-              {(formData?.name || '').toUpperCase().split(' ').slice(1).join(' ')}
+              {displayFirstName.toUpperCase()}
+              {displayLastName && (
+                <>
+                  <br />
+                  {displayLastName.toUpperCase()}
+                </>
+              )}
             </div>
             <div className="rmc-title">{formData?.builderTitle || 'THE BUILDER'}</div>
             <div className="rmc-badge">★ GOA COMPATIBILITY: 100% ★</div>
@@ -311,6 +325,12 @@ export const ResultScreen = ({ setStep, formData, croppedImageURL, serial, onRes
             ↻ MAKE ANOTHER / REGEN TITLE
           </button>
         </div>
+        {showManualAttachHint && (
+          <div className="share-hint">
+            📎 Your artifact PNG downloaded separately — attach it to the X tab that just opened
+            before you post (X doesn&apos;t support pre-attaching images via link).
+          </div>
+        )}
         <div className="caption-box">
           <div className="caption-label">// PRE-FILLED CAPTION:</div>
           <div className="caption-text">
