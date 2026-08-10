@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import './styles/tokens.css';
 import './index.css';
 import { Uploader } from './components/Uploader';
@@ -105,7 +106,12 @@ export const App = () => {
     pfp: <PfpScreen setStep={setStep} formData={formData} croppedImageURL={croppedImageURL} />,
   };
 
-  return <div className="app-root">{screens[step]}</div>;
+  return (
+    <div className="app-root">
+      {screens[step]}
+      <Analytics />
+    </div>
+  );
 };
 
 export default App;
