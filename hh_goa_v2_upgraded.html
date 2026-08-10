@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HH GOA BUILDER PAINT — V2</title>
+<link href="https://fonts.googleapis.com/css2?family=Teko:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Abril+Fatface&family=Unbounded:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --red:#C8001E;--yellow:#F0C229;--pink:#E8407A;--green:#2A7A4B;
+  --cream:#F5EDD8;--ink:#1A1008;--orange:#D4511A;--blue:#2B5FA0;
+  --paper:#EDE4C8;--fade:#B8A882;--rust:#A83210;--teal:#1A7A6E;
+  --lime:#8BC34A;
+}
+body{background:#111;font-family:'Space Mono',monospace;padding:12px;}
+.screen-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;color:#555;text-transform:uppercase;padding:16px 0 6px;text-align:center;}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SCREEN 1 — HERO / LANDING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.hero{
+  background:var(--red);
+  position:relative;overflow:hidden;
+  border:4px solid var(--ink);
+  min-height:640px;
+}
+
+/* Big poster background typography */
+.poster-bg-text{
+  position:absolute;
+  font-family:'Unbounded',sans-serif;font-weight:900;
+  text-transform:uppercase;line-height:0.85;
+  pointer-events:none;user-select:none;
+}
+.pbt-hacker{
+  top:-10px;left:-8px;font-size:148px;
+  color:var(--yellow);opacity:0.13;letter-spacing:-4px;
+}
+.pbt-goa{
+  bottom:-20px;right:-10px;font-size:200px;
+  color:var(--cream);opacity:0.07;letter-spacing:-6px;
+}
+.pbt-2026{
+  top:50%;right:-5px;transform:translateY(-50%) rotate(90deg);
+  font-size:88px;color:var(--pink);opacity:0.12;letter-spacing:-2px;
+  transform-origin:right center;
+}
+
+/* Decorative Indian border elements */
+.border-strip-top{
+  height:14px;
+  background:repeating-linear-gradient(90deg,
+    var(--yellow) 0,var(--yellow) 18px,
+    var(--orange) 18px,var(--orange) 36px,
+    var(--green) 36px,var(--green) 54px,
+    var(--orange) 54px,var(--orange) 72px
+  );
+  border-bottom:3px solid var(--ink);
+}
+.border-strip-bottom{
+  height:14px;
+  background:repeating-linear-gradient(90deg,
+    var(--green) 0,var(--green) 18px,
+    var(--yellow) 18px,var(--yellow) 36px,
+    var(--pink) 36px,var(--pink) 54px,
+    var(--yellow) 54px,var(--yellow) 72px
+  );
+  border-top:3px solid var(--ink);
+}
+
+/* Decorative SVG motifs (inline) */
+.hero-flower-bl{
+  position:absolute;bottom:60px;left:-20px;
+  width:130px;height:130px;opacity:0.35;
+}
+.hero-flower-tr{
+  position:absolute;top:30px;right:-15px;
+  width:100px;height:100px;opacity:0.28;
+}
+.hero-wave{
+  position:absolute;bottom:14px;left:0;right:0;height:28px;opacity:0.2;
+}
+
+/* Window bar */
+.windowbar{
+  background:var(--ink);padding:8px 14px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:2px solid var(--yellow);
+}
+.windowbar-title{font-family:'Space Mono',monospace;font-size:9px;color:var(--yellow);letter-spacing:.14em;}
+.wbtns{display:flex;gap:7px;}
+.wbtn{width:13px;height:13px;border-radius:50%;border:2px solid rgba(0,0,0,.3);}
+
+/* Menu bar */
+.menubar{
+  background:var(--yellow);border-bottom:3px solid var(--ink);
+  padding:6px 14px;display:flex;gap:22px;
+}
+.menuitem{font-size:9px;letter-spacing:.08em;color:var(--ink);text-transform:uppercase;cursor:pointer;font-weight:700;}
+
+/* Hero body */
+.hero-body{padding:22px 18px 18px;position:relative;}
+
+/* Diagonal title band */
+.diagonal-band{
+  background:var(--ink);
+  padding:6px 14px;
+  display:inline-block;
+  transform:rotate(-1.5deg);
+  margin-bottom:8px;
+  margin-left:-5px;
+}
+.diagonal-band-text{
+  font-family:'Space Mono',monospace;font-size:8px;color:var(--yellow);
+  letter-spacing:.2em;text-transform:uppercase;
+}
+
+/* Massive poster headline */
+.poster-headline{
+  font-family:'Unbounded',sans-serif;font-weight:900;
+  font-size:72px;line-height:0.85;
+  color:var(--cream);text-transform:uppercase;
+  letter-spacing:-2px;
+  position:relative;z-index:2;
+  text-shadow:5px 5px 0 var(--ink), 6px 6px 0 var(--ink);
+}
+.poster-headline .accent-red{color:var(--yellow);}
+.poster-headline .accent-pink{color:var(--pink);}
+.poster-sub-hindi{
+  font-family:serif;font-size:19px;color:var(--yellow);
+  margin:6px 0 4px;letter-spacing:.04em;
+  text-shadow:2px 2px 0 var(--ink);
+}
+
+/* Year pill rotated */
+.year-pill{
+  background:var(--yellow);
+  font-family:'Teko',sans-serif;font-size:22px;font-weight:700;
+  color:var(--ink);padding:3px 16px;letter-spacing:.12em;
+  display:inline-block;transform:rotate(1deg);
+  border:3px solid var(--ink);margin-bottom:14px;
+}
+
+/* Hero right column annotation */
+.hero-annotation{
+  position:absolute;top:28px;right:18px;
+  display:flex;flex-direction:column;align-items:flex-end;gap:6px;
+  z-index:3;
+}
+.anno-stamp{
+  background:var(--orange);border:3px solid var(--ink);
+  padding:8px 10px;transform:rotate(3deg);text-align:center;
+}
+.anno-stamp-text{
+  font-family:'Teko',sans-serif;font-size:12px;font-weight:700;
+  color:var(--cream);letter-spacing:.06em;line-height:1.1;
+}
+.anno-pill{
+  background:var(--green);border:2px solid var(--ink);
+  font-family:'Space Mono',monospace;font-size:7px;
+  color:var(--cream);padding:3px 8px;letter-spacing:.1em;
+  transform:rotate(-1deg);
+}
+
+/* Inner computer window */
+.inner-window{
+  background:var(--cream);border:3px solid var(--ink);
+  margin-top:16px;position:relative;
+  box-shadow:6px 6px 0 var(--ink);
+}
+.inner-window-top{
+  background:var(--paper);border-bottom:2px solid var(--ink);
+  padding:5px 10px;
+  font-family:'Space Mono',monospace;font-size:8px;color:var(--fade);
+  letter-spacing:.1em;display:flex;justify-content:space-between;align-items:center;
+}
+
+.upload-big{
+  font-family:'Unbounded',sans-serif;font-weight:900;
+  font-size:26px;color:var(--red);letter-spacing:.02em;
+  text-transform:uppercase;line-height:1;
+  display:block;
+}
+.upload-area{
+  padding:22px 18px;
+  border:3px dashed var(--fade);
+  margin:12px;
+  text-align:center;
+  cursor:pointer;
+  background:repeating-linear-gradient(
+    45deg,transparent,transparent 10px,
+    rgba(0,0,0,.015) 10px,rgba(0,0,0,.015) 20px
+  );
+}
+.upload-arrow-big{
+  font-family:'Abril Fatface',serif;font-size:42px;
+  color:var(--orange);display:block;margin-top:4px;
+}
+.upload-sub{
+  font-size:8px;letter-spacing:.14em;color:var(--fade);
+  margin-top:8px;text-transform:uppercase;
+}
+
+/* Ticker */
+.ticker-outer{
+  background:var(--ink);overflow:hidden;
+  border-top:3px solid var(--yellow);border-bottom:3px solid var(--yellow);
+  padding:8px 0;
+}
+.ticker-inner{
+  display:inline-block;white-space:nowrap;
+  animation:tick 20s linear infinite;
+  font-family:'Space Mono',monospace;font-size:10px;
+  color:var(--yellow);letter-spacing:.12em;
+}
+@keyframes tick{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* Info row at bottom */
+.hero-info-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:12px 18px;background:var(--cream);
+  border-top:2px solid var(--ink);
+}
+.info-chip{
+  font-family:'Space Mono',monospace;font-size:8px;
+  color:var(--fade);letter-spacing:.08em;
+}
+.info-chip strong{color:var(--ink);}
+
+/* Decorative corner ornaments */
+.corner-orn{
+  position:absolute;width:28px;height:28px;
+  border-color:var(--yellow);border-style:solid;
+}
+.corner-orn.tl{top:24px;left:8px;border-width:2px 0 0 2px;}
+.corner-orn.tr{top:24px;right:8px;border-width:2px 2px 0 0;}
+.corner-orn.bl{bottom:8px;left:8px;border-width:0 0 2px 2px;}
+.corner-orn.br{bottom:8px;right:8px;border-width:0 2px 2px 0;}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SCREEN 2 — BUILDER FORM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.form-screen{
+  background:var(--cream);border:4px solid var(--ink);
+  position:relative;overflow:hidden;
+}
+.form-poster-bg{
+  position:absolute;top:0;left:0;right:0;bottom:0;
+  font-family:'Unbounded',sans-serif;font-weight:900;
+  font-size:120px;color:var(--orange);opacity:0.04;
+  display:flex;align-items:center;justify-content:center;
+  letter-spacing:-4px;pointer-events:none;text-transform:uppercase;
+}
+.form-body{padding:18px;position:relative;z-index:1;}
+.form-eyebrow{
+  font-family:'Space Mono',monospace;font-size:8px;
+  letter-spacing:.2em;color:var(--fade);text-transform:uppercase;
+  margin-bottom:4px;
+}
+.form-heading-big{
+  font-family:'Unbounded',sans-serif;font-weight:900;
+  font-size:22px;color:var(--ink);text-transform:uppercase;
+  line-height:1;margin-bottom:16px;
+  border-bottom:4px solid var(--ink);padding-bottom:10px;
+}
+.form-heading-big .hl{color:var(--red);}
+
+/* Field style — feels like vintage form */
+.field-group{margin-bottom:18px;position:relative;}
+.field-label{
+  font-size:7px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--fade);margin-bottom:4px;font-family:'Space Mono',monospace;
+}
+.field-label::before{content:'→ ';color:var(--red);}
+.field-inp{
+  width:100%;border:0;border-bottom:3px solid var(--ink);
+  background:transparent;
+  font-family:'Teko',sans-serif;font-size:28px;font-weight:700;
+  color:var(--ink);letter-spacing:.04em;padding:4px 0 2px;
+  outline:none;text-transform:uppercase;
+  display:block;
+}
+.field-inp::placeholder{color:var(--fade);opacity:.5;}
+.field-decoration{
+  position:absolute;right:0;bottom:4px;
+  font-family:'Space Mono',monospace;font-size:7px;
+  color:var(--fade);letter-spacing:.1em;
+}
+
+/* Role tags */
+.tags-label{
+  font-size:7px;letter-spacing:.22em;color:var(--fade);
+  margin-bottom:8px;text-transform:uppercase;font-family:'Space Mono',monospace;
+}
+.tags-label::before{content:'→ ';}
+.tags-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px;}
+.tag{
+  border:2.5px solid var(--ink);padding:5px 12px;
+  font-size:9px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;
+  font-family:'Teko',sans-serif;font-weight:600;
+  transition:all .15s;
+}
+.tag:hover{background:var(--ink);color:var(--yellow);}
+.tag.active{background:var(--red);color:var(--yellow);border-color:var(--red);}
+
+/* Builder title reveal */
+.title-box{
+  background:var(--ink);padding:14px 16px 14px 16px;
+  margin-bottom:16px;position:relative;
+  border-left:6px solid var(--yellow);
+}
+.title-box::before{
+  content:'// GENERATED BUILDER TITLE';
+  display:block;font-family:'Space Mono',monospace;
+  font-size:7px;color:var(--fade);letter-spacing:.15em;margin-bottom:6px;
+}
+.title-box-name{
+  font-family:'Unbounded',sans-serif;font-weight:900;
+  font-size:20px;color:var(--yellow);line-height:1;
+  text-transform:uppercase;letter-spacing:.02em;
+}
+.title-box-regen{
+  position:absolute;top:12px;right:12px;
+  font-family:'Space Mono',monospace;font-size:7px;
+  color:var(--fade);border:1px solid var(--fade);
+  padding:3px 8px;letter-spacing:.1em;cursor:pointer;
+}
+.generate-btn{
+  width:100%;background:var(--red);border:4px solid var(--ink);
+  font-family:'Unbounded',sans-serif;font-size:16px;font-weight:900;
+  color:var(--yellow);letter-spacing:.06em;text-transform:uppercase;
+  padding:16px;cursor:pointer;
+  box-shadow:5px 5px 0 var(--ink);
+  display:block;text-align:center;
+  position:relative;
+}
+.generate-btn::after{
+  content:'';position:absolute;
+  bottom:-9px;right:-9px;
+  width:100%;height:100%;
+  border:2px solid var(--fade);pointer-events:none;z-index:-1;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SCREEN 3 — SCANNING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.scan-screen{
+  background:var(--ink);border:4px solid var(--yellow);
+  position:relative;overflow:hidden;
+}
+.scan-bg-text{
+  position:absolute;font-family:'Unbounded',sans-serif;font-weight:900;
+  font-size:180px;color:var(--yellow);opacity:0.04;
+  bottom:-40px;left:-20px;pointer-events:none;text-transform:uppercase;
+  letter-spacing:-6px;
+}
+.scan-body{padding:28px 22px;}
+.scan-eyebrow{
+  font-family:'Space Mono',monospace;font-size:8px;color:var(--fade);
+  letter-spacing:.2em;text-transform:uppercase;margin-bottom:8px;
+}
+.scan-headline{
+  font-family:'Unbounded',sans-serif;font-weight:900;
+  font-size:38px;color:var(--yellow);text-transform:uppercase;
+  line-height:.88;letter-spacing:-1px;margin-bottom:24px;
+}
+.scan-line{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.scan-icon{
+  width:20px;height:20px;border-radius:50%;
+  border:2px solid var(--fade);display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;font-size:9px;
+}
+.scan-icon.done{background:var(--green);border-color:var(--green);color:#fff;}
+.scan-icon.active{background:var(--yellow);border-color:var(--yellow);color:var(--ink);animation:pulse .8s ease infinite alternate;}
+@keyframes pulse{0%{opacity:1;}100%{opacity:.4;}}
+.scan-icon.wait{background:transparent;color:var(--fade);}
+.scan-text-wrap{flex:1;}
+.scan-text-main{
+  font-family:'Teko',sans-serif;font-weight:600;font-size:15px;
+  color:var(--cream);letter-spacing:.08em;text-transform:uppercase;
+}
+.scan-text-main.done{color:var(--fade);text-decoration:line-through;text-decoration-color:var(--green);}
+.scan-text-main.active{color:var(--yellow);}
+.scan-text-sub{font-family:'Space Mono',monospace;font-size:7px;color:var(--fade);letter-spacing:.1em;}
+.scan-result{
+  margin-left:auto;font-family:'Space Mono',monospace;font-size:8px;
+  color:var(--green);letter-spacing:.08em;
+}
+.scan-progress-wrap{margin-top:20px;}
+.scan-progress-label{
+  font-family:'Space Mono',monospace;font-size:7px;color:var(--fade);
+  letter-spacing:.15em;margin-bottom:6px;display:flex;justify-content:space-between;
+}
+.scan-progress-track{
+  border:2px solid var(--yellow);height:20px;position:relative;overflow:hidden;
+}
+.scan-progress-fill{
+  position:absolute;inset:2px;left:2px;right:auto;
+  background:linear-gradient(90deg,var(--green),var(--yellow));
+  width:72%;
+}
+.scan-progress-text{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:'Teko',sans-serif;font-size:12px;font-weight:700;
+  color:var(--ink);letter-spacing:.14em;z-index:1;
+}
+
+/* Generating bar */
+.gen-bar{
+  margin-top:14px;
+  font-family:'Space Mono',monospace;font-size:7px;
+  color:var(--fade);letter-spacing:.12em;text-align:center;
+  border:1px solid rgba(255,255,255,.08);padding:8px;
+}
+.gen-bar span{color:var(--yellow);}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SCREEN 4 — BUILDER ARTIFACT FRONT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.artifact{
+  background:var(--cream);border:4px solid var(--ink);
+  position:relative;overflow:hidden;
+  min-height:580px;
+}
+
+/* Layered background elements */
+.art-bg-circle{
+  position:absolute;width:320px;height:320px;border-radius:50%;
+  background:var(--yellow);opacity:0.18;
+  top:-80px;right:-80px;pointer-events:none;
+}
+.art-bg-stripe{
+  position:absolute;bottom:0;left:0;right:0;height:180px;
+  background:var(--red);opacity:0.08;
+  clip-path:polygon(0 40%,100% 0%,100% 100%,0 100%);
+  pointer-events:none;
+}
+
+/* Giant poster name */
+.art-name-giant{
+  position:absolute;
+  font-family:'Unbounded',sans-serif;font-weight:900;
+  font-size:88px;line-height:.85;
+  color:var(--ink);opacity:.06;
+  top:20px;left:-8px;
+  text-transform:uppercase;letter-spacing:-3px;
+  pointer-events:none;
+}
+
+/* Top band - truck art style */
+.art-top-band{
+  height:12px;
+  background:repeating-linear-gradient(90deg,
+    var(--red) 0,var(--red) 14px,
+    var(--yellow) 14px,var(--yellow) 28px,
+    var(--green) 28px,var(--green) 42px,
+    var(--pink) 42px,var(--pink) 56px,
+    var(--yellow) 56px,var(--yellow) 70px
+  );
+}
+
+/* Title plate at very top */
+.art-title-plate{
+  background:var(--red);padding:10px 16px;
+  display:flex;justify-content:space-between;align-items:flex-end;
+  border-bottom:3px solid var(--ink);
+}
+.art-hh-logo{
+  font-family:'Unbounded',sans-serif;font-weight:900;
+  font-size:22px;color:var(--yellow);line-height:.85;
+  letter-spacing:-.5px;text-transform:uppercase;
+}
+.art-hh-logo small{
+  display:block;font-size:8px;font-family:'Space Mono',monospace;
+  color:rgba(255,220,80,.6);letter-spacing:.14em;font-weight:400;
+  margin-top:4px;
+}
+.art-hindi-block{text-align:right;}
+.art-hindi-big{
+  font-family:serif;font-size:20px;color:var(--yellow);
+  text-shadow:1px 1px 0 var(--ink);
+}
+.art-hindi-small{
+  font-family:'Space Mono',monospace;font-size:7px;
+  color:rgba(255,220,80,.6);letter-spacing:.12em;margin-top:2px;
+}
+
+/* Main composition area */
+.art-main{position:relative;padding:18px 16px 14px;min-height:400px;}
+
+/* Photo area — editorial cutout treatment */
+.art-photo-zone{
+  position:relative;margin-bottom:0;
+}
+.art-photo-frame{
+  width:100%;
+  min-height:260px;
+  background:var(--paper);
+  border:3px solid var(--ink);
+  position:relative;overflow:hidden;
+  display:flex;align-items:flex-end;justify-content:center;
+}
+
+/* Silhouette placeholder — should be person cutout */
+.art-photo-silhouette{
+  width:100%;height:260px;
+  position:relative;display:flex;align-items:flex-end;justify-content:center;
+}
+
+/* Elements overlapping the photo */
+.art-photo-overlay-top{
+  position:absolute;top:8px;right:8px;z-index:4;
+  transform:rotate(4deg);
+}
+.art-photo-overlay-bl{
+  position:absolute;bottom:12px;left:8px;z-index:4;
+  transform:rotate(-2deg);
+}
+.art-photo-overlay-br{
+  position:absolute;bottom:0;right:0;z-index:4;
+}
+
+/* Floating sticker elements */
+.sticker{
+  display:inline-block;
+  font-family:'Teko',sans-serif;font-weight:700;
+  text-transform:uppercase;letter-spacing:.06em;
+}
+.sticker-stamp{
+  background:var(--orange);border:3px solid var(--ink);
+  padding:6px 10px;font-size:11px;color:var(--cream);
+}
+.sticker-pill{
+  background:var(--green);border:2px solid var(--ink);
+  padding:4px 10px;font-size:10px;color:var(--cream);
+  border-radius:2px;
+}
+.sticker-badge{
+  background:var(--yellow);border:3px solid var(--ink);
+  padding:5px 11px;font-size:10px;color:var(--ink);
+}
+.sticker-label{
+  background:var(--cream);border:2px solid var(--ink);
+  padding:4px 8px;font-family:'Space Mono',monospace;
+  font-size:7px;color:var(--fade);letter-spacing:.12em;
+}
+
+/* Overlapping big name typography */
+.art-name-display{
+  font-family:'Unbounded',sans-serif;font-weight:900;
+  font-size:44px;color:var(--ink);line-height:.88;
+  text-transform:uppercase;letter-spacing:-1.5px;
+  margin:10px 0 4px;
+}
+.art-name-display .first{color:var(--red);}
+.art-name-display .last{
+  color:var(--cream);
+  -webkit-text-stroke:2px var(--ink);
+}
+
+/* Title treatment */
+.art-title-label{
+  background:var(--ink);display:inline-block;
+  padding:6px 14px;margin:6px 0 10px;
+  transform:rotate(-.5deg);
+}
+.art-title-text{
+  font-family:'Abril Fatface',serif;
+  font-size:18px;color:var(--yellow);letter-spacing:.02em;
+}
+
+/* Stack as ingredients */
+.art-ingredients{
+  border:2px solid var(--ink);padding:8px 10px;margin:8px 0;
+  background:rgba(255,255,255,.4);position:relative;
+}
+.art-ingredients::before{
+  content:'INGREDIENTS';
+  position:absolute;top:-8px;left:10px;
+  background:var(--cream);padding:0 4px;
+  font-family:'Space Mono',monospace;font-size:7px;
+  color:var(--fade);letter-spacing:.18em;
+}
+.ing-row{
+  display:flex;justify-content:space-between;align-items:center;
+  font-family:'Teko',sans-serif;font-size:14px;font-weight:600;
+  color:var(--ink);text-transform:uppercase;letter-spacing:.04em;
+  border-bottom:1px dashed var(--fade);padding:3px 0;
+}
+.ing-row:last-child{border-bottom:none;}
+.ing-pct{color:var(--red);font-size:12px;font-family:'Space Mono',monospace;}
+
+/* Seals and quality marks */
+.art-seal{
+  width:68px;height:68px;border-radius:50%;
+  border:3px solid var(--red);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--cream);text-align:center;
+  box-shadow:inset 0 0 0 4px rgba(200,0,30,.12);
+}
+.art-seal-text{
+  font-family:'Teko',sans-serif;font-weight:700;font-size:10px;
+  color:var(--red);line-height:1.1;letter-spacing:.06em;text-transform:uppercase;
+}
+.art-seal-num{
+  font-family:'Abril Fatface',serif;font-size:18px;color:var(--red);line-height:1;
+}
+
+/* Illustrated objects — SVG inline */
+.art-coconut, .art-hibiscus, .art-wave-strip, .art-scooter{
+  position:absolute;pointer-events:none;
+}
+
+/* Bottom row */
+.art-bottom-row{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:10px;margin-top:8px;
+  border-top:3px solid var(--ink);padding-top:10px;
+}
+.art-goa-compat{text-align:center;}
+.goa-compat-num{
+  font-family:'Unbounded',sans-serif;font-weight:900;
+  font-size:34px;color:var(--red);line-height:.85;
+}
+.goa-compat-label{
+  font-family:'Space Mono',monospace;font-size:7px;
+  color:var(--fade);letter-spacing:.12em;margin-top:2px;
+}
+
+/* Easter egg row */
+.easter-row{
+  display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;
+  border-top:1px dashed var(--fade);padding-top:8px;
+}
+.easter-chip{
+  font-family:'Space Mono',monospace;font-size:6px;
+  color:var(--fade);letter-spacing:.1em;border:1px solid var(--fade);
+  padding:2px 6px;background:transparent;
+}
+
+/* Bottom band */
+.art-bottom-band{
+  display:flex;align-items:center;
+  background:var(--ink);padding:7px 14px;
+  border-top:2px solid var(--yellow);
+}
+.art-bottom-band-l{
+  font-family:'Space Mono',monospace;font-size:7px;
+  color:var(--fade);letter-spacing:.12em;flex:1;
+}
+.art-bottom-band-r{
+  font-family:'Teko',sans-serif;font-weight:700;font-size:15px;
+  color:var(--yellow);letter-spacing:.1em;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SCREEN 5 — ARTIFACT BACK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.card-back{
+  background:var(--paper);border:4px solid var(--ink);
+  position:relative;overflow:hidden;
+}
+.back-header{
+  background:var(--green);padding:12px 16px;
+  border-bottom:3px solid var(--ink);
+  display:flex;justify-content:space-between;align-items:baseline;
+}
+.back-header-brand{
+  font-family:'Unbounded',sans-serif;font-weight:900;
+  font-size:18px;color:var(--yellow);text-transform:uppercase;
+  letter-spacing:-.3px;
+}
+.back-header-batch{
+  font-family:'Space Mono',monospace;font-size:8px;
+  color:rgba(240,194,41,.7);letter-spacing:.1em;
+}
+.back-body{padding:14px 16px 16px;}
+
+/* Product label style */
+.back-section-title{
+  font-family:'Space Mono',monospace;font-size:8px;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--ink);
+  border-bottom:2px solid var(--ink);padding-bottom:4px;margin-bottom:10px;margin-top:14px;
+}
+.back-section-title:first-child{margin-top:0;}
+
+/* Ingredients table */
+.ing-table{width:100%;border-collapse:collapse;margin-bottom:10px;}
+.ing-table td{
+  font-family:'Space Mono',monospace;font-size:8px;
+  color:var(--ink);padding:4px 0;letter-spacing:.06em;
+  border-bottom:1px dotted var(--fade);
+  vertical-align:middle;
+}
+.ing-table td:first-child{text-transform:uppercase;padding-right:10px;}
+.ing-table td:last-child{text-align:right;font-weight:700;color:var(--red);}
+.ing-table td:nth-child(2){width:80px;}
+
+/* Mini bar */
+.mini-bar-track{
+  height:4px;background:rgba(0,0,0,.1);
+  position:relative;overflow:hidden;flex:1;
+}
+.mini-bar-fill{height:100%;background:var(--red);}
+
+/* Directions */
+.directions-text{
+  font-family:'Space Mono',monospace;font-size:7.5px;
+  line-height:1.7;color:var(--ink);letter-spacing:.04em;
+}
+.directions-text li{margin-bottom:2px;list-style:none;}
+.directions-text li::before{content:'› ';}
+
+/* Warning box */
+.warning-box{
+  background:var(--yellow);border:3px solid var(--ink);
+  padding:10px 12px;margin:12px 0;
+  position:relative;
+}
+.warning-box::before{
+  content:'⚠ WARNING';display:block;
+  font-family:'Teko',sans-serif;font-size:13px;font-weight:700;
+  color:var(--red);letter-spacing:.08em;margin-bottom:4px;
+}
+.warning-text{
+  font-family:'Space Mono',monospace;font-size:7px;
+  line-height:1.65;color:var(--ink);letter-spacing:.04em;
+}
+
+/* Manufacturing info */
+.mfg-block{
+  display:flex;justify-content:space-between;align-items:center;
+  border:2px solid var(--ink);padding:8px 10px;
+  margin-top:10px;background:rgba(255,255,255,.4);
+}
+.mfg-text{
+  font-family:'Space Mono',monospace;font-size:6.5px;
+  color:var(--fade);letter-spacing:.06em;line-height:1.6;
+}
+.mfg-hindi{
+  font-family:serif;font-size:32px;color:var(--fade);
+  opacity:.5;
+}
+
+/* Back barcode */
+.barcode{
+  margin-top:12px;display:flex;flex-direction:column;align-items:center;
+}
+.barcode-bars{
+  display:flex;gap:1px;height:30px;align-items:stretch;
+}
+.barcode-bar{
+  width:2px;background:var(--ink);
+}
+.barcode-bar.wide{width:4px;}
+.barcode-bar.gap{width:3px;background:transparent;}
+.barcode-num{
+  font-family:'Space Mono',monospace;font-size:7px;
+  color:var(--fade);letter-spacing:.2em;margin-top:4px;
+}
+
+/* Decorative back pattern */
+.back-pattern-row{
+  display:flex;gap:4px;justify-content:center;
+  padding:6px 0;margin:8px 0;
+  border-top:1px solid var(--fade);border-bottom:1px solid var(--fade);
+}
+.bp-diamond{
+  width:8px;height:8px;background:var(--red);
+  transform:rotate(45deg);
+}
+.bp-circle{
+  width:8px;height:8px;border-radius:50%;
+  border:2px solid var(--ink);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SCREEN 6 — RESULT / DOWNLOAD
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.result-screen{
+  background:var(--cream);border:4px solid var(--ink);
+  position:relative;overflow:hidden;
+}
+.result-poster-bg{
+  position:absolute;top:-30px;left:-10px;
+  font-family:'Unbounded',sans-serif;font-weight:900;
+  font-size:130px;color:var(--green);opacity:.06;
+  text-transform:uppercase;pointer-events:none;letter-spacing:-4px;
+}
+.result-top{
+  background:var(--green);padding:20px 18px;
+  border-bottom:4px solid var(--ink);
+  display:flex;justify-content:space-between;align-items:flex-start;
+}
+.result-big{
+  font-family:'Unbounded',sans-serif;font-weight:900;
+  font-size:36px;color:var(--yellow);line-height:.85;
+  text-transform:uppercase;letter-spacing:-1px;
+}
+.result-check{
+  font-family:'Abril Fatface',serif;font-size:54px;
+  color:var(--yellow);line-height:1;
+}
+.result-sub{
+  font-family:'Space Mono',monospace;font-size:8px;
+  color:rgba(240,194,41,.7);letter-spacing:.14em;
+  margin-top:8px;
+}
+.result-body{padding:18px;}
+.result-mini-card{
+  border:3px solid var(--ink);margin-bottom:16px;
+  background:var(--paper);display:flex;align-items:stretch;
+  box-shadow:5px 5px 0 var(--ink);
+}
+.rmc-left{
+  width:7px;
+  background:repeating-linear-gradient(180deg,
+    var(--red) 0,var(--red) 10px,
+    var(--yellow) 10px,var(--yellow) 20px,
+    var(--green) 20px,var(--green) 30px
+  );
+}
+.rmc-body{padding:12px 14px;flex:1;}
+.rmc-name{
+  font-family:'Unbounded',sans-serif;font-weight:900;
+  font-size:20px;color:var(--red);line-height:.9;
+  text-transform:uppercase;
+}
+.rmc-title{
+  font-family:'Abril Fatface',serif;font-size:13px;
+  color:var(--ink);margin:4px 0 8px;
+}
+.rmc-stack{
+  font-family:'Space Mono',monospace;font-size:7px;
+  color:var(--fade);letter-spacing:.1em;
+}
+.rmc-badge{
+  font-family:'Teko',sans-serif;font-size:11px;font-weight:700;
+  color:var(--green);letter-spacing:.08em;margin-top:6px;
+}
+
+/* Action buttons */
+.actions-grid{display:flex;flex-direction:column;gap:10px;}
+.act-btn{
+  border:3px solid var(--ink);padding:14px;
+  font-family:'Unbounded',sans-serif;font-size:13px;font-weight:900;
+  letter-spacing:.04em;text-transform:uppercase;cursor:pointer;
+  text-align:center;
+}
+.act-btn.primary{
+  background:var(--red);color:var(--yellow);
+  box-shadow:4px 4px 0 var(--ink);
+}
+.act-btn.x{background:var(--ink);color:var(--cream);}
+.act-btn.ghost{background:transparent;color:var(--ink);}
+
+.caption-box{
+  background:var(--paper);border:2px dashed var(--fade);
+  padding:12px;margin-top:14px;
+}
+.caption-label{
+  font-family:'Teko',sans-serif;font-size:12px;font-weight:700;
+  color:var(--red);letter-spacing:.08em;margin-bottom:6px;
+}
+.caption-text{
+  font-family:'Space Mono',monospace;font-size:7.5px;
+  color:var(--ink);line-height:1.65;letter-spacing:.04em;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SCREEN 7 — PFP / AVATAR VERSION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.pfp-outer{
+  width:280px;height:280px;border-radius:50%;
+  border:6px solid var(--ink);overflow:hidden;
+  position:relative;margin:0 auto;
+  background:var(--red);
+  box-shadow:8px 8px 0 var(--ink);
+}
+.pfp-bg-circle{
+  position:absolute;top:-20px;left:-20px;right:-20px;
+  height:60%;background:var(--yellow);border-radius:0 0 50% 50%;
+}
+.pfp-name{
+  position:absolute;bottom:30px;left:0;right:0;
+  font-family:'Unbounded',sans-serif;font-weight:900;
+  font-size:22px;color:var(--cream);text-transform:uppercase;
+  text-align:center;letter-spacing:-0.5px;
+  text-shadow:2px 2px 0 var(--ink);z-index:3;
+}
+.pfp-title-bar{
+  position:absolute;bottom:0;left:0;right:0;
+  background:var(--ink);padding:6px 10px;
+  font-family:'Space Mono',monospace;font-size:7px;
+  color:var(--yellow);letter-spacing:.1em;text-align:center;z-index:3;
+}
+.pfp-top-label{
+  position:absolute;top:16px;left:0;right:0;z-index:3;
+  text-align:center;
+  font-family:'Space Mono',monospace;font-size:7px;
+  color:var(--red);letter-spacing:.15em;text-transform:uppercase;
+}
+.pfp-person{
+  position:absolute;bottom:40px;left:50%;transform:translateX(-50%);
+  z-index:2;font-size:80px;/* placeholder emoji person */
+}
+.pfp-corner-orn{
+  position:absolute;
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SCREEN 1: LANDING PAGE HERO                                    -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="screen-label">01 · LANDING PAGE — DESKTOP HERO</div>
+<div class="hero">
+  <div class="pbt-hacker poster-bg-text">HACK<br>HACK</div>
+  <div class="pbt-goa poster-bg-text">GOA</div>
+  <div class="pbt-2026 poster-bg-text">2026</div>
+
+  <!-- Decorative SVG: hibiscus top right -->
+  <svg class="hero-flower-tr" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="50" cy="50" rx="30" ry="15" fill="#E8407A" opacity=".8" transform="rotate(0 50 50)"/>
+    <ellipse cx="50" cy="50" rx="30" ry="15" fill="#E8407A" opacity=".8" transform="rotate(45 50 50)"/>
+    <ellipse cx="50" cy="50" rx="30" ry="15" fill="#E8407A" opacity=".8" transform="rotate(90 50 50)"/>
+    <ellipse cx="50" cy="50" rx="30" ry="15" fill="#E8407A" opacity=".8" transform="rotate(135 50 50)"/>
+    <circle cx="50" cy="50" r="12" fill="#F0C229"/>
+    <circle cx="50" cy="50" r="6" fill="#C8001E"/>
+  </svg>
+
+  <!-- Decorative SVG: lotus bottom left -->
+  <svg class="hero-flower-bl" viewBox="0 0 130 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="65" cy="75" rx="20" ry="35" fill="#F5EDD8" opacity=".9" transform="rotate(-20 65 75)"/>
+    <ellipse cx="65" cy="75" rx="20" ry="35" fill="#F5EDD8" opacity=".9" transform="rotate(0 65 75)"/>
+    <ellipse cx="65" cy="75" rx="20" ry="35" fill="#F5EDD8" opacity=".9" transform="rotate(20 65 75)"/>
+    <ellipse cx="65" cy="75" rx="18" ry="30" fill="#F0C229" opacity=".7" transform="rotate(-10 65 75)"/>
+    <ellipse cx="65" cy="75" rx="18" ry="30" fill="#F0C229" opacity=".7" transform="rotate(10 65 75)"/>
+    <circle cx="65" cy="65" r="12" fill="#F0C229"/>
+    <!-- leaves -->
+    <ellipse cx="30" cy="90" rx="22" ry="10" fill="#2A7A4B" opacity=".6" transform="rotate(-15 30 90)"/>
+    <ellipse cx="100" cy="95" rx="22" ry="10" fill="#2A7A4B" opacity=".6" transform="rotate(10 100 95)"/>
+  </svg>
+
+  <div class="border-strip-top"></div>
+
+  <div class="windowbar">
+    <div class="windowbar-title">⬛ HH GOA BUILDER PAINT v2.26 — [UNTITLED.BUILDER]</div>
+    <div class="wbtns">
+      <div class="wbtn" style="background:#E8407A;"></div>
+      <div class="wbtn" style="background:#F0C229;"></div>
+      <div class="wbtn" style="background:#2A7A4B;"></div>
+    </div>
+  </div>
+  <div class="menubar">
+    <span class="menuitem">File</span>
+    <span class="menuitem">Edit</span>
+    <span class="menuitem" style="text-decoration:underline;text-decoration-style:dotted;">Builder</span>
+    <span class="menuitem">View</span>
+    <span class="menuitem">Jugaad</span>
+    <span class="menuitem">Help</span>
+  </div>
+
+  <div class="hero-body">
+    <!-- Annotation cluster top right -->
+    <div class="hero-annotation">
+      <div class="anno-stamp">
+        <div class="anno-stamp-text">OPEN<br>TRIALS<br>AUG '26</div>
+      </div>
+      <div class="anno-pill">247 BUILDERS SELECTED</div>
+      <div class="anno-pill" style="background:var(--pink);transform:rotate(1.5deg);">★ BUILT IN GOA ★</div>
+    </div>
+
+    <!-- Diagonal eyebrow -->
+    <div class="diagonal-band">
+      <div class="diagonal-band-text">// हैकर हाउस में आपका स्वागत है · welcome, builder</div>
+    </div>
+
+    <!-- Giant poster headline -->
+    <div class="poster-sub-hindi">हैकर हाउस</div>
+    <div class="poster-headline">
+      HACKER<br>
+      HOUSE<br>
+      <span class="accent-pink">GOA</span><span class="accent-red" style="font-size:.55em;vertical-align:top;margin-top:.15em;display:inline-block;">★</span>
+    </div>
+
+    <div class="year-pill">2026 ·  OCT 28–31</div>
+
+    <!-- Inner computer window -->
+    <div class="inner-window">
+      <div class="inner-window-top">
+        <span>NEW FILE — BUILDER_IDENTITY.ART</span>
+        <span>hhgoa.com</span>
+      </div>
+      <div class="upload-area">
+        <span class="upload-big">UPLOAD<br>PORTRAIT →</span>
+        <span class="upload-arrow-big">⇪</span>
+        <div class="upload-sub">JPG · PNG · HEIC — ANY CROP WORKS — MOBILE OK</div>
+        <div style="margin-top:14px;font-family:'Space Mono',monospace;font-size:7px;color:var(--fade);letter-spacing:.1em;">// YOUR PHOTO BECOMES THE ARTWORK. NOT THE CARD.</div>
+      </div>
+    </div>
+
+    <!-- Illustrated coconut annotation -->
+    <div style="margin-top:12px;display:flex;gap:10px;align-items:center;">
+      <div style="font-family:'Space Mono',monospace;font-size:7px;color:rgba(245,237,216,.5);letter-spacing:.1em;">
+        🥥 BEST ENJOYED NEAR THE ARABIAN SEA
+      </div>
+      <div style="flex:1;height:1px;background:rgba(245,237,216,.15);"></div>
+      <div style="font-family:'Space Mono',monospace;font-size:7px;color:rgba(245,237,216,.5);">
+        BUILT IN GOA · MADE TO SHIP
+      </div>
+    </div>
+  </div>
+
+  <div class="ticker-outer">
+    <span class="ticker-inner">
+      🌊 JUGAAD KARO · SHIP KARO · REPEAT 🌴 GOA COMPATIBILITY: 100% 🥥 247 BUILDERS FROM 20,500+ APPLICANTS ★ $50K+ BOUNTIES 🌺 PRIVATE BEACH RESORT 🐚 AI × CRYPTO 🛵 WORKS ON MY MACHINE ⚡ COFFEE: CRITICAL ✦ JUGAAD KARO · SHIP KARO · REPEAT 🌊 GOA COMPATIBILITY: 100% 🌴 247 BUILDERS ★ $50K+ BOUNTIES 🥥 PRIVATE BEACH RESORT 🛵 AI × CRYPTO 🌺 WORKS ON MY MACHINE ⚡
+    </span>
+  </div>
+
+  <div class="hero-info-row">
+    <span class="info-chip">// BUILDER DETECTED</span>
+    <span class="info-chip"><strong>28–31 OCTOBER · GOA, INDIA</strong></span>
+    <span class="info-chip">hhgoa.com</span>
+  </div>
+
+  <div class="border-strip-bottom"></div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SCREEN 2: BUILDER FORM                                         -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="screen-label">02 · BUILDER CUSTOMISATION SCREEN</div>
+<div class="form-screen">
+  <div class="form-poster-bg">BUILD</div>
+
+  <div class="border-strip-top"></div>
+  <div class="windowbar">
+    <div class="windowbar-title">⬛ NAAM KYA HAI, BUILDER? — STEP 2 OF 3</div>
+    <div class="wbtns">
+      <div class="wbtn" style="background:#C8001E;"></div>
+      <div class="wbtn" style="background:#F0C229;"></div>
+      <div class="wbtn" style="background:#2A7A4B;"></div>
+    </div>
+  </div>
+
+  <div class="form-body">
+    <!-- Header -->
+    <div class="form-eyebrow">// IDENTITY CONFIGURATION IN PROGRESS</div>
+    <div class="form-heading-big">
+      WHO'S<br>
+      <span class="hl">BUILDING?</span><br>
+    </div>
+
+    <!-- Name field -->
+    <div class="field-group">
+      <div class="field-label">WHAT DO WE CALL YOU? / Your name</div>
+      <input class="field-inp" value="SRISHTI DUGGAL" readonly>
+      <div class="field-decoration">NAAM ✓</div>
+    </div>
+
+    <!-- Stack field -->
+    <div class="field-group">
+      <div class="field-label">WHAT'S YOUR WEAPON OF CHOICE? / Your stack</div>
+      <input class="field-inp" value="REACT / TS / AI" readonly>
+      <div class="field-decoration">STACK ✓</div>
+    </div>
+
+    <!-- Role selector -->
+    <div class="tags-label">WHAT DO YOU BREAK AND FIX? / Your role</div>
+    <div class="tags-row">
+      <span class="tag active">Builder</span>
+      <span class="tag">Designer</span>
+      <span class="tag">Founder</span>
+      <span class="tag">AI Hacker</span>
+      <span class="tag">Chaos Agent</span>
+    </div>
+
+    <!-- Generated title -->
+    <div class="title-box">
+      <div class="title-box-name">THE PIXEL ALCHEMIST</div>
+      <div class="title-box-regen">↻ ROLL AGAIN</div>
+    </div>
+
+    <!-- Decorative divider before CTA -->
+    <div class="back-pattern-row" style="margin:14px 0;">
+      <div class="bp-diamond"></div><div class="bp-circle"></div>
+      <div class="bp-diamond"></div><div class="bp-circle"></div>
+      <div class="bp-diamond"></div><div class="bp-circle"></div>
+      <div class="bp-diamond"></div>
+    </div>
+
+    <button class="generate-btn">GENERATE MY ARTIFACT</button>
+  </div>
+  <div class="border-strip-bottom"></div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SCREEN 3: SCANNING                                             -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="screen-label">03 · SCANNING / AUTHENTICATION STATE</div>
+<div class="scan-screen">
+  <div class="scan-bg-text">SCAN</div>
+  <div class="border-strip-top"></div>
+  <div class="windowbar" style="border-color:var(--yellow);">
+    <div class="windowbar-title">⬛ BUILDER AUTHENTICATION IN PROGRESS</div>
+    <div class="wbtns">
+      <div class="wbtn" style="background:var(--yellow);animation:pulse .8s ease infinite alternate;"></div>
+      <div class="wbtn" style="background:var(--fade);"></div>
+      <div class="wbtn" style="background:var(--fade);"></div>
+    </div>
+  </div>
+
+  <div class="scan-body">
+    <div class="scan-eyebrow">// IDENTITY AUTHENTICATION IN PROGRESS</div>
+    <div class="scan-headline">SCANNING<br>BUILDER…</div>
+
+    <div class="scan-line">
+      <div class="scan-icon done">✓</div>
+      <div class="scan-text-wrap">
+        <div class="scan-text-main done">SCANNING BUILDER VIBES</div>
+        <div class="scan-text-sub">FACE FOUND · AESTHETIC CONFIRMED</div>
+      </div>
+      <div class="scan-result">✓ OK</div>
+    </div>
+
+    <div class="scan-line">
+      <div class="scan-icon done">✓</div>
+      <div class="scan-text-wrap">
+        <div class="scan-text-main done">ANALYSING STACK POTENTIAL</div>
+        <div class="scan-text-sub">REACT / TYPESCRIPT / AI DETECTED</div>
+      </div>
+      <div class="scan-result">✓ OK</div>
+    </div>
+
+    <div class="scan-line">
+      <div class="scan-icon done">✓</div>
+      <div class="scan-text-wrap">
+        <div class="scan-text-main done">DETECTING JUGAAD COEFFICIENT</div>
+        <div class="scan-text-sub">CHECKING CHAOS TOLERANCE</div>
+      </div>
+      <div class="scan-result" style="color:var(--orange);">✓ HIGH</div>
+    </div>
+
+    <div class="scan-line">
+      <div class="scan-icon active">→</div>
+      <div class="scan-text-wrap">
+        <div class="scan-text-main active">MEASURING SHIP VELOCITY…</div>
+        <div class="scan-text-sub">CALCULATING 3AM PRODUCTIVITY INDEX</div>
+      </div>
+      <div class="scan-result" style="color:var(--yellow);">97%</div>
+    </div>
+
+    <div class="scan-line">
+      <div class="scan-icon wait">○</div>
+      <div class="scan-text-wrap">
+        <div class="scan-text-main">CALCULATING GOA COMPATIBILITY</div>
+        <div class="scan-text-sub">CHECKING ARABIAN SEA PROXIMITY TOLERANCE</div>
+      </div>
+    </div>
+
+    <div class="scan-line">
+      <div class="scan-icon wait">○</div>
+      <div class="scan-text-wrap">
+        <div class="scan-text-main">GENERATING ARTIFACT…</div>
+        <div class="scan-text-sub">COMPOSING VINTAGE POSTER · APPLYING INK TEXTURES</div>
+      </div>
+    </div>
+
+    <div class="scan-progress-wrap">
+      <div class="scan-progress-label">
+        <span>BUILDER AUTHENTICATION</span>
+        <span style="color:var(--yellow);">68%</span>
+      </div>
+      <div class="scan-progress-track">
+        <div class="scan-progress-fill"></div>
+        <div class="scan-progress-text">JUGAAD IN PROGRESS · PLEASE HOLD</div>
+      </div>
+    </div>
+
+    <div class="gen-bar" style="margin-top:16px;">
+      GENERATING ARTIFACT · <span>GOA COMPATIBILITY: CALCULATING</span> · DO NOT CLOSE TAB<br>
+      <span style="color:var(--fade);font-size:6px;margin-top:4px;display:block;">// COFFEE: CRITICAL · 404: SLEEP NOT FOUND · WORKS ON MY MACHINE</span>
+    </div>
+  </div>
+  <div class="border-strip-bottom"></div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SCREEN 4: BUILDER ARTIFACT — FRONT                             -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="screen-label">04 · GENERATED BUILDER ARTIFACT — FRONT (VINTAGE POSTER STYLE)</div>
+<div class="artifact">
+  <!-- Background elements -->
+  <div class="art-bg-circle"></div>
+  <div class="art-bg-stripe"></div>
+  <div class="art-name-giant">SRISHTI<br>DUGGAL</div>
+
+  <!-- Decorative SVG behind photo — large hibiscus -->
+  <svg style="position:absolute;top:60px;left:50%;transform:translateX(-50%);width:260px;height:260px;opacity:0.12;pointer-events:none;" viewBox="0 0 260 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="130" cy="130" rx="80" ry="40" fill="#E8407A" transform="rotate(0 130 130)"/>
+    <ellipse cx="130" cy="130" rx="80" ry="40" fill="#F0C229" transform="rotate(36 130 130)"/>
+    <ellipse cx="130" cy="130" rx="80" ry="40" fill="#E8407A" transform="rotate(72 130 130)"/>
+    <ellipse cx="130" cy="130" rx="80" ry="40" fill="#F0C229" transform="rotate(108 130 130)"/>
+    <ellipse cx="130" cy="130" rx="80" ry="40" fill="#E8407A" transform="rotate(144 130 130)"/>
+    <circle cx="130" cy="130" r="32" fill="#C8001E"/>
+    <circle cx="130" cy="130" r="16" fill="#F0C229"/>
+  </svg>
+
+  <!-- Wave SVG along bottom of photo area -->
+  <svg style="position:absolute;bottom:80px;left:0;right:0;width:100%;height:40px;opacity:0.15;pointer-events:none;" viewBox="0 0 400 40" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,20 C50,0 100,40 150,20 C200,0 250,40 300,20 C350,0 400,40 400,20 L400,40 L0,40 Z" fill="#2B5FA0"/>
+  </svg>
+
+  <div class="art-top-band"></div>
+  <div class="art-title-plate">
+    <div>
+      <div class="art-hh-logo">HACKER<br>HOUSE
+        <small>// BUILDER IDENTITY ARTIFACT #247</small>
+      </div>
+    </div>
+    <div class="art-hindi-block">
+      <div class="art-hindi-big">हैकर हाउस<br>गोवा</div>
+      <div class="art-hindi-small">OCT 28–31 · 2026</div>
+    </div>
+  </div>
+
+  <div class="art-main">
+    <!-- Photo zone with overlapping elements -->
+    <div class="art-photo-zone" style="position:relative;margin-bottom:0;">
+
+      <!-- Sticker overlapping top right of photo -->
+      <div style="position:absolute;top:8px;right:0;z-index:10;transform:rotate(4deg);">
+        <div class="sticker sticker-stamp">★ QUALITY<br>BUILDER ★</div>
+      </div>
+
+      <!-- Annotation overlapping top left -->
+      <div style="position:absolute;top:12px;left:0;z-index:10;transform:rotate(-3deg);">
+        <div class="sticker sticker-badge">// BUILDER<br>DETECTED</div>
+      </div>
+
+      <!-- The photo frame — person goes here as editorial cutout -->
+      <div class="art-photo-frame" style="background:linear-gradient(180deg, var(--yellow) 0%, var(--cream) 100%);min-height:280px;">
+        <!-- Person silhouette placeholder -->
+        <div style="
+          width:100%;height:280px;display:flex;align-items:center;justify-content:center;
+          position:relative;
+        ">
+          <!-- Illustrated background elements behind person -->
+          <svg style="position:absolute;bottom:0;left:10px;width:60px;height:60px;opacity:.4;" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Scooter silhouette -->
+            <ellipse cx="15" cy="48" rx="10" ry="10" stroke="#1A1008" stroke-width="3" fill="none"/>
+            <ellipse cx="45" cy="48" rx="10" ry="10" stroke="#1A1008" stroke-width="3" fill="none"/>
+            <path d="M15,48 L25,30 L35,30 L45,48" stroke="#1A1008" stroke-width="2.5" fill="none"/>
+            <path d="M30,30 L30,20 L20,20" stroke="#1A1008" stroke-width="2" fill="none"/>
+          </svg>
+          <svg style="position:absolute;top:10px;right:15px;width:50px;height:70px;opacity:.35;" viewBox="0 0 50 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Coconut tree -->
+            <line x1="25" y1="70" x2="25" y2="20" stroke="#2A7A4B" stroke-width="3"/>
+            <ellipse cx="25" cy="18" rx="20" ry="14" fill="#2A7A4B" opacity=".8"/>
+            <ellipse cx="18" cy="25" rx="8" ry="5" fill="#2A7A4B" transform="rotate(-20 18 25)"/>
+            <circle cx="28" cy="26" r="5" fill="#D4511A"/>
+            <circle cx="22" cy="28" r="4" fill="#8BC34A"/>
+          </svg>
+
+          <!-- The person placeholder -->
+          <div style="
+            font-size:120px;line-height:1;
+            position:relative;z-index:2;
+            filter:drop-shadow(3px 3px 0 rgba(0,0,0,.2));
+            opacity:.7;
+          ">👤</div>
+
+          <!-- Typography behind/over person -->
+          <div style="
+            position:absolute;bottom:20px;left:0;right:0;z-index:3;
+            font-family:'Unbounded',sans-serif;font-weight:900;
+            font-size:70px;color:var(--red);opacity:.07;
+            text-align:center;text-transform:uppercase;letter-spacing:-3px;
+            pointer-events:none;
+          ">SHIP</div>
+
+          <!-- Bottom sticker on person -->
+          <div style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%) rotate(-1deg);z-index:4;">
+            <div class="sticker sticker-pill" style="background:var(--blue);font-family:'Space Mono',monospace;font-size:7px;padding:3px 8px;white-space:nowrap;">
+              PHOTO CUTOUT GOES HERE
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Floating sticker bottom left -->
+      <div style="position:absolute;bottom:-8px;left:-4px;z-index:10;transform:rotate(2deg);">
+        <div class="sticker sticker-label">100% SHIPPED · BUILT IN GOA</div>
+      </div>
+    </div>
+
+    <!-- Big overlapping name -->
+    <div style="margin-top:14px;position:relative;">
+      <div style="position:absolute;top:-30px;right:0;z-index:5;transform:rotate(-2deg);">
+        <div class="art-seal">
+          <div class="art-seal-num">100%</div>
+          <div class="art-seal-text">GOA COMPAT.</div>
+        </div>
+      </div>
+
+      <div class="art-name-display">
+        <span class="first">SRISHTI</span><br>
+        <span class="last">DUGGAL</span>
+      </div>
+    </div>
+
+    <!-- Title as hand-painted label -->
+    <div>
+      <div class="art-title-label">
+        <div class="art-title-text">THE PIXEL ALCHEMIST</div>
+      </div>
+    </div>
+
+    <!-- Stack as ingredients -->
+    <div class="art-ingredients">
+      <div class="ing-row">
+        <span>REACT</span>
+        <div style="flex:1;margin:0 8px;height:3px;background:var(--red);opacity:.3;"></div>
+        <span class="ing-pct">35%</span>
+      </div>
+      <div class="ing-row">
+        <span>TYPESCRIPT</span>
+        <div style="flex:1;margin:0 8px;height:3px;background:var(--orange);opacity:.3;"></div>
+        <span class="ing-pct" style="color:var(--orange);">25%</span>
+      </div>
+      <div class="ing-row">
+        <span>AI / ML</span>
+        <div style="flex:1;margin:0 8px;height:3px;background:var(--green);opacity:.3;"></div>
+        <span class="ing-pct" style="color:var(--green);">40%</span>
+      </div>
+    </div>
+
+    <!-- Easter egg row -->
+    <div class="easter-row">
+      <span class="easter-chip">404: SLEEP NOT FOUND</span>
+      <span class="easter-chip">WORKS ON MY MACHINE</span>
+      <span class="easter-chip">COFFEE: CRITICAL</span>
+      <span class="easter-chip">JUGAAD IN PROGRESS</span>
+    </div>
+  </div>
+
+  <!-- Bottom band -->
+  <div class="art-top-band"></div>
+  <div class="art-bottom-band">
+    <div class="art-bottom-band-l">MADE IN GOA · BUILT TO SHIP · #FrameInGoa · OCT 28–31 2026</div>
+    <div class="art-bottom-band-r">HHGOA.COM</div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SCREEN 5: ARTIFACT BACK                                        -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="screen-label">05 · BUILDER ARTIFACT — BACK (PRODUCT LABEL STYLE)</div>
+<div class="card-back">
+  <div class="art-top-band"></div>
+  <div class="back-header">
+    <div>
+      <div class="back-header-brand">PRODUCT<br>INFORMATION</div>
+      <div class="back-header-batch" style="margin-top:4px;">CERTIFIED BUILDER · HACKER HOUSE GOA 2026</div>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-family:'Space Mono',monospace;font-size:7px;color:rgba(240,194,41,.7);letter-spacing:.1em;">BATCH NO.</div>
+      <div style="font-family:'Abril Fatface',serif;font-size:22px;color:var(--yellow);">GOA-2026-247</div>
+    </div>
+  </div>
+
+  <div class="back-body">
+    <!-- Pattern divider -->
+    <div class="back-pattern-row">
+      <div class="bp-diamond"></div><div class="bp-circle"></div>
+      <div class="bp-diamond"></div><div class="bp-circle"></div>
+      <div class="bp-diamond"></div><div class="bp-circle"></div>
+      <div class="bp-diamond"></div><div class="bp-circle"></div>
+      <div class="bp-diamond"></div>
+    </div>
+
+    <!-- Ingredients -->
+    <div class="back-section-title">INGREDIENTS (PER BUILDER)</div>
+    <table class="ing-table">
+      <tr>
+        <td>REACT + TYPESCRIPT</td>
+        <td><div class="mini-bar-track"><div class="mini-bar-fill" style="width:40%;"></div></div></td>
+        <td>40%</td>
+      </tr>
+      <tr>
+        <td>CONTROLLED CHAOS</td>
+        <td><div class="mini-bar-track"><div class="mini-bar-fill" style="width:25%;background:var(--orange);"></div></div></td>
+        <td style="color:var(--orange);">25%</td>
+      </tr>
+      <tr>
+        <td>BLACK COFFEE (ARABICA)</td>
+        <td><div class="mini-bar-track"><div class="mini-bar-fill" style="width:15%;background:var(--ink);"></div></div></td>
+        <td style="color:var(--ink);">15%</td>
+      </tr>
+      <tr>
+        <td>GOA SUNLIGHT (D/W/V)</td>
+        <td><div class="mini-bar-track"><div class="mini-bar-fill" style="width:10%;background:var(--yellow);"></div></div></td>
+        <td style="color:var(--orange);">10%</td>
+      </tr>
+      <tr>
+        <td>QUESTIONABLE IDEAS</td>
+        <td><div class="mini-bar-track"><div class="mini-bar-fill" style="width:10%;background:var(--pink);"></div></div></td>
+        <td style="color:var(--pink);">10%</td>
+      </tr>
+    </table>
+
+    <div class="back-pattern-row" style="margin:8px 0;">
+      <div class="bp-diamond"></div><div class="bp-circle"></div>
+      <div class="bp-diamond"></div><div class="bp-circle"></div>
+      <div class="bp-diamond"></div>
+    </div>
+
+    <!-- Directions -->
+    <div class="back-section-title">DIRECTIONS FOR USE</div>
+    <ul class="directions-text">
+      <li>1. Apply one hackathon (minimum 4 days, maximum ∞).</li>
+      <li>2. Ship continuously. Do not wait for perfection.</li>
+      <li>3. Do not operate heavy machinery without caffeine.</li>
+      <li>4. Best used in proximity to the Arabian Sea.</li>
+      <li>5. Repeat as required. Jugaad liberally.</li>
+    </ul>
+
+    <!-- Warning box -->
+    <div class="warning-box">
+      <div class="warning-text">
+        May accidentally build something useful. Side effects include: shipping at 3am, unsolicited product demos, and an inexplicable fondness for Goa. Not responsible for bugs shipped to production.<br><br>
+        HANDLE PROD WITH CARE. KEEP AWAY FROM LEGACY CODEBASES. STORE IN A COOL, DRY, WIFI-ENABLED ENVIRONMENT.
+      </div>
+    </div>
+
+    <!-- Manufacturing info -->
+    <div class="mfg-block">
+      <div class="mfg-text">
+        MANUFACTURED AT:<br>
+        HACKER HOUSE GOA 2026<br>
+        PRIVATE BEACH RESORT · GOA, INDIA<br>
+        OCT 28–31 · 2026<br>
+        <br>
+        MFG. BY: 247PM STUDIO<br>
+        FOR: SRISHTI DUGGAL<br>
+        BEST BEFORE: INDEFINITE<br>
+        COUNTRY OF ORIGIN: 🇮🇳 INDIA<br>
+        <span style="color:var(--red);">★ BUILT IN GOA · 100% SHIPPED ★</span>
+      </div>
+      <div class="mfg-hindi">गोवा</div>
+    </div>
+
+    <!-- Barcode -->
+    <div class="barcode">
+      <div class="barcode-bars">
+        <div class="barcode-bar"></div><div class="barcode-bar wide"></div><div class="barcode-bar gap"></div>
+        <div class="barcode-bar"></div><div class="barcode-bar"></div><div class="barcode-bar gap"></div>
+        <div class="barcode-bar wide"></div><div class="barcode-bar"></div><div class="barcode-bar gap"></div>
+        <div class="barcode-bar"></div><div class="barcode-bar wide"></div><div class="barcode-bar"></div><div class="barcode-bar gap"></div>
+        <div class="barcode-bar"></div><div class="barcode-bar"></div><div class="barcode-bar wide"></div><div class="barcode-bar gap"></div>
+        <div class="barcode-bar"></div><div class="barcode-bar"></div><div class="barcode-bar gap"></div>
+        <div class="barcode-bar wide"></div><div class="barcode-bar"></div><div class="barcode-bar"></div><div class="barcode-bar gap"></div>
+        <div class="barcode-bar"></div><div class="barcode-bar wide"></div>
+      </div>
+      <div class="barcode-num">HH-GOA-2026-247-SRISHTI</div>
+    </div>
+  </div>
+  <div class="art-top-band"></div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SCREEN 6: RESULT / DOWNLOAD / SHARE                            -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="screen-label">06 · RESULT — DOWNLOAD + SHARE SCREEN</div>
+<div class="result-screen">
+  <div class="result-poster-bg">SHIP<br>SHIP</div>
+  <div class="border-strip-top"></div>
+  <div class="windowbar">
+    <div class="windowbar-title">⬛ ARTIFACT GENERATED · SRISHTI_DUGGAL.ART</div>
+    <div class="wbtns">
+      <div class="wbtn" style="background:#2A7A4B;"></div>
+      <div class="wbtn" style="background:#F0C229;"></div>
+      <div class="wbtn" style="background:#2A7A4B;"></div>
+    </div>
+  </div>
+
+  <div class="result-top">
+    <div>
+      <div class="result-big">IDENTITY<br>GENERATED.</div>
+      <div class="result-sub">// WELCOME TO THE HOUSE, BUILDER.<br>SHIP KARO. NOW.</div>
+    </div>
+    <div class="result-check">✓</div>
+  </div>
+
+  <div class="result-body">
+    <!-- Mini card preview -->
+    <div class="result-mini-card">
+      <div class="rmc-left"></div>
+      <div class="rmc-body">
+        <div class="rmc-name">SRISHTI<br>DUGGAL</div>
+        <div class="rmc-title">THE PIXEL ALCHEMIST</div>
+        <div class="rmc-stack">REACT / TYPESCRIPT / AI</div>
+        <div class="rmc-badge">★ GOA COMPATIBILITY: 100% ★</div>
+      </div>
+      <div style="display:flex;flex-direction:column;justify-content:space-between;padding:12px 10px;align-items:flex-end;">
+        <div style="font-family:'Space Mono',monospace;font-size:7px;color:var(--fade);letter-spacing:.1em;text-align:right;">HH GOA<br>2026</div>
+        <div style="font-family:serif;font-size:24px;color:var(--fade);">गोवा</div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions-grid">
+      <div class="act-btn primary">⬇ DOWNLOAD ARTIFACT</div>
+      <div class="act-btn x">POST TO X → #FrameInGoa</div>
+      <div class="act-btn ghost">↻ MAKE ANOTHER / REGEN TITLE</div>
+    </div>
+
+    <!-- Pre-filled caption -->
+    <div class="caption-box">
+      <div class="caption-label">// PRE-FILLED CAPTION:</div>
+      <div class="caption-text">
+        Just got my Builder Artifact from Hacker House Goa 2026.<br>
+        Shipping at a private beach resort in October.<br>
+        Find me there. 🌴🛵<br><br>
+        #FrameInGoa #HackerHouseGoa @247pmstudio
+      </div>
+    </div>
+
+    <div style="margin-top:16px;display:flex;justify-content:center;gap:4px;align-items:center;">
+      <div style="flex:1;height:1px;background:var(--fade);opacity:.3;"></div>
+      <div style="font-family:'Space Mono',monospace;font-size:7px;color:var(--fade);letter-spacing:.1em;padding:0 8px;">BUILT IN GOA · MADE TO SHIP · hhgoa.com</div>
+      <div style="flex:1;height:1px;background:var(--fade);opacity:.3;"></div>
+    </div>
+  </div>
+  <div class="border-strip-bottom"></div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- SCREEN 7: PFP / SOCIAL AVATAR VERSION                          -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="screen-label">07 · PFP / SOCIAL AVATAR VERSION</div>
+<div style="background:var(--ink);padding:28px;border:4px solid var(--yellow);display:flex;flex-direction:column;align-items:center;gap:16px;">
+
+  <!-- Main round PFP -->
+  <div class="pfp-outer">
+    <!-- Yellow top half background -->
+    <div class="pfp-bg-circle"></div>
+
+    <!-- Red bottom half -->
+    <div style="position:absolute;bottom:0;left:0;right:0;height:50%;background:var(--red);z-index:0;"></div>
+
+    <!-- Decorative inner border -->
+    <div style="
+      position:absolute;inset:6px;border-radius:50%;
+      border:3px solid rgba(240,194,41,.4);z-index:5;pointer-events:none;
+    "></div>
+
+    <!-- Illustrated hibiscus behind person -->
+    <svg style="position:absolute;top:20px;right:20px;width:70px;height:70px;opacity:.3;z-index:1;" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="35" cy="35" rx="22" ry="11" fill="#E8407A" transform="rotate(0 35 35)"/>
+      <ellipse cx="35" cy="35" rx="22" ry="11" fill="#F0C229" transform="rotate(60 35 35)"/>
+      <ellipse cx="35" cy="35" rx="22" ry="11" fill="#E8407A" transform="rotate(120 35 35)"/>
+      <circle cx="35" cy="35" r="9" fill="#C8001E"/>
+    </svg>
+
+    <!-- Person (in real version: photo cutout) -->
+    <div class="pfp-person">👤</div>
+
+    <!-- HH GOA label at top -->
+    <div class="pfp-top-label">HH GOA 2026</div>
+
+    <!-- Name -->
+    <div class="pfp-name">SRISHTI</div>
+
+    <!-- Bottom title bar -->
+    <div class="pfp-title-bar">THE PIXEL ALCHEMIST</div>
+  </div>
+
+  <!-- Square version note -->
+  <div style="font-family:'Space Mono',monospace;font-size:8px;color:var(--fade);letter-spacing:.12em;text-align:center;">
+    // AVATAR · PROFILE PICTURE · TWITTER / X · INSTAGRAM<br>
+    <span style="color:var(--yellow);margin-top:4px;display:block;">1:1 SQUARE VERSION ALSO GENERATED</span>
+  </div>
+
+  <!-- Square PFP version -->
+  <div style="
+    width:200px;height:200px;
+    background:var(--cream);border:4px solid var(--ink);
+    position:relative;overflow:hidden;
+    box-shadow:5px 5px 0 var(--yellow);
+  ">
+    <div style="height:6px;background:repeating-linear-gradient(90deg,var(--red) 0,var(--red) 10px,var(--yellow) 10px,var(--yellow) 20px,var(--green) 20px,var(--green) 30px);"></div>
+    <div style="background:var(--yellow);height:80px;display:flex;align-items:center;justify-content:center;position:relative;">
+      <!-- Hibiscus bg -->
+      <svg style="position:absolute;right:-10px;top:-10px;width:80px;height:80px;opacity:.2;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="40" cy="40" rx="26" ry="13" fill="#E8407A" transform="rotate(0 40 40)"/>
+        <ellipse cx="40" cy="40" rx="26" ry="13" fill="#C8001E" transform="rotate(45 40 40)"/>
+        <ellipse cx="40" cy="40" rx="26" ry="13" fill="#E8407A" transform="rotate(90 40 40)"/>
+        <ellipse cx="40" cy="40" rx="26" ry="13" fill="#C8001E" transform="rotate(135 40 40)"/>
+        <circle cx="40" cy="40" r="10" fill="#F0C229"/>
+      </svg>
+      <div style="font-size:48px;position:relative;z-index:2;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.15));">👤</div>
+    </div>
+    <div style="padding:8px 10px;">
+      <div style="font-family:'Unbounded',sans-serif;font-weight:900;font-size:16px;color:var(--red);text-transform:uppercase;line-height:.9;">SRISHTI<br>DUGGAL</div>
+      <div style="font-family:'Space Mono',monospace;font-size:6px;color:var(--fade);letter-spacing:.1em;margin-top:4px;">THE PIXEL ALCHEMIST</div>
+    </div>
+    <div style="height:6px;background:repeating-linear-gradient(90deg,var(--green) 0,var(--green) 10px,var(--yellow) 10px,var(--yellow) 20px,var(--pink) 20px,var(--pink) 30px);position:absolute;bottom:0;left:0;right:0;"></div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- MOBILE VERSION NOTE                                            -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="screen-label">08 · MOBILE HOMEPAGE — COMPACT POSTER</div>
+<div style="max-width:375px;margin:0 auto;">
+<div class="hero" style="min-height:auto;">
+  <div class="border-strip-top"></div>
+  <div class="windowbar">
+    <div class="windowbar-title" style="font-size:8px;">⬛ HH GOA BUILDER PAINT v2.26</div>
+    <div class="wbtns">
+      <div class="wbtn" style="background:#E8407A;"></div>
+      <div class="wbtn" style="background:#F0C229;"></div>
+      <div class="wbtn" style="background:#2A7A4B;"></div>
+    </div>
+  </div>
+
+  <div class="hero-body" style="padding:18px 16px;">
+    <!-- Annotation -->
+    <div class="hero-annotation" style="top:18px;right:12px;">
+      <div class="anno-stamp" style="padding:6px 8px;">
+        <div class="anno-stamp-text" style="font-size:10px;">OPEN<br>TRIALS</div>
+      </div>
+    </div>
+
+    <!-- Headline (smaller for mobile) -->
+    <div class="poster-sub-hindi" style="font-size:15px;">हैकर हाउस</div>
+    <div class="poster-headline" style="font-size:56px;">
+      HACKER<br>HOUSE<br>
+      <span class="accent-pink">GOA</span>
+    </div>
+    <div class="year-pill" style="font-size:18px;">2026</div>
+
+    <!-- Upload -->
+    <div class="inner-window" style="margin-top:14px;">
+      <div class="inner-window-top">
+        <span>NEW FILE</span><span>hhgoa.com</span>
+      </div>
+      <div class="upload-area" style="padding:18px 14px;margin:10px;">
+        <span class="upload-big" style="font-size:20px;">UPLOAD<br>PORTRAIT →</span>
+        <span class="upload-arrow-big" style="font-size:32px;">⇪</span>
+        <div class="upload-sub" style="font-size:7px;">TAP TO UPLOAD · CAMERA OK</div>
+      </div>
+    </div>
+
+    <!-- Quick stats -->
+    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+      <div style="background:rgba(240,194,41,.15);border:1px solid rgba(240,194,41,.3);padding:4px 8px;font-family:'Space Mono',monospace;font-size:7px;color:rgba(245,237,216,.6);letter-spacing:.08em;">247 BUILDERS</div>
+      <div style="background:rgba(240,194,41,.15);border:1px solid rgba(240,194,41,.3);padding:4px 8px;font-family:'Space Mono',monospace;font-size:7px;color:rgba(245,237,216,.6);letter-spacing:.08em;">$50K+ BOUNTIES</div>
+      <div style="background:rgba(240,194,41,.15);border:1px solid rgba(240,194,41,.3);padding:4px 8px;font-family:'Space Mono',monospace;font-size:7px;color:rgba(245,237,216,.6);letter-spacing:.08em;">GOA, INDIA</div>
+    </div>
+  </div>
+
+  <div class="ticker-outer">
+    <span class="ticker-inner">
+      🌊 JUGAAD KARO · SHIP KARO 🌴 GOA COMPATIBILITY: 100% 🥥 247 BUILDERS ★ $50K+ BOUNTIES 🛵 WORKS ON MY MACHINE ⚡ JUGAAD KARO · SHIP KARO 🌴 GOA COMPATIBILITY: 100% 🥥 247 BUILDERS ★ $50K+ BOUNTIES 🛵 WORKS ON MY MACHINE ⚡
+    </span>
+  </div>
+  <div class="border-strip-bottom"></div>
+</div>
+</div>
+
+<!-- Footer note -->
+<div style="margin:20px 0;text-align:center;font-family:'Space Mono',monospace;font-size:8px;color:#444;letter-spacing:.1em;line-height:1.8;">
+  HH GOA BUILDER PAINT · V2 · ART DIRECTION UPGRADE<br>
+  INDIAN VINTAGE PRINT + GOA + EARLY INTERNET + BUILDER CULTURE<br>
+  <span style="color:#666;">// JUGAAD KARO · SHIP KARO · REPEAT</span>
+</div>
+
+</body>
+</html>

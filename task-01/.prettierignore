@@ -1,0 +1,6 @@
+dist
+node_modules
+package-lock.json
+test-screenshots
+*.md
+hh_goa_2026_builder_id_FINAL.html
