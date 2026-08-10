@@ -1,4 +1,17 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
+
+const SCAN_LINES = [
+  { main: 'SCANNING BUILDER VIBES', sub: 'FACE FOUND · AESTHETIC CONFIRMED', result: '✓ OK' },
+  { main: 'SCANNING BUILDER AURA', sub: 'GOA FREQUENCY LOCKED', result: '✓ OK' },
+  { main: 'DETECTING JUGAAD COEFFICIENT', sub: 'CHECKING CHAOS TOLERANCE', result: '✓ HIGH' },
+  {
+    main: 'MEASURING SHIP VELOCITY…',
+    sub: 'CALCULATING 3AM PRODUCTIVITY INDEX',
+    result: '97%',
+  },
+  { main: 'CALCULATING GOA COMPATIBILITY', sub: 'CHECKING ARABIAN SEA PROXIMITY TOLERANCE' },
+  { main: 'GENERATING ARTIFACT…', sub: 'COMPOSING VINTAGE POSTER · APPLYING INK TEXTURES' },
+];
 
 /**
  * ScanningScreen Component - Phase 5 Implementation
@@ -6,28 +19,8 @@ import React, { useState, useEffect, useMemo } from 'react';
  * Matches hh_goa_v2_upgraded.html Screen 3 exactly
  * Triggers card rendering during animation to hide render time
  */
-export const ScanningScreen = ({ formData, onComplete }) => {
+export const ScanningScreen = ({ onComplete }) => {
   const [lineProgress, setLineProgress] = useState(0);
-
-  const SCAN_LINES = useMemo(
-    () => [
-      { main: 'SCANNING BUILDER VIBES', sub: 'FACE FOUND · AESTHETIC CONFIRMED', result: '✓ OK' },
-      {
-        main: `ANALYSING STACK POTENTIAL`,
-        sub: `${formData.stack || 'REACT'} DETECTED`,
-        result: '✓ OK',
-      },
-      { main: 'DETECTING JUGAAD COEFFICIENT', sub: 'CHECKING CHAOS TOLERANCE', result: '✓ HIGH' },
-      {
-        main: 'MEASURING SHIP VELOCITY…',
-        sub: 'CALCULATING 3AM PRODUCTIVITY INDEX',
-        result: '97%',
-      },
-      { main: 'CALCULATING GOA COMPATIBILITY', sub: 'CHECKING ARABIAN SEA PROXIMITY TOLERANCE' },
-      { main: 'GENERATING ARTIFACT…', sub: 'COMPOSING VINTAGE POSTER · APPLYING INK TEXTURES' },
-    ],
-    [formData.stack]
-  );
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -45,7 +38,7 @@ export const ScanningScreen = ({ formData, onComplete }) => {
     return () => {
       clearInterval(interval);
     };
-  }, [onComplete, SCAN_LINES]);
+  }, [onComplete]);
 
   const getLineState = (index) => {
     if (lineProgress > index) return 'done';

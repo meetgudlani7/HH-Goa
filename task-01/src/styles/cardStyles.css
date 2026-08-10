@@ -338,27 +338,6 @@
   color: var(--yellow);
   letter-spacing: 0.03em;
 }
-/* [STACK] */
-.f-stack {
-  border-top: 1.5px dashed var(--fade);
-  padding-top: 6px;
-}
-.f-stack-label {
-  font-family: 'Space Mono', monospace;
-  font-size: 5px;
-  color: #8a6840;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-}
-.f-stack-val {
-  font-family: 'Teko', sans-serif;
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--ink);
-  letter-spacing: 0.04em;
-  line-height: 1.05;
-}
-
 /* Floating "SHIP IT" label — overlaps info/person boundary */
 .f-float-label {
   position: absolute;

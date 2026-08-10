@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { BUILDER_TITLES } from '../utils/titlesList';
+import { INGREDIENTS } from '../utils/ingredientsList';
 
 /**
  * FormFields Component - Phase 4 Implementation
@@ -19,11 +20,7 @@ export const FormFields = ({ setStep, formData, setFormData }) => {
   }, []);
 
   const isFormValid = useCallback(() => {
-    return (
-      formData.name.trim().length > 0 &&
-      formData.stack.trim().length > 0 &&
-      formData.builderTitle.trim().length > 0
-    );
+    return formData.name.trim().length > 0 && formData.builderTitle.trim().length > 0;
   }, [formData]);
 
   const handleInputChange = useCallback(
@@ -54,6 +51,16 @@ export const FormFields = ({ setStep, formData, setFormData }) => {
     [setFormData]
   );
 
+  const handleIngredientChange = useCallback(
+    (key, value) => {
+      setFormData((prev) => ({
+        ...prev,
+        ingredients: { ...prev.ingredients, [key]: value },
+      }));
+    },
+    [setFormData]
+  );
+
   const regenerateTitle = useCallback(() => {
     const randomIndex = Math.floor(Math.random() * BUILDER_TITLES.length);
     handleTitleSelect(randomIndex);
@@ -78,7 +85,6 @@ export const FormFields = ({ setStep, formData, setFormData }) => {
     if (!isValid) {
       const newErrors = {};
       if (!formData.name.trim()) newErrors.name = 'Name is required';
-      if (!formData.stack.trim()) newErrors.stack = 'Stack is required';
       if (!formData.builderTitle.trim()) newErrors.builderTitle = 'Builder Title is required';
       setErrors(newErrors);
       if (newErrors.name && nameInputRef.current) nameInputRef.current.focus();
@@ -142,24 +148,9 @@ export const FormFields = ({ setStep, formData, setFormData }) => {
             autoComplete="name"
             disabled={isSubmitting}
           />
+          <div className="field-hint">Please enter your full name</div>
           {formData.name.trim() && <div className="field-decoration">NAAM ✓</div>}
           {errors.name && <div className="field-error">{errors.name}</div>}
-        </div>
-
-        <div className="field-group">
-          <div className="field-label">KYA CHALTA HAI MACHINE MEIN? / Your stack</div>
-          <input
-            className="field-inp"
-            value={formData.stack}
-            onChange={handleInputChange}
-            name="stack"
-            placeholder="REACT / TS / AI"
-            maxLength={50}
-            autoComplete="off"
-            disabled={isSubmitting}
-          />
-          {formData.stack.trim() && <div className="field-decoration">STACK ✓</div>}
-          {errors.stack && <div className="field-error">{errors.stack}</div>}
         </div>
 
         <div className="field-group">
@@ -289,6 +280,36 @@ export const FormFields = ({ setStep, formData, setFormData }) => {
         </button>
 
         {errors.builderTitle && <div className="field-error">{errors.builderTitle}</div>}
+
+        <div className="back-pattern-row">
+          <div className="bp-diamond"></div>
+          <div className="bp-circle"></div>
+          <div className="bp-diamond"></div>
+          <div className="bp-circle"></div>
+          <div className="bp-diamond"></div>
+          <div className="bp-circle"></div>
+          <div className="bp-diamond"></div>
+        </div>
+
+        <div className="tags-label">// CUSTOMISE YOUR INGREDIENTS (BACK OF CARD)</div>
+        {INGREDIENTS.map((ingredient) => (
+          <div className="ingredient-slider-row" key={ingredient.key}>
+            <div className="ingredient-slider-label">
+              <span>{ingredient.label}</span>
+              <span>{formData.ingredients[ingredient.key]}%</span>
+            </div>
+            <input
+              type="range"
+              min={0}
+              max={100}
+              value={formData.ingredients[ingredient.key]}
+              onChange={(e) => handleIngredientChange(ingredient.key, Number(e.target.value))}
+              className="ingredient-slider"
+              disabled={isSubmitting}
+              aria-label={`${ingredient.label} percentage`}
+            />
+          </div>
+        ))}
 
         <button
           className="generate-btn"

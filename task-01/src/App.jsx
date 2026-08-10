@@ -10,18 +10,21 @@ import { ArtifactFront } from './components/ArtifactFront';
 import { ArtifactBack } from './components/ArtifactBack';
 import { PfpScreen } from './components/PfpScreen';
 import { useImageProcessor } from './hooks/useImageProcessor';
+import { DEFAULT_INGREDIENTS } from './utils/ingredientsList';
+
+const INITIAL_FORM_DATA = {
+  name: '',
+  role: 'Builder',
+  builderTitle: '',
+  city: '',
+  xHandle: '',
+  ingredients: DEFAULT_INGREDIENTS,
+};
 
 export const App = () => {
   const [step, setStep] = useState('upload');
   const [croppedImageURL, setCroppedImageURL] = useState(null);
-  const [formData, setFormData] = useState({
-    name: '',
-    stack: '',
-    role: 'Builder',
-    builderTitle: '',
-    city: '',
-    xHandle: '',
-  });
+  const [formData, setFormData] = useState(INITIAL_FORM_DATA);
   // Only the setter is used — ArtifactFront pre-renders the front card as a
   // validation/warm-up step and reports back via this, but nothing reads
   // the resulting data URL anymore now that ResultScreen renders its own
@@ -41,14 +44,7 @@ export const App = () => {
     }
     setStep('upload');
     setCroppedImageURL(null);
-    setFormData({
-      name: '',
-      stack: '',
-      role: 'Builder',
-      builderTitle: '',
-      city: '',
-      xHandle: '',
-    });
+    setFormData(INITIAL_FORM_DATA);
     setCardDataURL(null);
   }, [croppedImageURL, originalBlob]);
 
@@ -79,9 +75,7 @@ export const App = () => {
       />
     ),
     form: <FormFields setStep={setStep} formData={formData} setFormData={setFormData} />,
-    scanning: (
-      <ScanningScreen setStep={setStep} formData={formData} onComplete={handleScanComplete} />
-    ),
+    scanning: <ScanningScreen setStep={setStep} onComplete={handleScanComplete} />,
     'artifact-front': (
       <ArtifactFront
         setStep={setStep}

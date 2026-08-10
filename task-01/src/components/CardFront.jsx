@@ -9,10 +9,6 @@ export default function CardFront({ formData = {}, croppedImageURL, serial, card
   const nameParts = (formData.name || '').trim().split(/\s+/).filter(Boolean);
   const firstName = nameParts[0] || 'YOUR';
   const lastName = nameParts.slice(1).join(' ') || 'NAME';
-  const stackItems = (formData.stack || 'YOUR STACK')
-    .split(/[/,]/)
-    .map((item) => item.trim())
-    .filter(Boolean);
 
   return (
     <div className="card-front" ref={cardRef}>
@@ -87,17 +83,6 @@ export default function CardFront({ formData = {}, croppedImageURL, serial, card
             <div className="f-name-last">{lastName}</div>
             <div className="f-title-box">
               <span>{formData.builderTitle || 'BUILDER ALIAS'}</span>
-            </div>
-            <div className="f-stack">
-              <div className="f-stack-label">STACK / KYA CHALTA HAI</div>
-              <div className="f-stack-val">
-                {stackItems.map((item, index) => (
-                  <React.Fragment key={`${item}-${index}`}>
-                    {item}
-                    {index < stackItems.length - 1 && <br />}
-                  </React.Fragment>
-                ))}
-              </div>
             </div>
           </div>
           <div className="f-float-label">SHIP IT →</div>

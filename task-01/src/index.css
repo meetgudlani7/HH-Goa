@@ -552,6 +552,58 @@ body {
   cursor: not-allowed;
 }
 
+.ingredient-slider-row {
+  margin-bottom: 14px;
+}
+.ingredient-slider-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-family: 'Space Mono', monospace;
+  font-size: 7px;
+  color: var(--fade);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.ingredient-slider-label span:last-child {
+  color: var(--yellow);
+  flex-shrink: 0;
+}
+.ingredient-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(245, 237, 216, 0.15);
+  outline: none;
+  cursor: pointer;
+  min-height: 24px;
+}
+.ingredient-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--yellow);
+  border: 2px solid var(--ink);
+  cursor: pointer;
+}
+.ingredient-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--yellow);
+  border: 2px solid var(--ink);
+  cursor: pointer;
+}
+.ingredient-slider:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 /* ============================================
    SCREEN 1 — HERO / LANDING
 ============================================ */
@@ -823,9 +875,28 @@ body {
   position: absolute;
   bottom: 20px;
   right: -10px;
-  width: 150px;
+  width: clamp(150px, 16vw, 320px);
   height: auto;
   opacity: 0.3;
+  pointer-events: none;
+}
+
+.result-flower-tr {
+  position: absolute;
+  top: 20px;
+  right: -15px;
+  width: clamp(90px, 10vw, 160px);
+  height: clamp(90px, 10vw, 160px);
+  opacity: 0.22;
+  pointer-events: none;
+}
+.result-palm-deco {
+  position: absolute;
+  bottom: 10px;
+  left: -10px;
+  width: clamp(120px, 14vw, 220px);
+  height: auto;
+  opacity: 0.22;
   pointer-events: none;
 }
 
@@ -943,14 +1014,6 @@ body {
   font-size: 13px;
   color: var(--yellow);
   margin-top: 4px;
-}
-
-.rmc-stack {
-  font-family: 'Space Mono', monospace;
-  font-size: 7px;
-  color: var(--fade);
-  letter-spacing: 0.08em;
-  margin-top: 6px;
 }
 
 .rmc-badge {
@@ -1462,9 +1525,6 @@ body {
   }
   .rmc-title {
     font-size: 11px;
-  }
-  .rmc-stack {
-    font-size: 6px;
   }
   .rmc-badge {
     font-size: 6px;

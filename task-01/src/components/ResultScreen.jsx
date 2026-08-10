@@ -86,6 +86,118 @@ export const ResultScreen = ({ setStep, formData, croppedImageURL, serial, onRes
         <br />
         SHIP
       </div>
+
+      {/* Decorative SVG: hibiscus top right (same motif as the hero screen) */}
+      <svg
+        className="result-flower-tr"
+        viewBox="0 0 100 100"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+        <ellipse
+          cx="50"
+          cy="50"
+          rx="30"
+          ry="15"
+          fill="#F5EDD8"
+          opacity=".8"
+          transform="rotate(0 50 50)"
+        />
+        <ellipse
+          cx="50"
+          cy="50"
+          rx="30"
+          ry="15"
+          fill="#F5EDD8"
+          opacity=".8"
+          transform="rotate(45 50 50)"
+        />
+        <ellipse
+          cx="50"
+          cy="50"
+          rx="30"
+          ry="15"
+          fill="#F5EDD8"
+          opacity=".8"
+          transform="rotate(90 50 50)"
+        />
+        <ellipse
+          cx="50"
+          cy="50"
+          rx="30"
+          ry="15"
+          fill="#F5EDD8"
+          opacity=".8"
+          transform="rotate(135 50 50)"
+        />
+        <circle cx="50" cy="50" r="12" fill="#F0C229" />
+        <circle cx="50" cy="50" r="6" fill="#1A1008" />
+      </svg>
+
+      {/* Decorative SVG: palm tree bottom left (same motif as the hero screen) */}
+      <svg
+        className="result-palm-deco"
+        viewBox="0 0 140 160"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+        <path
+          d="M70 160 C68 120 66 90 72 60"
+          stroke="#F5EDD8"
+          strokeWidth="6"
+          strokeLinecap="round"
+        />
+        <ellipse
+          cx="72"
+          cy="55"
+          rx="34"
+          ry="12"
+          fill="#1A1008"
+          opacity=".55"
+          transform="rotate(-25 72 55)"
+        />
+        <ellipse
+          cx="72"
+          cy="55"
+          rx="34"
+          ry="12"
+          fill="#1A1008"
+          opacity=".55"
+          transform="rotate(10 72 55)"
+        />
+        <ellipse
+          cx="72"
+          cy="55"
+          rx="34"
+          ry="12"
+          fill="#1A1008"
+          opacity=".55"
+          transform="rotate(45 72 55)"
+        />
+        <ellipse
+          cx="72"
+          cy="55"
+          rx="30"
+          ry="10"
+          fill="#F0C229"
+          opacity=".7"
+          transform="rotate(-55 72 55)"
+        />
+        <ellipse
+          cx="72"
+          cy="55"
+          rx="30"
+          ry="10"
+          fill="#F0C229"
+          opacity=".7"
+          transform="rotate(75 72 55)"
+        />
+        <circle cx="64" cy="66" r="6" fill="#F5EDD8" opacity=".8" />
+        <circle cx="76" cy="70" r="6" fill="#F5EDD8" opacity=".8" />
+      </svg>
+
       <div className="border-strip-top" />
       <div className="windowbar">
         <div className="windowbar-title">
@@ -122,7 +234,6 @@ export const ResultScreen = ({ setStep, formData, croppedImageURL, serial, onRes
               {(formData?.name || '').toUpperCase().split(' ').slice(1).join(' ')}
             </div>
             <div className="rmc-title">{formData?.builderTitle || 'THE BUILDER'}</div>
-            <div className="rmc-stack">{formData?.stack || 'REACT / TS / AI'}</div>
             <div className="rmc-badge">★ GOA COMPATIBILITY: 100% ★</div>
           </div>
           <div

@@ -1,5 +1,6 @@
 import React from 'react';
 import '../styles/cardStyles.css';
+import { INGREDIENTS, DEFAULT_INGREDIENTS } from '../utils/ingredientsList';
 
 const barcode = [
   '',
@@ -47,11 +48,7 @@ const barcode = [
 export default function CardBack({ formData = {}, serial, cardRef }) {
   const name = (formData.name || 'BUILDER').toUpperCase();
   const lastName = name.trim().split(/\s+/).slice(1).join('-') || 'BUILDER';
-  const stack = (formData.stack || 'YOUR STACK')
-    .split(/[/,]/)
-    .map((item) => item.trim())
-    .filter(Boolean)
-    .slice(0, 3);
+  const ingredientValues = formData.ingredients || DEFAULT_INGREDIENTS;
   const batch = `GOA-26-${serial}`;
   return (
     <div className="card-back" ref={cardRef}>
@@ -78,51 +75,23 @@ export default function CardBack({ formData = {}, serial, cardRef }) {
         <div className="back-section-label">INGREDIENTS (PER BUILDER)</div>
         <table className="ing-table">
           <tbody>
-            <tr>
-              <td>{stack.join(' / ') || 'YOUR STACK'}</td>
-              <td>
-                <div className="bar-track">
-                  <div className="bar-fill" style={{ width: '62%' }} />
-                </div>
-              </td>
-              <td>62%</td>
-            </tr>
-            <tr>
-              <td>CONTROLLED CHAOS</td>
-              <td>
-                <div className="bar-track">
-                  <div className="bar-fill p" style={{ width: '18%' }} />
-                </div>
-              </td>
-              <td>18%</td>
-            </tr>
-            <tr>
-              <td>BLACK COFFEE (ARABICA)</td>
-              <td>
-                <div className="bar-track">
-                  <div className="bar-fill y" style={{ width: '10%' }} />
-                </div>
-              </td>
-              <td>10%</td>
-            </tr>
-            <tr>
-              <td>GOA SUNLIGHT (UV-GRADE)</td>
-              <td>
-                <div className="bar-track">
-                  <div className="bar-fill g" style={{ width: '7%' }} />
-                </div>
-              </td>
-              <td>7%</td>
-            </tr>
-            <tr>
-              <td>QUESTIONABLE IDEAS (TRACE)</td>
-              <td>
-                <div className="bar-track">
-                  <div className="bar-fill b" style={{ width: '3%' }} />
-                </div>
-              </td>
-              <td>3%</td>
-            </tr>
+            {INGREDIENTS.map((ingredient) => {
+              const value = ingredientValues[ingredient.key] ?? ingredient.defaultValue;
+              return (
+                <tr key={ingredient.key}>
+                  <td>{ingredient.label}</td>
+                  <td>
+                    <div className="bar-track">
+                      <div
+                        className={`bar-fill ${ingredient.barClass}`}
+                        style={{ width: `${value}%` }}
+                      />
+                    </div>
+                  </td>
+                  <td>{value}%</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
         <div className="back-tile-row" />
