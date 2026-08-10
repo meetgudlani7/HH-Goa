@@ -159,7 +159,7 @@ export const Cropper = ({ setStep, originalBlob, setCroppedImageURL }) => {
       <div className="border-strip-top"></div>
 
       <div className="windowbar">
-        <div className="windowbar-title">⬛ APNI PHOTO FRAME KAR — STEP 1 OF 3</div>
+        <div className="windowbar-title">⬛  Set Your Frame — STEP 1 OF 3</div>
         <div className="wbtns">
           <div className="wbtn" style={{ background: '#C8001E' }}></div>
           <div className="wbtn" style={{ background: '#F0C229' }}></div>
