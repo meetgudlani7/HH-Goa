@@ -409,7 +409,7 @@ export const Cropper = ({ setStep, originalBlob, setCroppedImageURL }) => {
                 onClick={handleCropConfirm}
                 disabled={isProcessing || !croppedAreaPixels}
               >
-                FACE LOCK KAR →
+                LOCK IN →
               </button>
             </div>
           </div>

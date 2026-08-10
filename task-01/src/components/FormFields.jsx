@@ -128,7 +128,7 @@ export const FormFields = ({ setStep, formData, setFormData }) => {
         </button>
         <div className="form-eyebrow">// IDENTITY CONFIGURATION IN PROGRESS</div>
         <div className="form-heading-big">
-          WHO'S
+          WHO&apos;S
           <br />
           <span className="hl">BUILDING?</span>
           <br />

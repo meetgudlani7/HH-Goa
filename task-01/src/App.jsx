@@ -48,22 +48,29 @@ export const App = () => {
     setCardDataURL(null);
   }, [croppedImageURL, originalBlob]);
 
+  // Each blob URL gets its own cleanup effect, keyed only to itself. A
+  // single combined effect (depending on both) would re-run its cleanup —
+  // using the *previous* render's values — whenever *either* URL changed,
+  // so setting croppedImageURL for the first time (right after confirming
+  // a crop) would revoke originalBlob's still-in-use URL even though
+  // originalBlob itself never changed. That's what caused the original
+  // photo to go blank/broken when navigating back from Form to Crop (and,
+  // previously, from Result back to Artifact-Front).
   useEffect(() => {
-    // NOTE: only depend on the URLs actually being revoked here. Adding
-    // cardDataURL (or anything else) to this array would re-run the cleanup
-    // — and revoke the still-in-use croppedImageURL/originalBlob URLs —
-    // every time cardDataURL changes, e.g. right after the card finishes
-    // rendering. That's what caused the front photo to go blank/broken the
-    // moment you flipped to the back and came back.
     return () => {
       if (croppedImageURL) {
         URL.revokeObjectURL(croppedImageURL);
       }
+    };
+  }, [croppedImageURL]);
+
+  useEffect(() => {
+    return () => {
       if (originalBlob?.objectURL) {
         URL.revokeObjectURL(originalBlob.objectURL);
       }
     };
-  }, [croppedImageURL, originalBlob]);
+  }, [originalBlob]);
 
   const screens = {
     upload: <Uploader setStep={setStep} processImage={processImage} />,

@@ -474,7 +474,6 @@ export const Uploader = ({ setStep, processImage }) => {
                 <span className="upload-big">
                   UPLOAD PORTRAIT →
                   <br />
-                  
                 </span>
                 <span className="upload-arrow-big">⇪</span>
                 <div className="upload-sub">JPG · PNG · HEIC — ANY CROP WORKS — MOBILE OK</div>
