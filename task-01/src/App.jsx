@@ -10,8 +10,15 @@ import { ScanningScreen } from './components/ScanningScreen';
 import { ArtifactFront } from './components/ArtifactFront';
 import { ArtifactBack } from './components/ArtifactBack';
 import { PfpScreen } from './components/PfpScreen';
+import { SharePage } from './components/SharePage';
 import { useImageProcessor } from './hooks/useImageProcessor';
 import { DEFAULT_INGREDIENTS } from './utils/ingredientsList';
+
+// /share/:id is a standalone backup landing page (see SharePage) reached by
+// scanning the QR code offered on desktop when native multi-image sharing
+// isn't available — it has nothing to do with the upload/crop/form step
+// flow below, so it's handled before the app's own state-based router.
+const SHARE_PATH_MATCH = /^\/share\/([^/]+)/;
 
 const INITIAL_FORM_DATA = {
   name: '',
@@ -23,6 +30,7 @@ const INITIAL_FORM_DATA = {
 };
 
 export const App = () => {
+  const shareMatch = window.location.pathname.match(SHARE_PATH_MATCH);
   const [step, setStep] = useState('upload');
   const [croppedImageURL, setCroppedImageURL] = useState(null);
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
@@ -72,6 +80,8 @@ export const App = () => {
       }
     };
   }, [originalBlob]);
+
+  if (shareMatch) return <SharePage id={shareMatch[1]} />;
 
   const screens = {
     upload: <Uploader setStep={setStep} processImage={processImage} />,

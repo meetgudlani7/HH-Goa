@@ -100,7 +100,7 @@ export const ScanningScreen = ({ onComplete }) => {
           </div>
           <div className="scan-progress-track">
             <div className="scan-progress-fill" style={{ width: `${progressPercent}%` }}></div>
-            <div className="scan-progress-text">ASSEMBLING ARTIFACTS · PLEASE HOLD</div>
+            <div className="scan-progress-text">ASSEMBLING ARTIFACT · PLEASE HOLD</div>
           </div>
         </div>
 
