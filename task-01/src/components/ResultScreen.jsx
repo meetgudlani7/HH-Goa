@@ -1,22 +1,31 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import canvasConfetti from 'canvas-confetti';
+import QRCode from 'qrcode';
 import CardFront from './CardFront';
 import CardBack from './CardBack';
 import { useCardRenderer } from '../hooks/useCardRenderer';
+import { uploadShareImages } from '../lib/shareUpload';
+import { CAPTION_PLACEHOLDER } from '../constants/shareCaption';
 
 export const ResultScreen = ({ setStep, formData, croppedImageURL, serial, onReset }) => {
   const cardRef = useRef(null);
   const backCardRef = useRef(null);
-  const { renderCombined } = useCardRenderer();
+  const { renderFront, renderCombined } = useCardRenderer();
   const [isRevealed, setIsRevealed] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
   const [error, setError] = useState(null);
-  // Twitter/X's web intent can't attach an image or show a link-preview
+  // Twitter/X's web intent can't attach images or show a link-preview
   // graphic — that only works via the native OS share sheet. When we fall
   // back to the web intent (no Web Share API support), tell the user their
-  // PNG downloaded separately and needs to be attached by hand.
+  // two PNGs downloaded separately and need to be attached by hand.
   const [showManualAttachHint, setShowManualAttachHint] = useState(false);
+  // Non-blocking Supabase backup for the fallback path: lets a desktop user
+  // scan a QR code and finish the native multi-image share from their
+  // phone instead of attaching two downloaded files by hand. Uploads in the
+  // background after the primary download+compose flow has already fired;
+  // if it never resolves (or fails), the primary flow is unaffected.
+  const [shareBackup, setShareBackup] = useState(null);
   const builderName = (formData?.name || 'builder').toLowerCase().replace(/\s+/g, '-');
   const nameParts = (formData?.name || '').trim().split(/\s+/).filter(Boolean);
   const displayFirstName = nameParts[0] || 'BUILDER';
@@ -65,42 +74,71 @@ export const ResultScreen = ({ setStep, formData, croppedImageURL, serial, onRes
     setIsSharing(true);
     setError(null);
     setShowManualAttachHint(false);
+    setShareBackup(null);
 
-    const text =
-      'Just got my Builder Artifact from Hacker House Goa 2026.\nShipping at a private beach resort in October.\nFind me there. 🌴🛵\n\n#FrameInGoa #HackerHouseGoa @247pmstudio';
     const supportsNativeShare = typeof navigator.share === 'function';
     // Open the fallback tab synchronously, in direct response to the click —
-    // by the time the card finishes rendering below we're several `await`s
+    // by the time the cards finish rendering below we're several `await`s
     // removed from the user gesture, and Safari/most browsers will silently
     // block a window.open() that happens that late.
     const shareWindow = supportsNativeShare ? null : window.open('', '_blank');
 
-    let blobUrl;
+    let frontBlobUrl;
+    let backBlobUrl;
     try {
-      const blob = await getCombinedCardBlob();
-      const fileName = `hh-goa-2026-${builderName}.png`;
+      const [frontBlob, backBlob] = await Promise.all([
+        renderFront(cardRef),
+        renderFront(backCardRef),
+      ]);
+      const frontFileName = `hh-goa-2026-${builderName}-front.png`;
+      const backFileName = `hh-goa-2026-${builderName}-back.png`;
 
       if (supportsNativeShare) {
-        const file = new File([blob], fileName, { type: 'image/png' });
-        if (!navigator.canShare || navigator.canShare({ files: [file] })) {
-          await navigator.share({ files: [file], text });
+        const frontFile = new File([frontBlob], frontFileName, { type: 'image/png' });
+        const backFile = new File([backBlob], backFileName, { type: 'image/png' });
+        if (!navigator.canShare || navigator.canShare({ files: [frontFile, backFile] })) {
+          await navigator.share({ files: [frontFile, backFile], text: CAPTION_PLACEHOLDER });
           return;
         }
       }
 
-      // Fallback: download the PNG, then hand the pre-opened tab off to the X intent.
-      blobUrl = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
+      // Fallback: download both PNGs, then hand the pre-opened tab off to the X intent.
+      frontBlobUrl = URL.createObjectURL(frontBlob);
+      const frontLink = document.createElement('a');
+      frontLink.href = frontBlobUrl;
+      frontLink.download = frontFileName;
+      document.body.appendChild(frontLink);
+      frontLink.click();
+      frontLink.remove();
 
-      const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+      // Some browsers throttle or prompt when multiple downloads fire
+      // back-to-back from the same click — a short stagger keeps both saves
+      // reliable instead of racing them.
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
+      backBlobUrl = URL.createObjectURL(backBlob);
+      const backLink = document.createElement('a');
+      backLink.href = backBlobUrl;
+      backLink.download = backFileName;
+      document.body.appendChild(backLink);
+      backLink.click();
+      backLink.remove();
+
+      const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(CAPTION_PLACEHOLDER)}`;
       if (shareWindow) shareWindow.location.href = tweetUrl;
       else window.open(tweetUrl, '_blank', 'noopener,noreferrer');
       setShowManualAttachHint(true);
+
+      // Non-blocking backup upload — the primary download+compose flow above
+      // has already succeeded, so a failure here is only logged, never
+      // surfaced as an error to the user.
+      uploadShareImages(frontBlob, backBlob)
+        .then(async ({ id }) => {
+          const shareUrl = `${window.location.origin}/share/${id}`;
+          const qrDataUrl = await QRCode.toDataURL(shareUrl);
+          setShareBackup({ shareUrl, qrDataUrl });
+        })
+        .catch((backupError) => console.error('Share backup upload failed:', backupError));
     } catch (shareError) {
       shareWindow?.close();
       // AbortError just means the user closed the native share sheet — not a failure.
@@ -110,9 +148,10 @@ export const ResultScreen = ({ setStep, formData, croppedImageURL, serial, onRes
       }
     } finally {
       setIsSharing(false);
-      if (blobUrl) setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+      if (frontBlobUrl) setTimeout(() => URL.revokeObjectURL(frontBlobUrl), 60000);
+      if (backBlobUrl) setTimeout(() => URL.revokeObjectURL(backBlobUrl), 60000);
     }
-  }, [builderName, getCombinedCardBlob]);
+  }, [builderName, renderFront]);
 
   return (
     <div className="result-screen">
@@ -327,22 +366,34 @@ export const ResultScreen = ({ setStep, formData, croppedImageURL, serial, onRes
         </div>
         {showManualAttachHint && (
           <div className="share-hint">
-            📎 Your artifact PNG downloaded separately — attach it to the X tab that just opened
-            before you post (X doesn&apos;t support pre-attaching images via link).
+            📎 Both artifact PNGs (front + back) downloaded separately — attach them to the X tab
+            that just opened before you post (X doesn&apos;t support pre-attaching images via
+            link).
+          </div>
+        )}
+        {shareBackup && (
+          <div
+            className="share-hint"
+            style={{ display: 'flex', gap: '12px', alignItems: 'center' }}
+          >
+            <img
+              src={shareBackup.qrDataUrl}
+              alt="QR code to continue sharing on your phone"
+              style={{ width: '72px', height: '72px', flexShrink: 0 }}
+            />
+            <div>
+              📱 Or scan to finish on your phone — opens a native share sheet with both images
+              already attached.
+              <br />
+              <a href={shareBackup.shareUrl} style={{ color: 'var(--blue)' }}>
+                {shareBackup.shareUrl}
+              </a>
+            </div>
           </div>
         )}
         <div className="caption-box">
           <div className="caption-label">// PRE-FILLED CAPTION:</div>
-          <div className="caption-text">
-            Just got my Builder Artifact from Hacker House Goa 2026.
-            <br />
-            Shipping at a private beach resort in October.
-            <br />
-            Find me there. 🌴🛵
-            <br />
-            <br />
-            #FrameInGoa #HackerHouseGoa @247pmstudio
-          </div>
+          <div className="caption-text">{CAPTION_PLACEHOLDER}</div>
         </div>
         {error && (
           <div
