@@ -5,7 +5,7 @@ import CardFront from './CardFront';
 import CardBack from './CardBack';
 import { useCardRenderer } from '../hooks/useCardRenderer';
 import { uploadShareImages } from '../lib/shareUpload';
-import { CAPTION_PLACEHOLDER } from '../constants/shareCaption';
+import { CAPTION_PLACEHOLDER, MOBILE_BREAKPOINT_PX } from '../constants/share';
 
 export const ResultScreen = ({ setStep, formData, croppedImageURL, serial, onReset }) => {
   const cardRef = useRef(null);
@@ -16,15 +16,24 @@ export const ResultScreen = ({ setStep, formData, croppedImageURL, serial, onRes
   const [isSharing, setIsSharing] = useState(false);
   const [error, setError] = useState(null);
   // Twitter/X's web intent can't attach images or show a link-preview
-  // graphic — that only works via the native OS share sheet. When we fall
-  // back to the web intent (no Web Share API support), tell the user their
-  // two PNGs downloaded separately and need to be attached by hand.
+  // graphic — that only works via the OS share sheet. We only take that
+  // path on phones (see share()); on laptop/desktop we skip it entirely, so
+  // that path always downloads both PNGs and needs them attached by hand
+  // once X opens.
   const [showManualAttachHint, setShowManualAttachHint] = useState(false);
-  // Non-blocking Supabase backup for the fallback path: lets a desktop user
-  // scan a QR code and finish the native multi-image share from their
-  // phone instead of attaching two downloaded files by hand. Uploads in the
-  // background after the primary download+compose flow has already fired;
-  // if it never resolves (or fails), the primary flow is unaffected.
+  // Chrome (and most browsers) silently block more than one *scripted*
+  // download per click — an anti-abuse guard, not something a delay
+  // between the two clicks can dodge. So on the desktop fallback we only
+  // auto-download the front (the browser always allows the first one) and
+  // surface the back as a real button the user clicks themselves, which is
+  // its own fresh gesture and always succeeds. Null when there's nothing
+  // pending; { blobUrl, fileName } once the back render is ready.
+  const [pendingBackDownload, setPendingBackDownload] = useState(null);
+  // Non-blocking Supabase backup for the desktop fallback path: lets
+  // someone scan a QR code and pick this share up on their own phone
+  // instead of transferring the two downloaded files by hand. Uploads in
+  // the background after the primary download+compose flow has already
+  // fired; if it never resolves (or fails), the primary flow is unaffected.
   const [shareBackup, setShareBackup] = useState(null);
   const builderName = (formData?.name || 'builder').toLowerCase().replace(/\s+/g, '-');
   const nameParts = (formData?.name || '').trim().split(/\s+/).filter(Boolean);
@@ -75,12 +84,20 @@ export const ResultScreen = ({ setStep, formData, croppedImageURL, serial, onRes
     setError(null);
     setShowManualAttachHint(false);
     setShareBackup(null);
+    setPendingBackDownload(null);
 
-    const supportsNativeShare = typeof navigator.share === 'function';
+    // Hybrid by screen size: on phones, the OS share sheet is the better
+    // experience (auto-attaches both images, one tap on X). On laptop/
+    // desktop screens, that same sheet is a confusing generic AirDrop/Mail
+    // popup with no auto-attach payoff, so we skip it and go straight to X.
+    const isMobileScreen = window.innerWidth < MOBILE_BREAKPOINT_PX;
+    const supportsNativeShare = isMobileScreen && typeof navigator.share === 'function';
+
     // Open the fallback tab synchronously, in direct response to the click —
     // by the time the cards finish rendering below we're several `await`s
     // removed from the user gesture, and Safari/most browsers will silently
-    // block a window.open() that happens that late.
+    // block a window.open() that happens that late. Not needed on the
+    // native-share path, which doesn't open any tab itself.
     const shareWindow = supportsNativeShare ? null : window.open('', '_blank');
 
     let frontBlobUrl;
@@ -102,7 +119,11 @@ export const ResultScreen = ({ setStep, formData, croppedImageURL, serial, onRes
         }
       }
 
-      // Fallback: download both PNGs, then hand the pre-opened tab off to the X intent.
+      // Fallback (desktop, or a mobile browser without file-share support):
+      // auto-download the front, then hand the pre-opened tab off to the X
+      // intent. The back is NOT auto-downloaded here — see
+      // pendingBackDownload above for why a second scripted download would
+      // just get silently blocked by the browser.
       frontBlobUrl = URL.createObjectURL(frontBlob);
       const frontLink = document.createElement('a');
       frontLink.href = frontBlobUrl;
@@ -111,18 +132,8 @@ export const ResultScreen = ({ setStep, formData, croppedImageURL, serial, onRes
       frontLink.click();
       frontLink.remove();
 
-      // Some browsers throttle or prompt when multiple downloads fire
-      // back-to-back from the same click — a short stagger keeps both saves
-      // reliable instead of racing them.
-      await new Promise((resolve) => setTimeout(resolve, 300));
-
       backBlobUrl = URL.createObjectURL(backBlob);
-      const backLink = document.createElement('a');
-      backLink.href = backBlobUrl;
-      backLink.download = backFileName;
-      document.body.appendChild(backLink);
-      backLink.click();
-      backLink.remove();
+      setPendingBackDownload({ blobUrl: backBlobUrl, fileName: backFileName });
 
       const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(CAPTION_PLACEHOLDER)}`;
       if (shareWindow) shareWindow.location.href = tweetUrl;
@@ -149,7 +160,11 @@ export const ResultScreen = ({ setStep, formData, croppedImageURL, serial, onRes
     } finally {
       setIsSharing(false);
       if (frontBlobUrl) setTimeout(() => URL.revokeObjectURL(frontBlobUrl), 60000);
-      if (backBlobUrl) setTimeout(() => URL.revokeObjectURL(backBlobUrl), 60000);
+      // The back blob backs a button the user clicks themselves (see
+      // pendingBackDownload) rather than downloading immediately, so it
+      // needs to stay valid longer than the front's — revoked once the
+      // Supabase backup would have expired anyway.
+      if (backBlobUrl) setTimeout(() => URL.revokeObjectURL(backBlobUrl), 300000);
     }
   }, [builderName, renderFront]);
 
@@ -366,9 +381,23 @@ export const ResultScreen = ({ setStep, formData, croppedImageURL, serial, onRes
         </div>
         {showManualAttachHint && (
           <div className="share-hint">
-            📎 Both artifact PNGs (front + back) downloaded separately — attach them to the X tab
-            that just opened before you post (X doesn&apos;t support pre-attaching images via
-            link).
+            📎 The front PNG downloaded automatically
+            {pendingBackDownload && (
+              <>
+                {' '}
+                —{' '}
+                <a
+                  href={pendingBackDownload.blobUrl}
+                  download={pendingBackDownload.fileName}
+                  style={{ color: 'var(--blue)', fontWeight: 'bold' }}
+                >
+                  tap here to save the back
+                </a>{' '}
+                too (your browser only allows one automatic download per click)
+              </>
+            )}
+            . Attach both to the X tab that just opened before you post (X doesn&apos;t support
+            pre-attaching images via link).
           </div>
         )}
         {shareBackup && (
@@ -382,8 +411,8 @@ export const ResultScreen = ({ setStep, formData, croppedImageURL, serial, onRes
               style={{ width: '72px', height: '72px', flexShrink: 0 }}
             />
             <div>
-              📱 Or scan to finish on your phone — opens a native share sheet with both images
-              already attached.
+              📱 Or scan to continue on your own phone instead of transferring these files by
+              hand.
               <br />
               <a href={shareBackup.shareUrl} style={{ color: 'var(--blue)' }}>
                 {shareBackup.shareUrl}
